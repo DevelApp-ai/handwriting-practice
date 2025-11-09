@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Point, getWritingDirection, isComplexScript } from '@/lib/types'
+import { useKV } from '@github/spark/hooks'
 
 interface DrawingCanvasProps {
   character: string
@@ -13,12 +14,60 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
   const [isDrawing, setIsDrawing] = useState(false)
   const [strokes, setStrokes] = useState<Point[][]>([])
   const [currentStroke, setCurrentStroke] = useState<Point[]>([])
+  const [userProgress] = useKV<any>('user-progress', { progress: {} })
 
   const LINE_HEIGHTS = {
     ascender: 0.25,
     midline: 0.42,
     baseline: 0.58,
     descender: 0.75,
+  }
+
+  const getCharacterLevel = () => {
+    const progress = userProgress?.progress?.[character]
+    if (!progress) return 1
+    return Math.min(Math.floor(progress.attempts / 3) + 1, 5)
+  }
+
+  const getPrecisionThresholds = () => {
+    const level = getCharacterLevel()
+    const baseModerate = 40
+    const baseFar = 80
+    
+    const moderateThreshold = baseModerate - (level - 1) * 5
+    const farThreshold = baseFar - (level - 1) * 10
+    
+    return {
+      moderate: Math.max(moderateThreshold, 20),
+      far: Math.max(farThreshold, 40),
+    }
+  }
+
+  const getDistanceFromLines = (y: number, canvasHeight: number) => {
+    const ascender = canvasHeight * LINE_HEIGHTS.ascender
+    const descender = canvasHeight * LINE_HEIGHTS.descender
+    
+    if (y < ascender) {
+      return ascender - y
+    } else if (y > descender) {
+      return y - descender
+    }
+    return 0
+  }
+
+  const getStrokeColor = (point: Point, canvasHeight: number) => {
+    const distance = getDistanceFromLines(point.y, canvasHeight)
+    const thresholds = getPrecisionThresholds()
+    
+    if (distance === 0) {
+      return 'rgba(59, 130, 246, 0.8)'
+    } else if (distance < thresholds.moderate) {
+      return 'rgba(234, 179, 8, 0.8)'
+    } else if (distance < thresholds.far) {
+      return 'rgba(249, 115, 22, 0.8)'
+    } else {
+      return 'rgba(239, 68, 68, 0.8)'
+    }
   }
 
   useEffect(() => {
@@ -91,6 +140,30 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     })
 
     ctx.setLineDash([])
+
+    const level = getCharacterLevel()
+    if (level > 1) {
+      ctx.font = 'bold 14px Quicksand, sans-serif'
+      ctx.fillStyle = 'rgba(99, 102, 241, 0.9)'
+      ctx.textAlign = 'right'
+      ctx.fillText(`Level ${level} - Higher precision required!`, overlay.width - 8, 20)
+    }
+
+    const thresholds = getPrecisionThresholds()
+    ctx.font = '11px Quicksand, sans-serif'
+    ctx.textAlign = 'left'
+    
+    ctx.fillStyle = 'rgba(59, 130, 246, 0.8)'
+    ctx.fillText('● Perfect', 8, overlay.height - 50)
+    
+    ctx.fillStyle = 'rgba(234, 179, 8, 0.8)'
+    ctx.fillText('● Slightly off', 8, overlay.height - 35)
+    
+    ctx.fillStyle = 'rgba(249, 115, 22, 0.8)'
+    ctx.fillText('● Getting far', 8, overlay.height - 20)
+    
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.8)'
+    ctx.fillText('● Too far!', 8, overlay.height - 5)
   }
 
   const drawCharacterGuide = () => {
@@ -240,35 +313,47 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     strokes.forEach((stroke) => {
-      drawStroke(ctx, stroke, 'rgba(59, 130, 246, 0.8)', 4)
+      drawStrokeWithColors(ctx, stroke, canvas.height)
     })
 
     if (currentStroke.length > 0) {
-      drawStroke(ctx, currentStroke, 'rgba(59, 130, 246, 0.8)', 4)
+      drawStrokeWithColors(ctx, currentStroke, canvas.height)
     }
   }
 
-  const drawStroke = (
+  const drawStrokeWithColors = (
     ctx: CanvasRenderingContext2D,
     points: Point[],
-    color: string,
-    width: number
+    canvasHeight: number
   ) => {
     if (points.length < 2) return
 
-    ctx.strokeStyle = color
-    ctx.lineWidth = width
+    ctx.lineWidth = 4
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
 
-    ctx.beginPath()
-    ctx.moveTo(points[0].x, points[0].y)
-
-    for (let i = 1; i < points.length; i++) {
-      ctx.lineTo(points[i].x, points[i].y)
+    for (let i = 0; i < points.length - 1; i++) {
+      const currentPoint = points[i]
+      const nextPoint = points[i + 1]
+      
+      const currentColor = getStrokeColor(currentPoint, canvasHeight)
+      const nextColor = getStrokeColor(nextPoint, canvasHeight)
+      
+      const gradient = ctx.createLinearGradient(
+        currentPoint.x,
+        currentPoint.y,
+        nextPoint.x,
+        nextPoint.y
+      )
+      gradient.addColorStop(0, currentColor)
+      gradient.addColorStop(1, nextColor)
+      
+      ctx.strokeStyle = gradient
+      ctx.beginPath()
+      ctx.moveTo(currentPoint.x, currentPoint.y)
+      ctx.lineTo(nextPoint.x, nextPoint.y)
+      ctx.stroke()
     }
-
-    ctx.stroke()
   }
 
   const getPoint = (e: React.PointerEvent<HTMLCanvasElement>): Point => {

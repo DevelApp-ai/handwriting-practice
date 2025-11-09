@@ -12,12 +12,12 @@ A gamified handwriting practice application that helps children learn to write l
 
 ## Essential Features
 
-### Drawing Canvas with 4-Line Guide
-- **Functionality**: Interactive canvas with properly-spaced 4-line guide system (ascender line at 25%, midline at 42%, baseline at 58%, descender line at 75%) where children can draw with touch/pen input. Lines are clearly labeled and color-coded for easy recognition. Directional arrows appear for right-to-left scripts (Arabic, Urdu) and complex left-to-right scripts (Japanese, Nepali) to indicate writing direction.
-- **Purpose**: Provides the familiar ruled-paper environment children use in school with appropriately-spaced guide lines that actually guide letter height, helping them develop proper letter formation and sizing with clear visual references. Direction indicators help students learn proper writing direction for different scripts.
-- **Trigger**: Automatically displayed when a practice item is selected; educational overlay shown on first use explaining the line system
-- **Progression**: Child selects practice mode → 4-line guide displays with tighter, more accurate spacing → Character/word/sentence appears as light tracing guide with appropriate font (Noto Sans Arabic, Noto Sans JP, Noto Sans Devanagari, or Quicksand) → Directional arrow shows writing direction for non-Latin scripts → Child traces with pen/finger → Stroke detection tracks progress → Visual feedback shows completion
-- **Success criteria**: Bold, clearly visible lines with proper spacing for actual letter guidance; baseline (black, 3px), midline (blue dashed, 2px), ascender/descender (gray, 2px); line spacing allows letters to properly fit within guides; line labels visible when guide is on; smooth drawing with minimal lag (<50ms); accurate touch/pen input capture; educational popup explaining line system on first use; directional arrows for RTL (red) and complex LTR scripts (green)
+### Drawing Canvas with 4-Line Guide & Precision Feedback
+- **Functionality**: Interactive canvas with properly-spaced 4-line guide system (ascender line at 25%, midline at 42%, baseline at 58%, descender line at 75%) where children can draw with touch/pen input. Lines are clearly labeled and color-coded for easy recognition. Directional arrows appear for right-to-left scripts (Arabic, Urdu) and complex left-to-right scripts (Japanese, Nepali) to indicate writing direction. Real-time visual feedback shows stroke quality: blue for perfect (within guide lines), yellow for slightly outside, orange for getting far, and red for too far outside. Precision requirements increase progressively with each character level (every 3 attempts increases the level up to level 5), making acceptable boundaries tighter for advanced learners.
+- **Purpose**: Provides the familiar ruled-paper environment children use in school with appropriately-spaced guide lines that actually guide letter height, helping them develop proper letter formation and sizing with clear visual references. Direction indicators help students learn proper writing direction for different scripts. Color-coded feedback teaches spatial awareness and precision, with adaptive difficulty that grows with the child's skill level.
+- **Trigger**: Automatically displayed when a practice item is selected; educational overlay shown on first use explaining the line system; precision indicators always visible during drawing
+- **Progression**: Child selects practice mode → 4-line guide displays with tighter, more accurate spacing → Character/word/sentence appears as light tracing guide with appropriate font (Noto Sans Arabic, Noto Sans JP, Noto Sans Devanagari, or Quicksand) → Current level and precision requirements shown if level > 1 → Directional arrow shows writing direction for non-Latin scripts → Child traces with pen/finger → Real-time color feedback indicates stroke quality (blue/yellow/orange/red) → Stroke detection tracks progress → Visual feedback shows completion
+- **Success criteria**: Bold, clearly visible lines with proper spacing for actual letter guidance; baseline (black, 3px), midline (blue dashed, 2px), ascender/descender (gray, 2px); line spacing allows letters to properly fit within guides; line labels visible when guide is on; smooth drawing with minimal lag (<50ms); accurate touch/pen input capture; educational popup explaining line system on first use; directional arrows for RTL (red) and complex LTR scripts (green); real-time stroke color changes based on distance from guide boundaries; progressive precision tightening (starts at ±40px moderate/±80px far at level 1, tightens to ±20px/±40px at level 5); level indicator displayed when level > 1; color legend always visible showing: Perfect (blue), Slightly off (yellow), Getting far (orange), Too far (red)
 
 ### Character Selection & Categorization
 - **Functionality**: Browse and select from uppercase letters (A-Z), lowercase letters (a-z), numbers (0-9), EU accented characters (À-ž including diacritics used in European languages), Arabic alphabet, Urdu alphabet (with unique characters like پ، ٹ، ڈ، ڑ، ژ، گ، ں، ے، ھ), Japanese Hiragana and Katakana, Nepali consonants and vowels (Devanagari script), punctuation marks (.,!?;:'"-), common words, and complete sentences with proper punctuation
@@ -34,11 +34,11 @@ A gamified handwriting practice application that helps children learn to write l
 - **Success criteria**: Adaptive text sizing (40% height for letters, 25% for words, 12% for sentences); clear visual hierarchy (guide visible but not overwhelming); multi-line text wrapping for long sentences; educational overlay accessible at any time; appropriate font rendering for all supported scripts; clear directional indicators (red arrow pointing left for RTL, green arrow pointing right for complex LTR scripts)
 
 ### Progress Tracking & Stars
-- **Functionality**: Award 1-3 stars based on tracing accuracy and completion, track which characters have been practiced
-- **Purpose**: Provides immediate feedback and motivation through visible progress and achievement
-- **Trigger**: Awarded at end of each practice attempt
-- **Progression**: Child completes tracing → System analyzes coverage of guide → Star rating appears with animation → Total stars added to profile → Character marked as practiced
-- **Success criteria**: Fair but achievable star thresholds (1 star for attempt, 2 for good trace, 3 for excellent), persistent star counts across sessions
+- **Functionality**: Award 1-3 stars based on tracing accuracy and completion, track which characters have been practiced and at what level (levels 1-5 based on number of attempts, increasing every 3 attempts)
+- **Purpose**: Provides immediate feedback and motivation through visible progress and achievement, while tracking skill development per character
+- **Trigger**: Awarded at end of each practice attempt; level increases automatically with practice count
+- **Progression**: Child completes tracing → System analyzes coverage of guide → Star rating appears with animation → Total stars added to profile → Character marked as practiced → Attempt count increments → Level may increase, triggering higher precision requirements
+- **Success criteria**: Fair but achievable star thresholds (1 star for attempt, 2 for good trace, 3 for excellent), persistent star counts across sessions, level progression tracking per character, visual level indicator during practice
 
 ### Encouraging Feedback System
 - **Functionality**: Positive audio-visual feedback including celebratory animations, encouraging phrases, and unlockable stickers/badges
@@ -115,25 +115,31 @@ Animations should be celebratory and rewarding, with joyful bounces and sparkles
   - **Button**: Primary actions (Clear, Next, Try Again, Show/Hide Guide, Line Info) with rounded, large touch targets
   - **Progress**: Visual progress bars for tracking overall completion in each category
   - **Dialog**: Achievement unlock celebrations, first-time tutorial, and 4-line guide explanation
-  - **Badge**: Star counts, achievement indicators, and completion status
+  - **Badge**: Star counts, achievement indicators, completion status, and level indicators
   - **Scroll Area**: Vertical scrolling character lists within each category
-  - Custom Canvas Component: HTML5 Canvas for drawing with touch/pen input handling, adaptive 4-line guide, and directional arrows
+  - Custom Canvas Component: HTML5 Canvas for drawing with touch/pen input handling, adaptive 4-line guide, directional arrows, and real-time color-coded precision feedback
   - Custom Line Guide Helper: Modal overlay explaining the 4-line system with visual examples and updated spacing
+  - Custom Precision Feedback System: Real-time stroke coloring based on distance from guide boundaries with progressive difficulty
 
 - **Customizations**: 
   - Custom 4-line guide overlay component with properly-spaced, color-coded lines and labels (25%, 42%, 58%, 75%)
-  - Custom drawing canvas with stroke recording, playback, adaptive text sizing, and multi-script font support
+  - Custom drawing canvas with stroke recording, playback, adaptive text sizing, multi-script font support, and real-time precision feedback
   - Directional arrow indicators for RTL (Arabic, Urdu) and complex LTR scripts (Japanese, Nepali)
   - Custom star rating display with animated unlock
   - Custom character preview cards with completion status, adaptive layout for sentences, and proper font rendering
   - Custom celebration particle effect component
   - Custom line guide helper modal with interactive explanation of the improved 4-line system spacing
+  - Progressive precision system with level-based thresholds and color-coded visual feedback (blue/yellow/orange/red)
+  - Level indicator overlay showing current difficulty level for characters with multiple attempts
+  - Precision legend overlay showing meaning of stroke colors
 
 - **States**: 
   - Buttons: Large with rounded corners, subtle shadow in default state, scale down slightly on press, bright color fill for primary actions
   - Character Cards: Subtle border in default, lift up with shadow on hover, fill with primary color when selected, checkmark badge when completed
-  - Canvas: Light guide lines always visible, darker temporary stroke as user draws, stroke fades to lighter gray when complete
+  - Canvas: Light guide lines always visible, real-time stroke color changes from blue (perfect) to yellow (slightly off) to orange (getting far) to red (too far) based on distance from guide boundaries, stroke fades slightly when complete
   - Stars: Gray outline when locked, animated fill with bounce when earned
+  - Level Indicator: Appears when character level > 1, shows progressive difficulty
+  - Precision Legend: Always visible in corner showing color meanings
 
 - **Icon Selection**: 
   - Star (filled/outline) for ratings
