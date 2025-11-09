@@ -66,20 +66,28 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
 
     const height = overlay.height
     const lines = [
-      { y: height * LINE_HEIGHTS.ascender, color: '#e0e0e0', dash: [5, 5] },
-      { y: height * LINE_HEIGHTS.midline, color: '#b0b0b0', dash: [10, 5] },
-      { y: height * LINE_HEIGHTS.baseline, color: '#000000', dash: [] },
-      { y: height * LINE_HEIGHTS.descender, color: '#e0e0e0', dash: [5, 5] },
+      { y: height * LINE_HEIGHTS.ascender, color: '#9ca3af', dash: [], width: 2, label: 'Ascender' },
+      { y: height * LINE_HEIGHTS.midline, color: '#6366f1', dash: [8, 4], width: 2, label: 'Midline' },
+      { y: height * LINE_HEIGHTS.baseline, color: '#000000', dash: [], width: 3, label: 'Baseline' },
+      { y: height * LINE_HEIGHTS.descender, color: '#9ca3af', dash: [], width: 2, label: 'Descender' },
     ]
 
-    lines.forEach(({ y, color, dash }) => {
+    lines.forEach(({ y, color, dash, width, label }) => {
       ctx.strokeStyle = color
-      ctx.lineWidth = dash.length > 0 ? 1 : 2
+      ctx.lineWidth = width
       ctx.setLineDash(dash)
       ctx.beginPath()
       ctx.moveTo(0, y)
       ctx.lineTo(overlay.width, y)
       ctx.stroke()
+
+      if (showGuide) {
+        ctx.setLineDash([])
+        ctx.font = '12px Quicksand, sans-serif'
+        ctx.fillStyle = color
+        ctx.textAlign = 'left'
+        ctx.fillText(label, 8, y - 6)
+      }
     })
 
     ctx.setLineDash([])
@@ -94,14 +102,55 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     const ctx = overlay.getContext('2d')
     if (!ctx) return
 
-    const fontSize = overlay.height * 0.4
-    ctx.font = `${fontSize}px 'Quicksand', sans-serif`
-    ctx.fillStyle = 'rgba(100, 100, 100, 0.2)'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
+    const isSentence = character.length > 15
+    const isWord = character.length > 1 && character.length <= 15
+    
+    let fontSize = overlay.height * 0.4
+    if (isSentence) {
+      fontSize = overlay.height * 0.12
+    } else if (isWord) {
+      fontSize = overlay.height * 0.25
+    }
 
-    const centerY = overlay.height * LINE_HEIGHTS.baseline - fontSize * 0.35
-    ctx.fillText(character, overlay.width / 2, centerY)
+    ctx.font = `${fontSize}px 'Quicksand', sans-serif`
+    ctx.fillStyle = 'rgba(100, 100, 200, 0.25)'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'alphabetic'
+
+    const centerX = overlay.width / 2
+    const baselineY = overlay.height * LINE_HEIGHTS.baseline
+
+    if (isSentence) {
+      const maxWidth = overlay.width * 0.9
+      const words = character.split(' ')
+      const lines: string[] = []
+      let currentLine = ''
+
+      words.forEach((word) => {
+        const testLine = currentLine ? `${currentLine} ${word}` : word
+        const metrics = ctx.measureText(testLine)
+        
+        if (metrics.width > maxWidth && currentLine) {
+          lines.push(currentLine)
+          currentLine = word
+        } else {
+          currentLine = testLine
+        }
+      })
+      
+      if (currentLine) {
+        lines.push(currentLine)
+      }
+
+      const lineHeight = fontSize * 1.4
+      const startY = baselineY - ((lines.length - 1) * lineHeight) / 2
+
+      lines.forEach((line, index) => {
+        ctx.fillText(line, centerX, startY + (index * lineHeight))
+      })
+    } else {
+      ctx.fillText(character, centerX, baselineY)
+    }
   }
 
   const redrawStrokes = () => {

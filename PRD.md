@@ -1,6 +1,6 @@
 # Planning Guide
 
-A gamified handwriting practice application that helps children learn to write letters, numbers, and words using the standard 4-line writing guide (baseline, midline, ascender, descender) commonly used in schools, optimized for tablet pen input.
+A gamified handwriting practice application that helps children learn to write letters (including EU accented characters), numbers, words, and complete sentences with punctuation using the standard 4-line writing guide (baseline, midline, ascender, descender) commonly used in schools, optimized for tablet pen input.
 
 **Experience Qualities**: 
 1. **Encouraging** - Celebrates progress with positive feedback and rewards to build confidence in young learners
@@ -13,25 +13,25 @@ A gamified handwriting practice application that helps children learn to write l
 ## Essential Features
 
 ### Drawing Canvas with 4-Line Guide
-- **Functionality**: Interactive canvas with standard 4-line guide system (ascender line, midline, baseline, descender line) where children can draw with touch/pen input
-- **Purpose**: Provides the familiar ruled-paper environment children use in school, helping them develop proper letter formation and sizing
-- **Trigger**: Automatically displayed when a practice item is selected
-- **Progression**: Child selects practice mode → Character appears as light tracing guide → Child traces with pen/finger → Stroke detection tracks progress → Visual feedback shows completion
-- **Success criteria**: Smooth drawing with minimal lag (<50ms), clear visual distinction between the four lines, accurate touch/pen input capture
+- **Functionality**: Interactive canvas with prominent 4-line guide system (ascender line, midline, baseline, descender line) where children can draw with touch/pen input. Lines are clearly labeled and color-coded for easy recognition.
+- **Purpose**: Provides the familiar ruled-paper environment children use in school, helping them develop proper letter formation and sizing with clear visual references
+- **Trigger**: Automatically displayed when a practice item is selected; educational overlay shown on first use explaining the line system
+- **Progression**: Child selects practice mode → 4-line guide displays prominently with labels → Character/word/sentence appears as light tracing guide → Child traces with pen/finger → Stroke detection tracks progress → Visual feedback shows completion
+- **Success criteria**: Bold, clearly visible lines with distinct colors; baseline (black, 3px), midline (blue dashed, 2px), ascender/descender (gray, 2px); line labels visible when guide is on; smooth drawing with minimal lag (<50ms); accurate touch/pen input capture; educational popup explaining line system on first use
 
 ### Character Selection & Categorization
-- **Functionality**: Browse and select from uppercase letters (A-Z), lowercase letters (a-z), numbers (0-9), and common words organized by difficulty
-- **Purpose**: Allows children to practice specific characters they're learning and progress through curriculum naturally
+- **Functionality**: Browse and select from uppercase letters (A-Z), lowercase letters (a-z), numbers (0-9), EU accented characters (À-ž including diacritics used in European languages), punctuation marks (.,!?;:'"-), common words, and complete sentences with proper punctuation
+- **Purpose**: Allows children to practice specific characters they're learning across all European languages and progress through curriculum from individual letters to full sentences
 - **Trigger**: Main menu or navigation tabs
-- **Progression**: Child opens category → Scrolls through available characters → Taps character card → Practice canvas loads with selected character
-- **Success criteria**: All 62 basic characters available, words grouped by length (3-letter, 4-letter, 5-letter), clear visual previews
+- **Progression**: Child opens category → Scrolls through available characters/words/sentences → Taps character card → Practice canvas loads with selected item
+- **Success criteria**: All basic Latin characters, 100+ EU accented characters, 11 punctuation marks, multilingual words, 20+ practice sentences available; clear visual previews
 
 ### Tracing Guides & Stroke Order
-- **Functionality**: Light gray reference character shown on canvas with numbered stroke order indicators and directional arrows
-- **Purpose**: Teaches proper letter formation technique, not just shape recognition
-- **Trigger**: Displayed when practice session begins, can be toggled on/off
-- **Progression**: Reference appears → Numbers show stroke sequence → Child follows the path → Each completed stroke fades/changes color
-- **Success criteria**: Clear visual hierarchy (guide visible but not distracting), stroke numbers large enough for young children to read
+- **Functionality**: Light blue/gray reference character shown on canvas that adapts to content size (large for single characters, medium for words, small for sentences). Toggle button allows showing/hiding the guide. Info button provides access to 4-line system explanation.
+- **Purpose**: Teaches proper letter formation technique and provides visual reference without being distracting
+- **Trigger**: Displayed when practice session begins, can be toggled on/off; info button always available
+- **Progression**: Reference appears at appropriate size → Child follows the guide → Guide can be hidden to test independent writing → Info button provides line system reminder
+- **Success criteria**: Adaptive text sizing (40% height for letters, 25% for words, 12% for sentences); clear visual hierarchy (guide visible but not overwhelming); multi-line text wrapping for long sentences; educational overlay accessible at any time
 
 ### Progress Tracking & Stars
 - **Functionality**: Award 1-3 stars based on tracing accuracy and completion, track which characters have been practiced
@@ -106,21 +106,23 @@ Animations should be celebratory and rewarding, with joyful bounces and sparkles
 ## Component Selection
 
 - **Components**: 
-  - **Card**: Character selection grid items showing letter/number preview and star progress
-  - **Tabs**: Category navigation (Uppercase, Lowercase, Numbers, Words)
-  - **Button**: Primary actions (Clear, Next, Try Again) with rounded, large touch targets
+  - **Card**: Character/word/sentence selection grid items showing preview and star progress; sentences use wider horizontal layout
+  - **Tabs**: Category navigation (Uppercase, Lowercase, Numbers, EU Uppercase, EU Lowercase, Punctuation, Words, Sentences)
+  - **Button**: Primary actions (Clear, Next, Try Again, Show/Hide Guide, Line Info) with rounded, large touch targets
   - **Progress**: Visual progress bars for tracking overall completion in each category
-  - **Dialog**: Achievement unlock celebrations and first-time tutorial
-  - **Badge**: Star counts and achievement indicators
+  - **Dialog**: Achievement unlock celebrations, first-time tutorial, and 4-line guide explanation
+  - **Badge**: Star counts, achievement indicators, and completion status
   - **Scroll Area**: Vertical scrolling character lists within each category
-  - Custom Canvas Component: HTML5 Canvas for drawing with touch/pen input handling
+  - Custom Canvas Component: HTML5 Canvas for drawing with touch/pen input handling and adaptive 4-line guide
+  - Custom Line Guide Helper: Modal overlay explaining the 4-line system with visual examples
 
 - **Customizations**: 
-  - Custom 4-line guide overlay component with adjustable spacing
-  - Custom drawing canvas with stroke recording and playback
+  - Custom 4-line guide overlay component with bold, color-coded lines and labels
+  - Custom drawing canvas with stroke recording, playback, and adaptive text sizing
   - Custom star rating display with animated unlock
-  - Custom character preview cards with completion status
+  - Custom character preview cards with completion status and adaptive layout for sentences
   - Custom celebration particle effect component
+  - Custom line guide helper modal with interactive explanation of the 4-line system
 
 - **States**: 
   - Buttons: Large with rounded corners, subtle shadow in default state, scale down slightly on press, bright color fill for primary actions
@@ -137,6 +139,8 @@ Animations should be celebratory and rewarding, with joyful bounces and sparkles
   - Play for stroke order demonstrations
   - House for home navigation
   - Trophy for achievements page
+  - Eye/EyeSlash for showing/hiding guides
+  - Info for accessing 4-line system explanation
 
 - **Spacing**: 
   - Container padding: space-6 (24px) on mobile, space-8 (32px) on tablet

@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { DrawingCanvas } from '@/components/DrawingCanvas'
 import { Celebration } from '@/components/Celebration'
-import { ArrowLeft, Trash, Eye, EyeSlash } from '@phosphor-icons/react'
+import { LineGuideHelper } from '@/components/LineGuideHelper'
+import { ArrowLeft, Trash, Eye, EyeSlash, Info } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
+import { useKV } from '@github/spark/hooks'
 
 interface PracticeScreenProps {
   character: string
@@ -16,6 +18,18 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
   const [showCelebration, setShowCelebration] = useState(false)
   const [earnedStars, setEarnedStars] = useState(0)
   const [key, setKey] = useState(0)
+  const [showLineHelper, setShowLineHelper] = useState(false)
+  const [hasSeenHelper, setHasSeenHelper] = useKV<boolean>('has-seen-line-helper', false)
+
+  useEffect(() => {
+    if (!hasSeenHelper) {
+      const timer = setTimeout(() => {
+        setShowLineHelper(true)
+        setHasSeenHelper(() => true)
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   const handleComplete = () => {
     const stars = Math.floor(Math.random() * 2) + 2
@@ -48,30 +62,42 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="text-6xl font-bold"
+          className={`font-bold ${character.length > 15 ? 'text-xl md:text-2xl' : character.length > 1 ? 'text-3xl md:text-4xl' : 'text-6xl'}`}
           style={{ fontFamily: "'Quicksand', sans-serif" }}
         >
           {character}
         </motion.div>
 
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={() => setShowGuide(!showGuide)}
-          className="gap-2"
-        >
-          {showGuide ? (
-            <>
-              <EyeSlash className="w-5 h-5" />
-              <span className="hidden sm:inline">Hide Guide</span>
-            </>
-          ) : (
-            <>
-              <Eye className="w-5 h-5" />
-              <span className="hidden sm:inline">Show Guide</span>
-            </>
-          )}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={() => setShowLineHelper(true)}
+            className="gap-2"
+          >
+            <Info className="w-5 h-5" />
+            <span className="hidden sm:inline">Lines</span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setShowGuide(!showGuide)}
+            className="gap-2"
+          >
+            {showGuide ? (
+              <>
+                <EyeSlash className="w-5 h-5" />
+                <span className="hidden sm:inline">Hide Guide</span>
+              </>
+            ) : (
+              <>
+                <Eye className="w-5 h-5" />
+                <span className="hidden sm:inline">Show Guide</span>
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-hidden">
@@ -107,6 +133,11 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
         stars={earnedStars}
         show={showCelebration}
         onComplete={handleCelebrationComplete}
+      />
+
+      <LineGuideHelper
+        show={showLineHelper}
+        onDismiss={() => setShowLineHelper(false)}
       />
     </div>
   )

@@ -8,7 +8,11 @@ import {
   UPPERCASE_LETTERS,
   LOWERCASE_LETTERS,
   NUMBERS,
+  EU_ACCENTED_UPPERCASE,
+  EU_ACCENTED_LOWERCASE,
+  PUNCTUATION,
   PRACTICE_WORDS,
+  PRACTICE_SENTENCES,
   Progress,
 } from '@/lib/types'
 import { motion } from 'framer-motion'
@@ -30,8 +34,8 @@ export function SelectionScreen({
     return progressData[char]
   }
 
-  const renderCharacterGrid = (characters: string[]) => (
-    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 p-4">
+  const renderCharacterGrid = (characters: string[], isSentence: boolean = false) => (
+    <div className={isSentence ? "flex flex-col gap-4 p-4" : "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 p-4"}>
       {characters.map((char, index) => (
         <motion.div
           key={char}
@@ -43,6 +47,7 @@ export function SelectionScreen({
             character={char}
             progress={getProgress(char)}
             onClick={() => onSelectCharacter(char)}
+            isSentence={isSentence}
           />
         </motion.div>
       ))}
@@ -108,8 +113,20 @@ export function SelectionScreen({
           <TabsTrigger value="numbers" className="text-base">
             Numbers
           </TabsTrigger>
+          <TabsTrigger value="eu-uppercase" className="text-base">
+            EU Uppercase
+          </TabsTrigger>
+          <TabsTrigger value="eu-lowercase" className="text-base">
+            EU Lowercase
+          </TabsTrigger>
+          <TabsTrigger value="punctuation" className="text-base">
+            Punctuation
+          </TabsTrigger>
           <TabsTrigger value="words" className="text-base">
             Words
+          </TabsTrigger>
+          <TabsTrigger value="sentences" className="text-base">
+            Sentences
           </TabsTrigger>
         </TabsList>
 
@@ -127,8 +144,24 @@ export function SelectionScreen({
               {renderCharacterGrid(NUMBERS)}
             </TabsContent>
 
+            <TabsContent value="eu-uppercase" className="mt-0">
+              {renderCharacterGrid(EU_ACCENTED_UPPERCASE)}
+            </TabsContent>
+
+            <TabsContent value="eu-lowercase" className="mt-0">
+              {renderCharacterGrid(EU_ACCENTED_LOWERCASE)}
+            </TabsContent>
+
+            <TabsContent value="punctuation" className="mt-0">
+              {renderCharacterGrid(PUNCTUATION)}
+            </TabsContent>
+
             <TabsContent value="words" className="mt-0">
               {renderCharacterGrid(PRACTICE_WORDS)}
+            </TabsContent>
+
+            <TabsContent value="sentences" className="mt-0">
+              {renderCharacterGrid(PRACTICE_SENTENCES, true)}
             </TabsContent>
           </ScrollArea>
         </div>
