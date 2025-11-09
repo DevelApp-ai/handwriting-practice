@@ -45,20 +45,86 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     }
   }
 
-  const getDistanceFromLines = (y: number, canvasHeight: number) => {
-    const ascender = canvasHeight * LINE_HEIGHTS.ascender
-    const descender = canvasHeight * LINE_HEIGHTS.descender
+  const getCharacterBounds = (canvasWidth: number, canvasHeight: number) => {
+    const isSentence = character.length > 15
+    const isWord = character.length > 1 && character.length <= 15
     
-    if (y < ascender) {
-      return ascender - y
-    } else if (y > descender) {
-      return y - descender
+    let fontSize = canvasHeight * 0.4
+    if (isSentence) {
+      fontSize = canvasHeight * 0.12
+    } else if (isWord) {
+      fontSize = canvasHeight * 0.25
     }
-    return 0
+
+    const getFontFamily = () => {
+      const arabicChars = /[\u0600-\u06FF]/
+      const japaneseChars = /[\u3040-\u309F\u30A0-\u30FF]/
+      const devanagariChars = /[\u0900-\u097F]/
+      
+      if (arabicChars.test(character)) {
+        return "'Noto Sans Arabic', sans-serif"
+      } else if (japaneseChars.test(character)) {
+        return "'Noto Sans JP', sans-serif"
+      } else if (devanagariChars.test(character)) {
+        return "'Noto Sans Devanagari', sans-serif"
+      }
+      return "'Quicksand', sans-serif"
+    }
+
+    const tempCanvas = document.createElement('canvas')
+    tempCanvas.width = canvasWidth
+    tempCanvas.height = canvasHeight
+    const ctx = tempCanvas.getContext('2d')
+    if (!ctx) return null
+
+    ctx.font = `${fontSize}px ${getFontFamily()}`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'alphabetic'
+
+    const centerX = canvasWidth / 2
+    const baselineY = canvasHeight * LINE_HEIGHTS.baseline
+    const metrics = ctx.measureText(character)
+
+    const actualHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+    const actualWidth = metrics.width
+
+    return {
+      top: baselineY - metrics.actualBoundingBoxAscent,
+      bottom: baselineY + metrics.actualBoundingBoxDescent,
+      left: centerX - actualWidth / 2,
+      right: centerX + actualWidth / 2,
+      centerX,
+      baselineY,
+    }
   }
 
-  const getStrokeColor = (point: Point, canvasHeight: number) => {
-    const distance = getDistanceFromLines(point.y, canvasHeight)
+  const getDistanceFromCharacter = (point: Point, canvasWidth: number, canvasHeight: number) => {
+    const bounds = getCharacterBounds(canvasWidth, canvasHeight)
+    if (!bounds) return 0
+
+    const { top, bottom, left, right } = bounds
+
+    let minDistance = 0
+
+    if (point.y < top) {
+      minDistance = top - point.y
+    } else if (point.y > bottom) {
+      minDistance = point.y - bottom
+    }
+
+    if (point.x < left) {
+      const horizontalDist = left - point.x
+      minDistance = Math.max(minDistance, horizontalDist * 0.5)
+    } else if (point.x > right) {
+      const horizontalDist = point.x - right
+      minDistance = Math.max(minDistance, horizontalDist * 0.5)
+    }
+
+    return minDistance
+  }
+
+  const getStrokeColor = (point: Point, canvasWidth: number, canvasHeight: number) => {
+    const distance = getDistanceFromCharacter(point, canvasWidth, canvasHeight)
     const thresholds = getPrecisionThresholds()
     
     if (distance === 0) {
@@ -315,17 +381,18 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     strokes.forEach((stroke) => {
-      drawStrokeWithColors(ctx, stroke, canvas.height)
+      drawStrokeWithColors(ctx, stroke, canvas.width, canvas.height)
     })
 
     if (currentStroke.length > 0) {
-      drawStrokeWithColors(ctx, currentStroke, canvas.height)
+      drawStrokeWithColors(ctx, currentStroke, canvas.width, canvas.height)
     }
   }
 
   const drawStrokeWithColors = (
     ctx: CanvasRenderingContext2D,
     points: Point[],
+    canvasWidth: number,
     canvasHeight: number
   ) => {
     if (points.length < 2) return
@@ -338,8 +405,8 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
       const currentPoint = points[i]
       const nextPoint = points[i + 1]
       
-      const currentColor = getStrokeColor(currentPoint, canvasHeight)
-      const nextColor = getStrokeColor(nextPoint, canvasHeight)
+      const currentColor = getStrokeColor(currentPoint, canvasWidth, canvasHeight)
+      const nextColor = getStrokeColor(nextPoint, canvasWidth, canvasHeight)
       
       const gradient = ctx.createLinearGradient(
         currentPoint.x,
@@ -392,7 +459,7 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const distance = getDistanceFromLines(point.y, canvas.height)
+    const distance = getDistanceFromCharacter(point, canvas.width, canvas.height)
     const thresholds = getPrecisionThresholds()
 
     if (distance > 0) {
