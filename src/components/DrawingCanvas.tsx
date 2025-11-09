@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Point } from '@/lib/types'
+import { Point, getWritingDirection, isComplexScript } from '@/lib/types'
 
 interface DrawingCanvasProps {
   character: string
@@ -15,10 +15,10 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
   const [currentStroke, setCurrentStroke] = useState<Point[]>([])
 
   const LINE_HEIGHTS = {
-    ascender: 0.15,
-    midline: 0.4,
-    baseline: 0.65,
-    descender: 0.9,
+    ascender: 0.25,
+    midline: 0.42,
+    baseline: 0.58,
+    descender: 0.75,
   }
 
   useEffect(() => {
@@ -104,6 +104,8 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
 
     const isSentence = character.length > 15
     const isWord = character.length > 1 && character.length <= 15
+    const isComplex = isComplexScript(character)
+    const direction = getWritingDirection(character)
     
     let fontSize = overlay.height * 0.4
     if (isSentence) {
@@ -112,7 +114,22 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
       fontSize = overlay.height * 0.25
     }
 
-    ctx.font = `${fontSize}px 'Quicksand', sans-serif`
+    const getFontFamily = () => {
+      const arabicChars = /[\u0600-\u06FF]/
+      const japaneseChars = /[\u3040-\u309F\u30A0-\u30FF]/
+      const devanagariChars = /[\u0900-\u097F]/
+      
+      if (arabicChars.test(character)) {
+        return "'Noto Sans Arabic', sans-serif"
+      } else if (japaneseChars.test(character)) {
+        return "'Noto Sans JP', sans-serif"
+      } else if (devanagariChars.test(character)) {
+        return "'Noto Sans Devanagari', sans-serif"
+      }
+      return "'Quicksand', sans-serif"
+    }
+
+    ctx.font = `${fontSize}px ${getFontFamily()}`
     ctx.fillStyle = 'rgba(100, 100, 200, 0.25)'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'alphabetic'
@@ -145,11 +162,71 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
       const lineHeight = fontSize * 1.4
       const startY = baselineY - ((lines.length - 1) * lineHeight) / 2
 
+      ctx.direction = direction
       lines.forEach((line, index) => {
         ctx.fillText(line, centerX, startY + (index * lineHeight))
       })
     } else {
+      ctx.direction = direction
       ctx.fillText(character, centerX, baselineY)
+    }
+
+    if (direction === 'rtl' && !isSentence) {
+      const arrowSize = 20
+      const arrowY = overlay.height * 0.88
+      const arrowStartX = overlay.width * 0.7
+      const arrowEndX = overlay.width * 0.3
+
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)'
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.6)'
+      ctx.lineWidth = 3
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+
+      ctx.beginPath()
+      ctx.moveTo(arrowStartX, arrowY)
+      ctx.lineTo(arrowEndX, arrowY)
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.moveTo(arrowEndX, arrowY)
+      ctx.lineTo(arrowEndX + arrowSize * 0.6, arrowY - arrowSize * 0.5)
+      ctx.lineTo(arrowEndX + arrowSize * 0.6, arrowY + arrowSize * 0.5)
+      ctx.closePath()
+      ctx.fill()
+
+      ctx.font = '14px Quicksand, sans-serif'
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.8)'
+      ctx.textAlign = 'center'
+      ctx.fillText('Write this way →', overlay.width / 2, arrowY - 15)
+    } else if (direction === 'ltr' && !isSentence && isComplex) {
+      const arrowSize = 20
+      const arrowY = overlay.height * 0.88
+      const arrowStartX = overlay.width * 0.3
+      const arrowEndX = overlay.width * 0.7
+
+      ctx.strokeStyle = 'rgba(34, 197, 94, 0.6)'
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.6)'
+      ctx.lineWidth = 3
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+
+      ctx.beginPath()
+      ctx.moveTo(arrowStartX, arrowY)
+      ctx.lineTo(arrowEndX, arrowY)
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.moveTo(arrowEndX, arrowY)
+      ctx.lineTo(arrowEndX - arrowSize * 0.6, arrowY - arrowSize * 0.5)
+      ctx.lineTo(arrowEndX - arrowSize * 0.6, arrowY + arrowSize * 0.5)
+      ctx.closePath()
+      ctx.fill()
+
+      ctx.font = '14px Quicksand, sans-serif'
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.8)'
+      ctx.textAlign = 'center'
+      ctx.fillText('← Write this way', overlay.width / 2, arrowY - 15)
     }
   }
 

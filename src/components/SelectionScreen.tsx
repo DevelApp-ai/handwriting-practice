@@ -13,6 +13,12 @@ import {
   PUNCTUATION,
   PRACTICE_WORDS,
   PRACTICE_SENTENCES,
+  ARABIC_LETTERS,
+  URDU_LETTERS,
+  JAPANESE_HIRAGANA,
+  JAPANESE_KATAKANA,
+  NEPALI_LETTERS,
+  NEPALI_VOWELS,
   Progress,
 } from '@/lib/types'
 import { motion } from 'framer-motion'
@@ -128,6 +134,24 @@ export function SelectionScreen({
           <TabsTrigger value="sentences" className="text-base">
             Sentences
           </TabsTrigger>
+          <TabsTrigger value="arabic" className="text-base">
+            Arabic
+          </TabsTrigger>
+          <TabsTrigger value="urdu" className="text-base">
+            Urdu
+          </TabsTrigger>
+          <TabsTrigger value="hiragana" className="text-base">
+            Hiragana
+          </TabsTrigger>
+          <TabsTrigger value="katakana" className="text-base">
+            Katakana
+          </TabsTrigger>
+          <TabsTrigger value="nepali" className="text-base">
+            Nepali
+          </TabsTrigger>
+          <TabsTrigger value="nepali-vowels" className="text-base">
+            Nepali Vowels
+          </TabsTrigger>
         </TabsList>
 
         <div className="flex-1 overflow-hidden">
@@ -162,6 +186,30 @@ export function SelectionScreen({
 
             <TabsContent value="sentences" className="mt-0">
               {renderCharacterGrid(PRACTICE_SENTENCES, true)}
+            </TabsContent>
+
+            <TabsContent value="arabic" className="mt-0">
+              {renderCharacterGrid(ARABIC_LETTERS)}
+            </TabsContent>
+
+            <TabsContent value="urdu" className="mt-0">
+              {renderCharacterGrid(URDU_LETTERS)}
+            </TabsContent>
+
+            <TabsContent value="hiragana" className="mt-0">
+              {renderCharacterGrid(JAPANESE_HIRAGANA)}
+            </TabsContent>
+
+            <TabsContent value="katakana" className="mt-0">
+              {renderCharacterGrid(JAPANESE_KATAKANA)}
+            </TabsContent>
+
+            <TabsContent value="nepali" className="mt-0">
+              {renderCharacterGrid(NEPALI_LETTERS)}
+            </TabsContent>
+
+            <TabsContent value="nepali-vowels" className="mt-0">
+              {renderCharacterGrid(NEPALI_VOWELS)}
             </TabsContent>
           </ScrollArea>
         </div>

@@ -42,7 +42,7 @@ export function LineGuideHelper({ show, onDismiss }: LineGuideHelperProps) {
               <div className="space-y-4">
                 <div className="relative h-48 border-2 border-border rounded-lg bg-background p-4">
                   <div className="relative h-full">
-                    <div className="absolute w-full" style={{ top: '15%' }}>
+                    <div className="absolute w-full" style={{ top: '25%' }}>
                       <div className="h-0.5 bg-gray-400 relative">
                         <span className="absolute -top-6 left-2 text-sm text-gray-600 font-medium">
                           Ascender Line
@@ -50,7 +50,7 @@ export function LineGuideHelper({ show, onDismiss }: LineGuideHelperProps) {
                       </div>
                     </div>
 
-                    <div className="absolute w-full" style={{ top: '40%' }}>
+                    <div className="absolute w-full" style={{ top: '42%' }}>
                       <div className="h-0.5 bg-indigo-500 border-t-2 border-dashed border-indigo-500 relative">
                         <span className="absolute -top-6 left-2 text-sm text-indigo-600 font-medium">
                           Midline
@@ -58,7 +58,7 @@ export function LineGuideHelper({ show, onDismiss }: LineGuideHelperProps) {
                       </div>
                     </div>
 
-                    <div className="absolute w-full" style={{ top: '65%' }}>
+                    <div className="absolute w-full" style={{ top: '58%' }}>
                       <div className="h-0.5 bg-black relative">
                         <span className="absolute -bottom-6 left-2 text-sm text-black font-bold">
                           Baseline
@@ -66,7 +66,7 @@ export function LineGuideHelper({ show, onDismiss }: LineGuideHelperProps) {
                       </div>
                     </div>
 
-                    <div className="absolute w-full" style={{ top: '90%' }}>
+                    <div className="absolute w-full" style={{ top: '75%' }}>
                       <div className="h-0.5 bg-gray-400 relative">
                         <span className="absolute -bottom-6 left-2 text-sm text-gray-600 font-medium">
                           Descender Line
@@ -78,7 +78,7 @@ export function LineGuideHelper({ show, onDismiss }: LineGuideHelperProps) {
                       className="absolute text-6xl font-bold text-primary/30"
                       style={{ 
                         fontFamily: "'Quicksand', sans-serif",
-                        top: '30%',
+                        top: '23%',
                         left: '50%',
                         transform: 'translateX(-50%)'
                       }}

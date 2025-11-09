@@ -1,6 +1,6 @@
 # Planning Guide
 
-A gamified handwriting practice application that helps children learn to write letters (including EU accented characters), numbers, words, and complete sentences with punctuation using the standard 4-line writing guide (baseline, midline, ascender, descender) commonly used in schools, optimized for tablet pen input.
+A gamified handwriting practice application that helps children learn to write letters (including EU accented characters, Arabic, Urdu, Japanese kana, and Nepali Devanagari), numbers, words, and complete sentences with punctuation using the standard 4-line writing guide (baseline, midline, ascender, descender) commonly used in schools, with visual direction indicators for different writing systems, optimized for tablet pen input.
 
 **Experience Qualities**: 
 1. **Encouraging** - Celebrates progress with positive feedback and rewards to build confidence in young learners
@@ -13,25 +13,25 @@ A gamified handwriting practice application that helps children learn to write l
 ## Essential Features
 
 ### Drawing Canvas with 4-Line Guide
-- **Functionality**: Interactive canvas with prominent 4-line guide system (ascender line, midline, baseline, descender line) where children can draw with touch/pen input. Lines are clearly labeled and color-coded for easy recognition.
-- **Purpose**: Provides the familiar ruled-paper environment children use in school, helping them develop proper letter formation and sizing with clear visual references
+- **Functionality**: Interactive canvas with properly-spaced 4-line guide system (ascender line at 25%, midline at 42%, baseline at 58%, descender line at 75%) where children can draw with touch/pen input. Lines are clearly labeled and color-coded for easy recognition. Directional arrows appear for right-to-left scripts (Arabic, Urdu) and complex left-to-right scripts (Japanese, Nepali) to indicate writing direction.
+- **Purpose**: Provides the familiar ruled-paper environment children use in school with appropriately-spaced guide lines that actually guide letter height, helping them develop proper letter formation and sizing with clear visual references. Direction indicators help students learn proper writing direction for different scripts.
 - **Trigger**: Automatically displayed when a practice item is selected; educational overlay shown on first use explaining the line system
-- **Progression**: Child selects practice mode → 4-line guide displays prominently with labels → Character/word/sentence appears as light tracing guide → Child traces with pen/finger → Stroke detection tracks progress → Visual feedback shows completion
-- **Success criteria**: Bold, clearly visible lines with distinct colors; baseline (black, 3px), midline (blue dashed, 2px), ascender/descender (gray, 2px); line labels visible when guide is on; smooth drawing with minimal lag (<50ms); accurate touch/pen input capture; educational popup explaining line system on first use
+- **Progression**: Child selects practice mode → 4-line guide displays with tighter, more accurate spacing → Character/word/sentence appears as light tracing guide with appropriate font (Noto Sans Arabic, Noto Sans JP, Noto Sans Devanagari, or Quicksand) → Directional arrow shows writing direction for non-Latin scripts → Child traces with pen/finger → Stroke detection tracks progress → Visual feedback shows completion
+- **Success criteria**: Bold, clearly visible lines with proper spacing for actual letter guidance; baseline (black, 3px), midline (blue dashed, 2px), ascender/descender (gray, 2px); line spacing allows letters to properly fit within guides; line labels visible when guide is on; smooth drawing with minimal lag (<50ms); accurate touch/pen input capture; educational popup explaining line system on first use; directional arrows for RTL (red) and complex LTR scripts (green)
 
 ### Character Selection & Categorization
-- **Functionality**: Browse and select from uppercase letters (A-Z), lowercase letters (a-z), numbers (0-9), EU accented characters (À-ž including diacritics used in European languages), punctuation marks (.,!?;:'"-), common words, and complete sentences with proper punctuation
-- **Purpose**: Allows children to practice specific characters they're learning across all European languages and progress through curriculum from individual letters to full sentences
+- **Functionality**: Browse and select from uppercase letters (A-Z), lowercase letters (a-z), numbers (0-9), EU accented characters (À-ž including diacritics used in European languages), Arabic alphabet, Urdu alphabet (with unique characters like پ، ٹ، ڈ، ڑ، ژ، گ، ں، ے، ھ), Japanese Hiragana and Katakana, Nepali consonants and vowels (Devanagari script), punctuation marks (.,!?;:'"-), common words, and complete sentences with proper punctuation
+- **Purpose**: Allows children to practice specific characters they're learning across multiple writing systems and languages, progressing from individual letters to full sentences
 - **Trigger**: Main menu or navigation tabs
-- **Progression**: Child opens category → Scrolls through available characters/words/sentences → Taps character card → Practice canvas loads with selected item
-- **Success criteria**: All basic Latin characters, 100+ EU accented characters, 11 punctuation marks, multilingual words, 20+ practice sentences available; clear visual previews
+- **Progression**: Child opens category → Scrolls through available characters/words/sentences → Taps character card → Practice canvas loads with selected item and appropriate font
+- **Success criteria**: All basic Latin characters, 100+ EU accented characters, 28 Arabic letters, 38 Urdu letters, 46 Hiragana, 46 Katakana, 36 Nepali consonants, 13 Nepali vowels, 11 punctuation marks, multilingual words, 20+ practice sentences available; clear visual previews with culturally-appropriate fonts
 
 ### Tracing Guides & Stroke Order
-- **Functionality**: Light blue/gray reference character shown on canvas that adapts to content size (large for single characters, medium for words, small for sentences). Toggle button allows showing/hiding the guide. Info button provides access to 4-line system explanation.
-- **Purpose**: Teaches proper letter formation technique and provides visual reference without being distracting
-- **Trigger**: Displayed when practice session begins, can be toggled on/off; info button always available
-- **Progression**: Reference appears at appropriate size → Child follows the guide → Guide can be hidden to test independent writing → Info button provides line system reminder
-- **Success criteria**: Adaptive text sizing (40% height for letters, 25% for words, 12% for sentences); clear visual hierarchy (guide visible but not overwhelming); multi-line text wrapping for long sentences; educational overlay accessible at any time
+- **Functionality**: Light blue/gray reference character shown on canvas that adapts to content size (large for single characters, medium for words, small for sentences) and script type (Arabic/Urdu use Noto Sans Arabic, Japanese uses Noto Sans JP, Nepali uses Noto Sans Devanagari). Toggle button allows showing/hiding the guide. Info button provides access to 4-line system explanation. Directional arrows automatically appear for RTL scripts and complex scripts.
+- **Purpose**: Teaches proper letter formation technique and writing direction for different scripts, providing visual reference without being distracting
+- **Trigger**: Displayed when practice session begins, can be toggled on/off; info button always available; direction arrows appear automatically for applicable scripts
+- **Progression**: Reference appears at appropriate size with correct font → Directional arrow shows writing direction if applicable → Child follows the guide → Guide can be hidden to test independent writing → Info button provides line system reminder
+- **Success criteria**: Adaptive text sizing (40% height for letters, 25% for words, 12% for sentences); clear visual hierarchy (guide visible but not overwhelming); multi-line text wrapping for long sentences; educational overlay accessible at any time; appropriate font rendering for all supported scripts; clear directional indicators (red arrow pointing left for RTL, green arrow pointing right for complex LTR scripts)
 
 ### Progress Tracking & Stars
 - **Functionality**: Award 1-3 stars based on tracing accuracy and completion, track which characters have been practiced
@@ -81,8 +81,12 @@ The design should feel playful and encouraging like a friendly classroom helper,
 
 Typefaces should be clear, rounded, and approachable like the print letters children learn in early education, while maintaining excellent legibility at all sizes for young readers.
 
-- **Primary Font**: Quicksand - Rounded geometric sans-serif that feels friendly and matches handwriting guides
+- **Primary Font**: Quicksand - Rounded geometric sans-serif that feels friendly and matches handwriting guides (for Latin scripts)
 - **Display Font**: Fredoka - Playful rounded font for headings and celebration messages
+- **Script-Specific Fonts**:
+  - Noto Sans Arabic - Professional, clear Arabic/Urdu script support with proper connection handling
+  - Noto Sans JP - Clean Japanese Hiragana and Katakana rendering
+  - Noto Sans Devanagari - Authentic Nepali/Devanagari script display
 
 - **Typographic Hierarchy**: 
   - H1 (Page Title): Fredoka Bold / 32px / tight letter-spacing (-0.02em) / line-height 1.2
@@ -106,23 +110,24 @@ Animations should be celebratory and rewarding, with joyful bounces and sparkles
 ## Component Selection
 
 - **Components**: 
-  - **Card**: Character/word/sentence selection grid items showing preview and star progress; sentences use wider horizontal layout
-  - **Tabs**: Category navigation (Uppercase, Lowercase, Numbers, EU Uppercase, EU Lowercase, Punctuation, Words, Sentences)
+  - **Card**: Character/word/sentence selection grid items showing preview and star progress; sentences use wider horizontal layout; multi-script support with appropriate fonts
+  - **Tabs**: Category navigation (Uppercase, Lowercase, Numbers, EU Uppercase, EU Lowercase, Punctuation, Words, Sentences, Arabic, Urdu, Hiragana, Katakana, Nepali, Nepali Vowels)
   - **Button**: Primary actions (Clear, Next, Try Again, Show/Hide Guide, Line Info) with rounded, large touch targets
   - **Progress**: Visual progress bars for tracking overall completion in each category
   - **Dialog**: Achievement unlock celebrations, first-time tutorial, and 4-line guide explanation
   - **Badge**: Star counts, achievement indicators, and completion status
   - **Scroll Area**: Vertical scrolling character lists within each category
-  - Custom Canvas Component: HTML5 Canvas for drawing with touch/pen input handling and adaptive 4-line guide
-  - Custom Line Guide Helper: Modal overlay explaining the 4-line system with visual examples
+  - Custom Canvas Component: HTML5 Canvas for drawing with touch/pen input handling, adaptive 4-line guide, and directional arrows
+  - Custom Line Guide Helper: Modal overlay explaining the 4-line system with visual examples and updated spacing
 
 - **Customizations**: 
-  - Custom 4-line guide overlay component with bold, color-coded lines and labels
-  - Custom drawing canvas with stroke recording, playback, and adaptive text sizing
+  - Custom 4-line guide overlay component with properly-spaced, color-coded lines and labels (25%, 42%, 58%, 75%)
+  - Custom drawing canvas with stroke recording, playback, adaptive text sizing, and multi-script font support
+  - Directional arrow indicators for RTL (Arabic, Urdu) and complex LTR scripts (Japanese, Nepali)
   - Custom star rating display with animated unlock
-  - Custom character preview cards with completion status and adaptive layout for sentences
+  - Custom character preview cards with completion status, adaptive layout for sentences, and proper font rendering
   - Custom celebration particle effect component
-  - Custom line guide helper modal with interactive explanation of the 4-line system
+  - Custom line guide helper modal with interactive explanation of the improved 4-line system spacing
 
 - **States**: 
   - Buttons: Large with rounded corners, subtle shadow in default state, scale down slightly on press, bright color fill for primary actions

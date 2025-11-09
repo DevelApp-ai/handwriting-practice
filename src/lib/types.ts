@@ -118,6 +118,78 @@ export const PRACTICE_SENTENCES = [
   'Can you help me?'
 ]
 
+export const ARABIC_LETTERS = [
+  'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز',
+  'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك',
+  'ل', 'م', 'ن', 'ه', 'و', 'ي'
+]
+
+export const URDU_LETTERS = [
+  'ا', 'ب', 'پ', 'ت', 'ٹ', 'ث', 'ج', 'چ', 'ح', 'خ', 'د', 'ڈ',
+  'ذ', 'ر', 'ڑ', 'ز', 'ژ', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع',
+  'غ', 'ف', 'ق', 'ک', 'گ', 'ل', 'م', 'ن', 'ں', 'و', 'ہ', 'ھ',
+  'ء', 'ی', 'ے'
+]
+
+export const JAPANESE_HIRAGANA = [
+  'あ', 'い', 'う', 'え', 'お',
+  'か', 'き', 'く', 'け', 'こ',
+  'さ', 'し', 'す', 'せ', 'そ',
+  'た', 'ち', 'つ', 'て', 'と',
+  'な', 'に', 'ぬ', 'ね', 'の',
+  'は', 'ひ', 'ふ', 'へ', 'ほ',
+  'ま', 'み', 'む', 'め', 'も',
+  'や', 'ゆ', 'よ',
+  'ら', 'り', 'る', 'れ', 'ろ',
+  'わ', 'を', 'ん'
+]
+
+export const JAPANESE_KATAKANA = [
+  'ア', 'イ', 'ウ', 'エ', 'オ',
+  'カ', 'キ', 'ク', 'ケ', 'コ',
+  'サ', 'シ', 'ス', 'セ', 'ソ',
+  'タ', 'チ', 'ツ', 'テ', 'ト',
+  'ナ', 'ニ', 'ヌ', 'ネ', 'ノ',
+  'ハ', 'ヒ', 'フ', 'ヘ', 'ホ',
+  'マ', 'ミ', 'ム', 'メ', 'モ',
+  'ヤ', 'ユ', 'ヨ',
+  'ラ', 'リ', 'ル', 'レ', 'ロ',
+  'ワ', 'ヲ', 'ン'
+]
+
+export const NEPALI_LETTERS = [
+  'क', 'ख', 'ग', 'घ', 'ङ',
+  'च', 'छ', 'ज', 'झ', 'ञ',
+  'ट', 'ठ', 'ड', 'ढ', 'ण',
+  'त', 'थ', 'द', 'ध', 'न',
+  'प', 'फ', 'ब', 'भ', 'म',
+  'य', 'र', 'ल', 'व',
+  'श', 'ष', 'स', 'ह',
+  'क्ष', 'त्र', 'ज्ञ'
+]
+
+export const NEPALI_VOWELS = [
+  'अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ',
+  'ए', 'ऐ', 'ओ', 'औ', 'अं', 'अः'
+]
+
+export function getWritingDirection(char: string): 'ltr' | 'rtl' {
+  const rtlChars = [...ARABIC_LETTERS, ...URDU_LETTERS]
+  return rtlChars.includes(char) ? 'rtl' : 'ltr'
+}
+
+export function isComplexScript(char: string): boolean {
+  const complexScripts = [
+    ...ARABIC_LETTERS,
+    ...URDU_LETTERS,
+    ...JAPANESE_HIRAGANA,
+    ...JAPANESE_KATAKANA,
+    ...NEPALI_LETTERS,
+    ...NEPALI_VOWELS
+  ]
+  return complexScripts.includes(char)
+}
+
 export const ENCOURAGING_PHRASES = [
   "Awesome job! ⭐",
   "You're doing great! 🎉",
