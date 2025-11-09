@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Point, getWritingDirection, isComplexScript } from '@/lib/types'
 import { useKV } from '@github/spark/hooks'
+import { triggerHapticFeedback, stopHapticFeedback } from '@/lib/haptics'
 
 interface DrawingCanvasProps {
   character: string
@@ -390,6 +391,19 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    const distance = getDistanceFromLines(point.y, canvas.height)
+    const thresholds = getPrecisionThresholds()
+
+    if (distance > 0) {
+      if (distance >= thresholds.far) {
+        triggerHapticFeedback('error')
+      } else if (distance >= thresholds.moderate) {
+        triggerHapticFeedback('heavy')
+      } else {
+        triggerHapticFeedback('moderate')
+      }
+    }
+
     redrawStrokes()
   }
 
@@ -401,6 +415,8 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     if (canvas) {
       canvas.releasePointerCapture(e.pointerId)
     }
+
+    stopHapticFeedback()
 
     setIsDrawing(false)
     if (currentStroke.length > 0) {
