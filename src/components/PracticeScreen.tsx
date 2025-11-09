@@ -3,9 +3,17 @@ import { Button } from '@/components/ui/button'
 import { DrawingCanvas } from '@/components/DrawingCanvas'
 import { Celebration } from '@/components/Celebration'
 import { LineGuideHelper } from '@/components/LineGuideHelper'
-import { ArrowLeft, Trash, Eye, EyeSlash, Info } from '@phosphor-icons/react'
+import { StrokeOrderDemo } from '@/components/StrokeOrderDemo'
+import { ArrowLeft, Trash, Eye, EyeSlash, Info, Path } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 interface PracticeScreenProps {
   character: string
@@ -19,6 +27,7 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
   const [earnedStars, setEarnedStars] = useState(0)
   const [key, setKey] = useState(0)
   const [showLineHelper, setShowLineHelper] = useState(false)
+  const [showStrokeOrder, setShowStrokeOrder] = useState(false)
   const [hasSeenHelper, setHasSeenHelper] = useKV<boolean>('has-seen-line-helper', false)
 
   useEffect(() => {
@@ -69,6 +78,16 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
         </motion.div>
 
         <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={() => setShowStrokeOrder(true)}
+            className="gap-2"
+          >
+            <Path className="w-5 h-5" />
+            <span className="hidden sm:inline">Strokes</span>
+          </Button>
+
           <Button
             variant="ghost"
             size="lg"
@@ -139,6 +158,18 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
         show={showLineHelper}
         onDismiss={() => setShowLineHelper(false)}
       />
+
+      <Dialog open={showStrokeOrder} onOpenChange={setShowStrokeOrder}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Stroke Order for "{character}"</DialogTitle>
+            <DialogDescription>
+              Watch how to write this character stroke by stroke. Green dots show where to start each stroke.
+            </DialogDescription>
+          </DialogHeader>
+          <StrokeOrderDemo character={character} width={280} height={280} />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

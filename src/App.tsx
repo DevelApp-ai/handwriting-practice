@@ -16,6 +16,8 @@ function App() {
     lastPracticeDate: '',
   })
 
+  const [selectedLanguage, setSelectedLanguage] = useKV<string>('selected-language', 'en')
+
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null)
   const [isPracticing, setIsPracticing] = useState(false)
 
@@ -115,6 +117,8 @@ function App() {
         onSelectCharacter={handleSelectCharacter}
         progressData={userProgress?.progress || {}}
         totalStars={userProgress?.totalStars || 0}
+        selectedLanguage={selectedLanguage || 'en'}
+        onLanguageChange={setSelectedLanguage}
       />
       <Toaster />
     </>

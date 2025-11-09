@@ -4,37 +4,29 @@ import { CharacterCard } from '@/components/CharacterCard'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Star, Trophy } from '@phosphor-icons/react'
-import {
-  UPPERCASE_LETTERS,
-  LOWERCASE_LETTERS,
-  NUMBERS,
-  EU_ACCENTED_UPPERCASE,
-  EU_ACCENTED_LOWERCASE,
-  PUNCTUATION,
-  PRACTICE_WORDS,
-  PRACTICE_SENTENCES,
-  ARABIC_LETTERS,
-  URDU_LETTERS,
-  JAPANESE_HIRAGANA,
-  JAPANESE_KATAKANA,
-  NEPALI_LETTERS,
-  NEPALI_VOWELS,
-  Progress,
-} from '@/lib/types'
+import { Progress } from '@/lib/types'
 import { motion } from 'framer-motion'
+import { LanguageSelector } from '@/components/LanguageSelector'
+import { LANGUAGES, getLanguageByCode } from '@/lib/languages'
 
 interface SelectionScreenProps {
   onSelectCharacter: (character: string) => void
   progressData: Record<string, Progress>
   totalStars: number
+  selectedLanguage: string
+  onLanguageChange: (languageCode: string) => void
 }
 
 export function SelectionScreen({
   onSelectCharacter,
   progressData,
   totalStars,
+  selectedLanguage,
+  onLanguageChange,
 }: SelectionScreenProps) {
-  const [selectedTab, setSelectedTab] = useState('uppercase')
+  const [selectedTab, setSelectedTab] = useState('0')
+
+  const currentLanguage = getLanguageByCode(selectedLanguage) || LANGUAGES[0]
 
   const getProgress = (char: string): Progress | undefined => {
     return progressData[char]
@@ -64,13 +56,19 @@ export function SelectionScreen({
     <div className="h-screen flex flex-col bg-background">
       <div className="bg-gradient-to-r from-primary via-accent to-secondary p-6 md:p-8 text-white shadow-lg">
         <div className="max-w-7xl mx-auto">
-          <motion.h1
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
-          >
-            WriteRight
-          </motion.h1>
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <motion.h1
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="text-4xl md:text-5xl font-bold"
+            >
+              WriteRight
+            </motion.h1>
+            <LanguageSelector
+              selectedLanguage={selectedLanguage}
+              onLanguageChange={onLanguageChange}
+            />
+          </div>
           <motion.p
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -110,107 +108,20 @@ export function SelectionScreen({
         className="flex-1 flex flex-col overflow-hidden"
       >
         <TabsList className="w-full justify-start rounded-none border-b bg-card px-4 h-auto gap-2 flex-wrap">
-          <TabsTrigger value="uppercase" className="text-base">
-            Uppercase
-          </TabsTrigger>
-          <TabsTrigger value="lowercase" className="text-base">
-            Lowercase
-          </TabsTrigger>
-          <TabsTrigger value="numbers" className="text-base">
-            Numbers
-          </TabsTrigger>
-          <TabsTrigger value="eu-uppercase" className="text-base">
-            EU Uppercase
-          </TabsTrigger>
-          <TabsTrigger value="eu-lowercase" className="text-base">
-            EU Lowercase
-          </TabsTrigger>
-          <TabsTrigger value="punctuation" className="text-base">
-            Punctuation
-          </TabsTrigger>
-          <TabsTrigger value="words" className="text-base">
-            Words
-          </TabsTrigger>
-          <TabsTrigger value="sentences" className="text-base">
-            Sentences
-          </TabsTrigger>
-          <TabsTrigger value="arabic" className="text-base">
-            Arabic
-          </TabsTrigger>
-          <TabsTrigger value="urdu" className="text-base">
-            Urdu
-          </TabsTrigger>
-          <TabsTrigger value="hiragana" className="text-base">
-            Hiragana
-          </TabsTrigger>
-          <TabsTrigger value="katakana" className="text-base">
-            Katakana
-          </TabsTrigger>
-          <TabsTrigger value="nepali" className="text-base">
-            Nepali
-          </TabsTrigger>
-          <TabsTrigger value="nepali-vowels" className="text-base">
-            Nepali Vowels
-          </TabsTrigger>
+          {currentLanguage.categories.map((category, index) => (
+            <TabsTrigger key={category.id} value={index.toString()} className="text-base">
+              {category.name}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-full">
-            <TabsContent value="uppercase" className="mt-0">
-              {renderCharacterGrid(UPPERCASE_LETTERS)}
-            </TabsContent>
-
-            <TabsContent value="lowercase" className="mt-0">
-              {renderCharacterGrid(LOWERCASE_LETTERS)}
-            </TabsContent>
-
-            <TabsContent value="numbers" className="mt-0">
-              {renderCharacterGrid(NUMBERS)}
-            </TabsContent>
-
-            <TabsContent value="eu-uppercase" className="mt-0">
-              {renderCharacterGrid(EU_ACCENTED_UPPERCASE)}
-            </TabsContent>
-
-            <TabsContent value="eu-lowercase" className="mt-0">
-              {renderCharacterGrid(EU_ACCENTED_LOWERCASE)}
-            </TabsContent>
-
-            <TabsContent value="punctuation" className="mt-0">
-              {renderCharacterGrid(PUNCTUATION)}
-            </TabsContent>
-
-            <TabsContent value="words" className="mt-0">
-              {renderCharacterGrid(PRACTICE_WORDS)}
-            </TabsContent>
-
-            <TabsContent value="sentences" className="mt-0">
-              {renderCharacterGrid(PRACTICE_SENTENCES, true)}
-            </TabsContent>
-
-            <TabsContent value="arabic" className="mt-0">
-              {renderCharacterGrid(ARABIC_LETTERS)}
-            </TabsContent>
-
-            <TabsContent value="urdu" className="mt-0">
-              {renderCharacterGrid(URDU_LETTERS)}
-            </TabsContent>
-
-            <TabsContent value="hiragana" className="mt-0">
-              {renderCharacterGrid(JAPANESE_HIRAGANA)}
-            </TabsContent>
-
-            <TabsContent value="katakana" className="mt-0">
-              {renderCharacterGrid(JAPANESE_KATAKANA)}
-            </TabsContent>
-
-            <TabsContent value="nepali" className="mt-0">
-              {renderCharacterGrid(NEPALI_LETTERS)}
-            </TabsContent>
-
-            <TabsContent value="nepali-vowels" className="mt-0">
-              {renderCharacterGrid(NEPALI_VOWELS)}
-            </TabsContent>
+            {currentLanguage.categories.map((category, index) => (
+              <TabsContent key={category.id} value={index.toString()} className="mt-0">
+                {renderCharacterGrid(category.characters, category.id === 'sentences')}
+              </TabsContent>
+            ))}
           </ScrollArea>
         </div>
       </Tabs>

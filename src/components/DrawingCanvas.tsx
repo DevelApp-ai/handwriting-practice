@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { Point, getWritingDirection, isComplexScript } from '@/lib/types'
+import { Point } from '@/lib/types'
 import { useKV } from '@github/spark/hooks'
 import { triggerHapticFeedback, stopHapticFeedback } from '@/lib/haptics'
+import { getWritingDirection, isComplexScript } from '@/lib/languages'
 
 interface DrawingCanvasProps {
   character: string

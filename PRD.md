@@ -1,6 +1,6 @@
 # Planning Guide
 
-A gamified handwriting practice application that helps children learn to write letters (including EU accented characters, Arabic, Urdu, Japanese kana, and Nepali Devanagari), numbers, words, and complete sentences with punctuation using the standard 4-line writing guide (baseline, midline, ascender, descender) commonly used in schools, with visual direction indicators for different writing systems, optimized for tablet pen input.
+A gamified handwriting practice application that helps children learn to write letters (including support for Danish, German, French, Spanish, Arabic, Urdu, Japanese kana, and Nepali Devanagari), numbers, words, and complete sentences with punctuation using the standard 4-line writing guide (baseline, midline, ascender, descender) commonly used in schools, with visual direction indicators for different writing systems, stroke order demonstrations for letters and punctuation, and multi-sensory feedback, optimized for tablet pen input.
 
 **Experience Qualities**: 
 1. **Encouraging** - Celebrates progress with positive feedback and rewards to build confidence in young learners
@@ -12,6 +12,20 @@ A gamified handwriting practice application that helps children learn to write l
 
 ## Essential Features
 
+### Language Selector
+- **Functionality**: Dropdown selector in the main header allowing users to switch between supported languages (English, Danish, German, French, Spanish, Arabic, Urdu, Japanese, Nepali). Each language has its own character sets, appropriate fonts, and localized category names. Selection persists between sessions.
+- **Purpose**: Enables children to practice handwriting in multiple languages with culturally-appropriate rendering and character organization
+- **Trigger**: Accessible from main selection screen header; default language is English
+- **Progression**: User clicks language selector → Dropdown shows available languages with native names → User selects language → Categories update to show language-specific character sets with appropriate fonts → Selection saved for future sessions
+- **Success criteria**: 9 languages supported; appropriate fonts load for each script (Quicksand for Latin, Noto Sans Arabic for Arabic/Urdu, Noto Sans JP for Japanese, Noto Sans Devanagari for Nepali); category names localized; persistent language selection across sessions
+
+### Stroke Order Demonstration
+- **Functionality**: Visual demonstration showing the proper stroke order for writing letters, numbers, and punctuation marks. Animated playback draws each stroke in sequence, with numbered green dots indicating stroke start points. Red dot shows current drawing position. Can play, pause, and reset the animation. Available for single characters only (not words or sentences).
+- **Purpose**: Teaches children the correct way to form letters through visual demonstration, helping them develop proper muscle memory and writing technique
+- **Trigger**: "Strokes" button in practice screen header opens demonstration dialog
+- **Progression**: User selects "Strokes" button → Dialog opens showing stroke order canvas → Animation shows guide lines and character outline → User clicks "Play" → Strokes draw in sequence with numbered indicators → User can pause/resume or reset → User practices based on demonstration
+- **Success criteria**: Stroke order data for uppercase Latin letters, numbers 0-3, and basic punctuation (. , ! ?); smooth animation at ~50 strokes per second; clear visual indicators (green dots for start, red dot for current position, numbered labels); play/pause/reset controls responsive; demonstrates on canvas with same 4-line guide system as practice area
+
 ### Drawing Canvas with 4-Line Guide & Precision Feedback
 - **Functionality**: Interactive canvas with properly-spaced 4-line guide system (ascender line at 25%, midline at 42%, baseline at 58%, descender line at 75%) where children can draw with touch/pen input. Lines are clearly labeled and color-coded for easy recognition. Directional arrows appear for right-to-left scripts (Arabic, Urdu) and complex left-to-right scripts (Japanese, Nepali) to indicate writing direction. Real-time visual feedback shows stroke quality: blue for perfect (within guide lines), yellow for slightly outside, orange for getting far, and red for too far outside. Haptic/vibration feedback provides tactile response when drawing outside the lines, with intensity matching the severity (light vibration for moderate deviation, stronger for heavy deviation, pulsing pattern for error state). Precision requirements increase progressively with each character level (every 3 attempts increases the level up to level 5), making acceptable boundaries tighter for advanced learners.
 - **Purpose**: Provides the familiar ruled-paper environment children use in school with appropriately-spaced guide lines that actually guide letter height, helping them develop proper letter formation and sizing with clear visual references. Direction indicators help students learn proper writing direction for different scripts. Color-coded visual feedback combined with haptic feedback teaches spatial awareness and precision through multiple sensory channels, with adaptive difficulty that grows with the child's skill level. Haptic feedback helps children develop muscle memory for staying within boundaries without constantly looking at the screen.
@@ -20,11 +34,11 @@ A gamified handwriting practice application that helps children learn to write l
 - **Success criteria**: Bold, clearly visible lines with proper spacing for actual letter guidance; baseline (black, 3px), midline (blue dashed, 2px), ascender/descender (gray, 2px); line spacing allows letters to properly fit within guides; line labels visible when guide is on; smooth drawing with minimal lag (<50ms); accurate touch/pen input capture; educational popup explaining line system on first use; directional arrows for RTL (red) and complex LTR scripts (green); real-time stroke color changes based on distance from guide boundaries; haptic feedback with appropriate intensity (10ms for moderate, 25ms for heavy, 50ms pulse pattern for error); throttled vibration to prevent excessive feedback (<100ms intervals); progressive precision tightening (starts at ±40px moderate/±80px far at level 1, tightens to ±20px/±40px at level 5); level indicator displayed when level > 1; color legend always visible showing: Perfect (blue), Slightly off (yellow), Getting far (orange), Too far (red)
 
 ### Character Selection & Categorization
-- **Functionality**: Browse and select from uppercase letters (A-Z), lowercase letters (a-z), numbers (0-9), EU accented characters (À-ž including diacritics used in European languages), Arabic alphabet, Urdu alphabet (with unique characters like پ، ٹ، ڈ، ڑ، ژ، گ، ں، ے، ھ), Japanese Hiragana and Katakana, Nepali consonants and vowels (Devanagari script), punctuation marks (.,!?;:'"-), common words, and complete sentences with proper punctuation
+- **Functionality**: Browse and select from language-specific character sets organized into categories. English includes uppercase (A-Z), lowercase (a-z), numbers (0-9), punctuation, words, and sentences. Danish adds Æ, Ø, Å. German adds Ä, Ö, Ü, ẞ. French adds accented characters. Spanish adds Ñ and accents. Arabic includes 28 letters and Arabic numerals. Urdu includes unique characters (پ، ٹ، ڈ، etc.). Japanese has Hiragana and Katakana. Nepali has Devanagari consonants and vowels. Each language displays characters with culturally-appropriate fonts.
 - **Purpose**: Allows children to practice specific characters they're learning across multiple writing systems and languages, progressing from individual letters to full sentences
-- **Trigger**: Main menu or navigation tabs
-- **Progression**: Child opens category → Scrolls through available characters/words/sentences → Taps character card → Practice canvas loads with selected item and appropriate font
-- **Success criteria**: All basic Latin characters, 100+ EU accented characters, 28 Arabic letters, 38 Urdu letters, 46 Hiragana, 46 Katakana, 36 Nepali consonants, 13 Nepali vowels, 11 punctuation marks, multilingual words, 20+ practice sentences available; clear visual previews with culturally-appropriate fonts
+- **Trigger**: Main menu with language selector and category tabs
+- **Progression**: Child selects language → Categories display for that language → Child selects category tab → Scrolls through available characters/words/sentences → Taps character card → Practice canvas loads with selected item and appropriate font
+- **Success criteria**: 9 languages fully supported with appropriate character sets; Danish (29 letters + shared categories), German (30 letters + shared categories), French (42 letters + shared categories), Spanish (27 letters + Ñ + inverted punctuation), Arabic (28 letters + numerals), Urdu (38 letters + numerals), Japanese (46 Hiragana + 46 Katakana), Nepali (36 consonants + 13 vowels); localized category names; culturally-appropriate fonts for each script; language-specific words and sentences where applicable
 
 ### Tracing Guides & Stroke Order
 - **Functionality**: Light blue/gray reference character shown on canvas that adapts to content size (large for single characters, medium for words, small for sentences) and script type (Arabic/Urdu use Noto Sans Arabic, Japanese uses Noto Sans JP, Nepali uses Noto Sans Devanagari). Toggle button allows showing/hiding the guide. Info button provides access to 4-line system explanation. Directional arrows automatically appear for RTL scripts and complex scripts.
@@ -41,11 +55,11 @@ A gamified handwriting practice application that helps children learn to write l
 - **Success criteria**: Fair but achievable star thresholds (1 star for attempt, 2 for good trace, 3 for excellent), persistent star counts across sessions, level progression tracking per character, visual level indicator during practice
 
 ### Encouraging Feedback System
-- **Functionality**: Positive audio-visual and haptic feedback including celebratory animations, encouraging phrases, unlockable stickers/badges, and vibration feedback during drawing that helps children stay within boundaries
-- **Purpose**: Maintains motivation and creates positive association with handwriting practice through multiple sensory channels; haptic feedback provides immediate physical reinforcement without requiring visual attention
-- **Trigger**: After completing each character, reaching star milestones, practicing consecutive days, or when drawing outside guide lines
-- **Progression**: Achievement unlocked → Celebration animation plays → Encouraging message displays → Reward added to collection; During drawing → Pen goes outside lines → Gentle vibration indicates correction needed
-- **Success criteria**: Variety of 10+ encouraging phrases, 5+ celebration animations, collectible rewards visible in profile area, responsive haptic feedback with appropriate intensity levels, graceful degradation on devices without vibration support
+- **Functionality**: Positive audio-visual and haptic feedback including celebratory animations, encouraging phrases, unlockable stickers/badges, vibration feedback during drawing that helps children stay within boundaries, and stroke order demonstrations that show proper letter formation
+- **Purpose**: Maintains motivation and creates positive association with handwriting practice through multiple sensory channels; haptic feedback provides immediate physical reinforcement without requiring visual attention; stroke order demos teach proper technique
+- **Trigger**: After completing each character, reaching star milestones, practicing consecutive days, when drawing outside guide lines, or when requesting stroke order demonstration
+- **Progression**: Achievement unlocked → Celebration animation plays → Encouraging message displays → Reward added to collection; During drawing → Pen goes outside lines → Gentle vibration indicates correction needed; During practice → User clicks "Strokes" → Animated demonstration shows proper formation
+- **Success criteria**: Variety of 10+ encouraging phrases, 5+ celebration animations, collectible rewards visible in profile area, responsive haptic feedback with appropriate intensity levels, graceful degradation on devices without vibration support, stroke order demonstrations for Latin letters, numbers, and basic punctuation with smooth playback controls
 
 ## Edge Case Handling
 
@@ -111,19 +125,23 @@ Animations should be celebratory and rewarding, with joyful bounces and sparkles
 
 - **Components**: 
   - **Card**: Character/word/sentence selection grid items showing preview and star progress; sentences use wider horizontal layout; multi-script support with appropriate fonts
-  - **Tabs**: Category navigation (Uppercase, Lowercase, Numbers, EU Uppercase, EU Lowercase, Punctuation, Words, Sentences, Arabic, Urdu, Hiragana, Katakana, Nepali, Nepali Vowels)
-  - **Button**: Primary actions (Clear, Next, Try Again, Show/Hide Guide, Line Info) with rounded, large touch targets
+  - **Tabs**: Category navigation that updates based on selected language (e.g., "Uppercase/Lowercase" for English, "Store/Små bogstaver" for Danish, "Hiragana/Katakana" for Japanese)
+  - **Select**: Language selector dropdown showing language names with native names in parentheses
+  - **Button**: Primary actions (Clear, Next, Try Again, Show/Hide Guide, Line Info, Strokes Demo) with rounded, large touch targets
+  - **Dialog**: Achievement unlock celebrations, first-time tutorial, 4-line guide explanation, and stroke order demonstration player
   - **Progress**: Visual progress bars for tracking overall completion in each category
-  - **Dialog**: Achievement unlock celebrations, first-time tutorial, and 4-line guide explanation
   - **Badge**: Star counts, achievement indicators, completion status, and level indicators
   - **Scroll Area**: Vertical scrolling character lists within each category
   - Custom Canvas Component: HTML5 Canvas for drawing with touch/pen input handling, adaptive 4-line guide, directional arrows, and real-time color-coded precision feedback
+  - Custom Stroke Order Demo: HTML5 Canvas showing animated letter formation with numbered stroke indicators, play/pause/reset controls
   - Custom Line Guide Helper: Modal overlay explaining the 4-line system with visual examples and updated spacing
   - Custom Precision Feedback System: Real-time stroke coloring based on distance from guide boundaries with progressive difficulty
 
 - **Customizations**: 
+  - Custom language selector with flags and native language names
   - Custom 4-line guide overlay component with properly-spaced, color-coded lines and labels (25%, 42%, 58%, 75%)
   - Custom drawing canvas with stroke recording, playback, adaptive text sizing, multi-script font support, real-time precision feedback, and haptic feedback system
+  - Custom stroke order demonstration canvas with animated playback, numbered stroke indicators, and playback controls
   - Directional arrow indicators for RTL (Arabic, Urdu) and complex LTR scripts (Japanese, Nepali)
   - Custom star rating display with animated unlock
   - Custom character preview cards with completion status, adaptive layout for sentences, and proper font rendering
@@ -148,11 +166,14 @@ Animations should be celebratory and rewarding, with joyful bounces and sparkles
   - Sparkle for achievement moments
   - Check for completed characters
   - X or Trash for clear/reset
-  - Play for stroke order demonstrations
+  - Play/Pause for stroke order demonstrations
+  - ArrowCounterClockwise for resetting stroke order playback
+  - Path for accessing stroke order demonstration
   - House for home navigation
   - Trophy for achievements page
   - Eye/EyeSlash for showing/hiding guides
   - Info for accessing 4-line system explanation
+  - Globe for language selector
 
 - **Spacing**: 
   - Container padding: space-6 (24px) on mobile, space-8 (32px) on tablet
