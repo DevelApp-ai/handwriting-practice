@@ -38,7 +38,7 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
       }, 1000)
       return () => clearTimeout(timer)
     }
-  }, [hasSeenHelper, setHasSeenHelper])
+  }, [])
 
   const handleComplete = () => {
     const stars = Math.floor(Math.random() * 2) + 2

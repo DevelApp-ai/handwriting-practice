@@ -19,10 +19,10 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
   const [userProgress] = useKV<any>('user-progress', { progress: {} })
 
   const LINE_HEIGHTS = {
-    ascender: 0.25,
-    midline: 0.42,
-    baseline: 0.58,
-    descender: 0.75,
+    ascender: 0.15,
+    midline: 0.48,
+    baseline: 0.67,
+    descender: 0.85,
   }
 
   const getCharacterLevel = () => {
