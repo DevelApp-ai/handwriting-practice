@@ -3,6 +3,7 @@ import { Point } from '@/lib/types'
 import { useKV } from '@github/spark/hooks'
 import { triggerHapticFeedback, stopHapticFeedback } from '@/lib/haptics'
 import { getWritingDirection, isComplexScript } from '@/lib/languages'
+import { generateBasicStrokeOrder } from '@/lib/strokeOrder'
 
 interface DrawingCanvasProps {
   character: string
@@ -19,10 +20,10 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
   const [userProgress] = useKV<any>('user-progress', { progress: {} })
 
   const LINE_HEIGHTS = {
-    ascender: 0.15,
-    midline: 0.48,
-    baseline: 0.67,
-    descender: 0.85,
+    ascender: 0.25,
+    midline: 0.42,
+    baseline: 0.58,
+    descender: 0.75,
   }
 
   const getCharacterLevel = () => {
@@ -310,6 +311,10 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     } else {
       ctx.direction = direction
       ctx.fillText(character, centerX, baselineY)
+      
+      if (character.length === 1) {
+        drawStrokeDirectionArrows(ctx, character, overlay.width, overlay.height)
+      }
     }
 
     if (direction === 'rtl' && !isSentence) {
@@ -369,6 +374,58 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
       ctx.textAlign = 'center'
       ctx.fillText('← Write this way', overlay.width / 2, arrowY - 15)
     }
+  }
+
+  const drawStrokeDirectionArrows = (
+    ctx: CanvasRenderingContext2D,
+    character: string,
+    canvasWidth: number,
+    canvasHeight: number
+  ) => {
+    const strokeData = generateBasicStrokeOrder(character)
+    if (strokeData.strokes.length === 0) return
+
+    strokeData.strokes.forEach((stroke) => {
+      if (stroke.points.length < 2) return
+
+      ctx.strokeStyle = 'rgba(34, 197, 94, 0.5)'
+      ctx.lineWidth = 2
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+
+      for (let i = 0; i < stroke.points.length - 1; i++) {
+        const p1 = stroke.points[i]
+        const p2 = stroke.points[i + 1]
+        
+        const x1 = p1.x * canvasWidth
+        const y1 = p1.y * canvasHeight
+        const x2 = p2.x * canvasWidth
+        const y2 = p2.y * canvasHeight
+
+        const dx = x2 - x1
+        const dy = y2 - y1
+        const length = Math.sqrt(dx * dx + dy * dy)
+        
+        if (length < 10) continue
+
+        const midX = (x1 + x2) / 2
+        const midY = (y1 + y2) / 2
+
+        const angle = Math.atan2(dy, dx)
+        
+        const arrowSize = 8
+        const perpAngle1 = angle + Math.PI * 0.75
+        const perpAngle2 = angle - Math.PI * 0.75
+
+        ctx.fillStyle = 'rgba(34, 197, 94, 0.7)'
+        ctx.beginPath()
+        ctx.moveTo(midX, midY)
+        ctx.lineTo(midX + Math.cos(perpAngle1) * arrowSize, midY + Math.sin(perpAngle1) * arrowSize)
+        ctx.lineTo(midX + Math.cos(perpAngle2) * arrowSize, midY + Math.sin(perpAngle2) * arrowSize)
+        ctx.closePath()
+        ctx.fill()
+      }
+    })
   }
 
   const redrawStrokes = () => {

@@ -36,6 +36,8 @@ export function StrokeOrderDemo({ character, width = 300, height = 300 }: Stroke
     })
     ctx.stroke()
 
+    drawStrokeArrows(ctx, stroke)
+
     if (stroke.points.length > 0) {
       const firstPoint = stroke.points[0]
       ctx.fillStyle = 'rgba(34, 197, 94, 0.9)'
@@ -90,6 +92,8 @@ export function StrokeOrderDemo({ character, width = 300, height = 300 }: Stroke
 
     ctx.stroke()
 
+    drawStrokeArrows(ctx, stroke, progress)
+
     const firstPoint = stroke.points[0]
     ctx.fillStyle = 'rgba(34, 197, 94, 0.9)'
     ctx.beginPath()
@@ -101,6 +105,46 @@ export function StrokeOrderDemo({ character, width = 300, height = 300 }: Stroke
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText((index + 1).toString(), firstPoint.x * width, firstPoint.y * height)
+  }
+
+  const drawStrokeArrows = (ctx: CanvasRenderingContext2D, stroke: any, progress = 1) => {
+    if (stroke.points.length < 2) return
+
+    for (let i = 0; i < stroke.points.length - 1; i++) {
+      const segmentProgress = (i + 1) / stroke.points.length
+      if (segmentProgress > progress) break
+
+      const p1 = stroke.points[i]
+      const p2 = stroke.points[i + 1]
+      
+      const x1 = p1.x * width
+      const y1 = p1.y * height
+      const x2 = p2.x * width
+      const y2 = p2.y * height
+
+      const dx = x2 - x1
+      const dy = y2 - y1
+      const length = Math.sqrt(dx * dx + dy * dy)
+      
+      if (length < 10) continue
+
+      const midX = (x1 + x2) / 2
+      const midY = (y1 + y2) / 2
+
+      const angle = Math.atan2(dy, dx)
+      
+      const arrowSize = 6
+      const perpAngle1 = angle + Math.PI * 0.75
+      const perpAngle2 = angle - Math.PI * 0.75
+
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.8)'
+      ctx.beginPath()
+      ctx.moveTo(midX, midY)
+      ctx.lineTo(midX + Math.cos(perpAngle1) * arrowSize, midY + Math.sin(perpAngle1) * arrowSize)
+      ctx.lineTo(midX + Math.cos(perpAngle2) * arrowSize, midY + Math.sin(perpAngle2) * arrowSize)
+      ctx.closePath()
+      ctx.fill()
+    }
   }
 
   const drawStrokePreview = (ctx: CanvasRenderingContext2D, stroke: any, index: number) => {
