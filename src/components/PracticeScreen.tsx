@@ -34,11 +34,11 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
     if (!hasSeenHelper) {
       const timer = setTimeout(() => {
         setShowLineHelper(true)
-        setHasSeenHelper(() => true)
+        setHasSeenHelper(true)
       }, 1000)
       return () => clearTimeout(timer)
     }
-  }, [])
+  }, [hasSeenHelper, setHasSeenHelper])
 
   const handleComplete = () => {
     const stars = Math.floor(Math.random() * 2) + 2
