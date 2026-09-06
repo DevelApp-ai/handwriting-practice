@@ -99,4 +99,31 @@ describe('generateBasicStrokeOrder', () => {
       expect(result.strokes.length).toBeGreaterThan(0)
     })
   })
+
+  it('should return stroke data for German special characters', () => {
+    const germanChars = ['\u00c4', '\u00d6', '\u00dc', '\u00e4', '\u00f6', '\u00fc', '\u00df']
+    germanChars.forEach(char => {
+      const result = generateBasicStrokeOrder(char)
+      expect(result.character).toBe(char)
+      expect(result.strokes.length).toBeGreaterThan(0)
+    })
+  })
+
+  it('should return stroke data for French special characters', () => {
+    const frenchChars = ['\u00c0', '\u00c2', '\u00c7', '\u00c9', '\u00c8', '\u00ca', '\u00cb', '\u00ce', '\u00cf', '\u00d4', '\u00d9', '\u00db', '\u00e0', '\u00e2', '\u00e7', '\u00e9', '\u00e8', '\u00ea', '\u00eb', '\u00ee', '\u00ef', '\u00f4', '\u00fb']
+    frenchChars.forEach(char => {
+      const result = generateBasicStrokeOrder(char)
+      expect(result.character).toBe(char)
+      expect(result.strokes.length).toBeGreaterThan(0)
+    })
+  })
+
+  it('should return stroke data for Spanish special characters', () => {
+    const spanishChars = ['\u00d1', '\u00c1', '\u00c9', '\u00cd', '\u00d3', '\u00da', '\u00f1', '\u00e1', '\u00e9', '\u00ed', '\u00f3', '\u00fa']
+    spanishChars.forEach(char => {
+      const result = generateBasicStrokeOrder(char)
+      expect(result.character).toBe(char)
+      expect(result.strokes.length).toBeGreaterThan(0)
+    })
+  })
 })
