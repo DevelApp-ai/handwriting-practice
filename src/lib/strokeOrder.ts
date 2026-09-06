@@ -55,9 +55,9 @@ function getBasicLetterStrokes(char: string): StrokePoint[][] {
   const japaneseStrokes = getJapaneseStroke(char)
   if (japaneseStrokes) return japaneseStrokes
   
-  // Check Nepali/Devanagari characters
-  const nepaliStrokes = getNepaliStroke(char)
-  if (nepaliStrokes) return nepaliStrokes
+  // Check Nepali/Sanskrit/Newari Devanagari characters
+  const devanagariStrokes = getNepaliStroke(char)
+  if (devanagariStrokes) return devanagariStrokes
   
   // Latin characters
   const latinStrokes = getLatinStrokeData(normalized) || getLatinStrokeData(lowerChar)
@@ -977,7 +977,26 @@ function getJapaneseStroke(char: string): StrokePoint[][] | null {
  * Stroke data for Nepali Devanagari (using actual Unicode characters)
  */
 function getNepaliStroke(char: string): StrokePoint[][] | null {
+  // Devanagari database used by Nepali, Sanskrit, and Newari
   const devanagariDatabase: Record<string, StrokePoint[][]> = {
+    // Sanskrit and Newari specific vowels
+    '\u0904': [[{x: 0.3, y: 0.3}, {x: 0.5, y: 0.2}, {x: 0.7, y: 0.3}]],
+    // Newari specific consonants
+    '\u0958': [
+      [{x: 0.3, y: 0.3}, {x: 0.5, y: 0.2}, {x: 0.7, y: 0.3}],
+      [{x: 0.5, y: 0.2}, {x: 0.5, y: 0.7}]
+    ],
+    '\u0959': [
+      [{x: 0.3, y: 0.3}, {x: 0.5, y: 0.2}, {x: 0.7, y: 0.3}],
+      [{x: 0.5, y: 0.2}, {x: 0.5, y: 0.7}],
+      [{x: 0.5, y: 0.45}, {x: 0.7, y: 0.45}]
+    ],
+    '\u095a': [
+      [{x: 0.3, y: 0.3}, {x: 0.7, y: 0.3}],
+      [{x: 0.7, y: 0.3}, {x: 0.7, y: 0.7}],
+      [{x: 0.7, y: 0.7}, {x: 0.3, y: 0.7}]
+    ],
+    // Common Devanagari characters (shared by Nepali, Sanskrit, Newari)
     // क (KA)
     'क': [
       [{x: 0.3, y: 0.3}, {x: 0.5, y: 0.2}, {x: 0.7, y: 0.3}],

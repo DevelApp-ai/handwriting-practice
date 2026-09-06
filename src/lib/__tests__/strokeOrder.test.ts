@@ -126,4 +126,13 @@ describe('generateBasicStrokeOrder', () => {
       expect(result.strokes.length).toBeGreaterThan(0)
     })
   })
+
+  it('should return stroke data for Devanagari characters used in Sanskrit and Newari', () => {
+    const devanagariChars = ['\u0905', '\u0915', '\u0917', '\u0928', '\u0930', '\u0904', '\u0958', '\u0959', '\u095a']
+    devanagariChars.forEach(char => {
+      const result = generateBasicStrokeOrder(char)
+      expect(result.character).toBe(char)
+      expect(result.strokes.length).toBeGreaterThan(0)
+    })
+  })
 })
