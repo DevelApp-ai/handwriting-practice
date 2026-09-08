@@ -127,6 +127,28 @@ export const LANGUAGES: Language[] = [
       { id: 'numbers', name: 'संख्या', characters: '०१२३४५६७८९'.split('') },
     ]
   },
+  {
+    code: 'sa',
+    name: 'Sanskrit',
+    nativeName: '\u0938\u0928\u094d\u0938\u094d\u0915\u0943\u0924',
+    fontFamily: "'Noto Sans Devanagari', sans-serif",
+    categories: [
+      { id: 'vowels', name: '\u0938\u094d\u0935\u0930', characters: ['\u0905', '\u0906', '\u0907', '\u0908', '\u0909', '\u090a', '\u090b', '\u090f', '\u0910', '\u0913', '\u0914'] },
+      { id: 'consonants', name: '\u0935\u094d\u092f\u091e\u094d\u091c\u0928', characters: ['\u0915', '\u0916', '\u0917', '\u0918', '\u0919', '\u091a', '\u091b', '\u091c', '\u091d', '\u091e', '\u091f', '\u0920', '\u0921', '\u0922', '\u0923', '\u0924', '\u0925', '\u0926', '\u0927', '\u0928', '\u092a', '\u092b', '\u092c', '\u092d', '\u092e', '\u092f', '\u0930', '\u0932', '\u0935', '\u0936', '\u0937', '\u0938', '\u0939'] },
+      { id: 'numbers', name: '\u0938\u0902\u0916\u094d\u092f\u093e', characters: '\u0966\u0967\u0968\u0969\u096a\u096b\u096c\u096d\u096e\u096f'.split('') },
+    ]
+  },
+  {
+    code: 'new',
+    name: 'Newari',
+    nativeName: '\u0928\u0947\u092a\u093e\u0932 \u092d\u094d\u092f\u093e\u0938',
+    fontFamily: "'Noto Sans Devanagari', sans-serif",
+    categories: [
+      { id: 'vowels', name: '\u0938\u094d\u0935\u0930', characters: ['\u0904', '\u0905', '\u0906', '\u0907', '\u0908', '\u0909', '\u090a', '\u090b', '\u090f', '\u0910'] },
+      { id: 'consonants', name: '\u0935\u094d\u092f\u091e\u094d\u091c\u0928', characters: ['\u0915', '\u0916', '\u0917', '\u0918', '\u0919', '\u091a', '\u091b', '\u091c', '\u091d', '\u091e', '\u091f', '\u0920', '\u0921', '\u0922', '\u0923', '\u0924', '\u0925', '\u0926', '\u0927', '\u0928', '\u092a', '\u092b', '\u092c', '\u092d', '\u092e', '\u092f', '\u0930', '\u0932', '\u0935', '\u0936', '\u0937', '\u0938', '\u0939', '\u0958', '\u0959', '\u095a'] },
+      { id: 'numbers', name: '\u0938\u0902\u0916\u094d\u092f\u093e', characters: '\u0966\u0967\u0968\u0969\u096a\u096b\u096c\u096d\u096e\u096f'.split('') },
+    ]
+  },
 ]
 
 export function getLanguageByCode(code: string): Language | undefined {
