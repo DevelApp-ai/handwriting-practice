@@ -1,4 +1,4 @@
-# ✨ Welcome to Your Spark Template!
+# 🌱 Welcome to Your Spark Template!
 You've just launched your brand-new Spark Template Codespace — everything’s fired up and ready for you to explore, build, and create with Spark!
 
 This template is your blank canvas. It comes with a minimal setup to help you get started quickly with Spark development.
@@ -7,12 +7,16 @@ This template is your blank canvas. It comes with a minimal setup to help you ge
 - A clean, minimal Spark environment
 - Pre-configured for local development
 - Ready to scale with your ideas
+
+[![GitHub Pages Deployment](https://github.com/DevelApp-ai/handwriting-practice/actions/workflows/pages.yml/badge.svg)](https://github.com/DevelApp-ai/handwriting-practice/actions/workflows/pages.yml)
+
+**Live Demo:** https://DevelApp-ai.github.io/handwriting-practice/
   
-🧠 What Can You Do?
+🤔 What Can You Do?
 
 Right now, this is just a starting point — the perfect place to begin building and testing your Spark applications.
 
-🧹 Just Exploring?
+🏃 Just Exploring?
 No problem! If you were just checking things out and don’t need to keep this code:
 
 - Simply delete your Spark.
