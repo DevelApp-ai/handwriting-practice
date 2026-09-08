@@ -22,4 +22,9 @@ export default defineConfig({
       '@': resolve(projectRoot, 'src')
     }
   },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+  },
+  base: process.env.NODE_ENV === 'production' ? '/handwriting-practice/' : '/',
 });
