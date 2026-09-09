@@ -18,7 +18,7 @@ import {
 interface PracticeScreenProps {
   character: string
   onBack: () => void
-  onComplete: (stars: number) => void
+  onComplete: (stars: number, characterId: string) => void
 }
 
 export function PracticeScreen({ character, onBack, onComplete }: PracticeScreenProps) {
@@ -48,7 +48,7 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
 
   const handleCelebrationComplete = () => {
     setShowCelebration(false)
-    onComplete(earnedStars)
+    onComplete(earnedStars, character)
   }
 
   const handleClear = () => {
