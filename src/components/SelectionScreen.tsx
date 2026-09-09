@@ -3,7 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CharacterCard } from '@/components/CharacterCard'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
-import { Star, Trophy } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { Star, Trophy, Printer } from '@phosphor-icons/react'
 import { Progress } from '@/lib/types'
 import { motion } from 'framer-motion'
 import { LanguageSelector } from '@/components/LanguageSelector'
@@ -15,6 +16,7 @@ interface SelectionScreenProps {
   totalStars: number
   selectedLanguage: string
   onLanguageChange: (languageCode: string) => void
+  onPrintSheet?: () => void
 }
 
 export function SelectionScreen({
@@ -64,10 +66,23 @@ export function SelectionScreen({
             >
               WriteRight
             </motion.h1>
-            <LanguageSelector
-              selectedLanguage={selectedLanguage}
-              onLanguageChange={onLanguageChange}
-            />
+            <div className="flex items-center gap-2">
+              <LanguageSelector
+                selectedLanguage={selectedLanguage}
+                onLanguageChange={onLanguageChange}
+              />
+              {onPrintSheet && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onPrintSheet}
+                  className="bg-white/20 border-white/30 hover:bg-white/30 text-white"
+                  title="Create Printable Sheet"
+                >
+                  <Printer className="w-5 h-5" />
+                </Button>
+              )}
+            </div>
           </div>
           <motion.p
             initial={{ y: -20, opacity: 0 }}

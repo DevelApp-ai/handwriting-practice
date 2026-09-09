@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { SelectionScreen } from '@/components/SelectionScreen'
 import { PracticeScreen } from '@/components/PracticeScreen'
+import { PrintableSheet } from '@/components/PrintableSheet'
 import { UserProgress, Progress } from '@/lib/types'
 import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
@@ -20,6 +21,7 @@ function App() {
 
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null)
   const [isPracticing, setIsPracticing] = useState(false)
+  const [showPrintableSheet, setShowPrintableSheet] = useState(false)
 
   const handleSelectCharacter = (character: string) => {
     setSelectedCharacter(character)
@@ -119,6 +121,12 @@ function App() {
         totalStars={userProgress?.totalStars || 0}
         selectedLanguage={selectedLanguage || 'en'}
         onLanguageChange={setSelectedLanguage}
+        onPrintSheet={() => setShowPrintableSheet(true)}
+      />
+      <PrintableSheet
+        isOpen={showPrintableSheet}
+        onClose={() => setShowPrintableSheet(false)}
+        selectedLanguage={selectedLanguage || 'en'}
       />
       <Toaster />
     </>
