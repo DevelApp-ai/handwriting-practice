@@ -14,6 +14,11 @@ interface SelectionScreenProps {
   onSelectCharacter: (character: string) => void
   progressData: Record<string, Progress>
   totalStars: number
+  totalXP?: number
+  level?: number
+  achievements?: string[]
+  badges?: string[]
+  consecutiveDays?: number
   selectedLanguage: string
   onLanguageChange: (languageCode: string) => void
   onPrintSheet?: () => void
@@ -23,8 +28,14 @@ export function SelectionScreen({
   onSelectCharacter,
   progressData,
   totalStars,
+  totalXP = 0,
+  level = 1,
+  achievements = [],
+  badges = [],
+  consecutiveDays = 0,
   selectedLanguage,
   onLanguageChange,
+  onPrintSheet,
 }: SelectionScreenProps) {
   const [selectedTab, setSelectedTab] = useState('0')
 
@@ -111,8 +122,28 @@ export function SelectionScreen({
               className="text-base px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30"
             >
               <Trophy weight="fill" className="w-5 h-5 mr-2 text-secondary" />
-              {Object.values(progressData).filter((p) => p.completed).length} Completed
+              Level {level}
             </Badge>
+            <Badge
+              variant="secondary"
+              className="text-base px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30"
+            >
+              \u{1F4C5} {totalXP} XP
+            </Badge>
+            <Badge
+              variant="secondary"
+              className="text-base px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30"
+            >
+              \u{1F525} {consecutiveDays} Day Streak
+            </Badge>
+            {badges.length > 0 && (
+              <Badge
+                variant="secondary"
+                className="text-base px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30"
+              >
+                \u2728 {badges.length} Badges
+              </Badge>
+            )}
           </motion.div>
         </div>
       </div>
