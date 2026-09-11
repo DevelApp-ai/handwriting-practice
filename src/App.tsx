@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { SelectionScreen } from '@/components/SelectionScreen'
+import { RadicalExplorer } from '@/components/RadicalExplorer'
 import { PracticeScreen } from '@/components/PracticeScreen'
 import { PrintableSheet } from '@/components/PrintableSheet'
 import { AchievementModal } from '@/components/AchievementModal'
@@ -18,6 +19,7 @@ function App() {
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null)
   const [isPracticing, setIsPracticing] = useState(false)
   const [showPrintableSheet, setShowPrintableSheet] = useState(false)
+  const [showRadicalExplorer, setShowRadicalExplorer] = useState(false)
   const [showAchievementModal, setShowAchievementModal] = useState(false)
   const [achievementToShow, setAchievementToShow] = useState<AchievementId | null>(null)
   const [showLevelUpModal, setShowLevelUpModal] = useState(false)
@@ -117,6 +119,9 @@ function App() {
     }
   }, [userProgress?.level])
 
+  if (showRadicalExplorer) {
+    return <RadicalExplorer onBack={() => setShowRadicalExplorer(false)} />
+  }
   if (isPracticing && selectedCharacter) {
     return (
       <>
@@ -154,6 +159,7 @@ function App() {
         selectedLanguage={selectedLanguage || 'en'}
         onLanguageChange={setSelectedLanguage}
         onPrintSheet={() => setShowPrintableSheet(true)}
+        onOpenRadicalExplorer={() => setShowRadicalExplorer(true)}
       />
       <PrintableSheet
         isOpen={showPrintableSheet}
