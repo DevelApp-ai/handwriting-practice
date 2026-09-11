@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react'
 import { Point, TimedPoint, Phase1Settings, DEFAULT_PHASE1_SETTINGS } from '@/lib/types'
+import { PencilFrictionSynth, AudioContextLike, computeVelocity } from '@/lib/audio'
 import { useKV } from '@github/spark/hooks'
 import { triggerHapticFeedback, stopHapticFeedback } from '@/lib/haptics'
+import { DEFAULT_SETTINGS } from '@/lib/types'
 import { getWritingDirection, isComplexScript, getSlantReferenceRad } from '@/lib/languages'
 import { generateBasicStrokeOrder } from '@/lib/strokeOrder'
 import { renderGrid, selectGridKind, drawShirorekhaLine, drawSlantGuide, detectScriptFamily } from '@/lib/grid'
@@ -47,12 +49,26 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
   const [strokes, setStrokes] = useState<TimedPoint[][]>([])
   const [currentStroke, setCurrentStroke] = useState<TimedPoint[]>([])
   const [userProgress] = useKV<any>('user-progress', { progress: {} })
+  const [userSettings] = useKV<any>('user-settings', DEFAULT_SETTINGS)
   const [phase1Settings] = useKV<Phase1Settings>('phase1-settings', DEFAULT_PHASE1_SETTINGS)
 
   const settings: Phase1Settings = { ...DEFAULT_PHASE1_SETTINGS, ...phase1Settings }
+  const soundEnabled = userSettings?.soundEffects ?? DEFAULT_SETTINGS.soundEffects
   const activePointerTypeRef = useRef<string>('')
   const rafRef = useRef<number | null>(null)
   const pendingRedrawRef = useRef(false)
+  const synthRef = useRef<PencilFrictionSynth | null>(null)
+  const lastPointRef = useRef<TimedPoint | null>(null)
+
+  const ensureSynth = useCallback((): PencilFrictionSynth | null => {
+    if (!soundEnabled) return null
+    if (synthRef.current) return synthRef.current
+    const Ctor = (typeof window !== 'undefined' && (window as any).AudioContext)
+      || (typeof window !== 'undefined' && (window as any).webkitAudioContext)
+    if (!Ctor) return null
+    synthRef.current = new PencilFrictionSynth(new Ctor() as AudioContextLike)
+    return synthRef.current
+  }, [soundEnabled])
 
   useEffect(() => {
     strokesRef.current = strokes
@@ -311,6 +327,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
   useEffect(() => {
     return () => {
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
+      synthRef.current?.stop()
     }
   }, [])
 
@@ -752,7 +769,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     canvas.setPointerCapture(e.pointerId)
     setIsDrawing(true)
     const point = capturePoint(e)
+    lastPointRef.current = point
     setCurrentStroke([point])
+    const synth = ensureSynth()
+    if (synth) synth.start()
   }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -779,6 +799,12 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     })
 
     const lastPoint = newPoints[newPoints.length - 1]
+    const synth = synthRef.current
+    if (synth && lastPointRef.current) {
+      const v = computeVelocity(lastPointRef.current, lastPoint)
+      synth.update(v, lastPoint.pressure ?? 0.5)
+    }
+    lastPointRef.current = lastPoint
     const distance = getDistanceFromCharacter(lastPoint, canvas.width, canvas.height)
     const thresholds = getPrecisionThresholds()
 
@@ -805,6 +831,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     }
 
     stopHapticFeedback()
+    synthRef.current?.stop()
+    lastPointRef.current = null
 
     setIsDrawing(false)
     activePointerTypeRef.current = ''

@@ -4,7 +4,7 @@ import { CharacterCard } from '@/components/CharacterCard'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Star, Trophy, Printer, Clock } from '@phosphor-icons/react'
+import { Star, Trophy, Printer, Clock, Path } from '@phosphor-icons/react'
 import { Progress } from '@/lib/types'
 import { motion } from 'framer-motion'
 import { LanguageSelector } from '@/components/LanguageSelector'
@@ -23,6 +23,7 @@ interface SelectionScreenProps {
   selectedLanguage: string
   onLanguageChange: (languageCode: string) => void
   onPrintSheet?: () => void
+  onOpenRadicalExplorer?: () => void
 }
 
 export function SelectionScreen({
@@ -37,6 +38,7 @@ export function SelectionScreen({
   selectedLanguage,
   onLanguageChange,
   onPrintSheet,
+  onOpenRadicalExplorer,
 }: SelectionScreenProps) {
   const [selectedTab, setSelectedTab] = useState('0')
 
@@ -94,6 +96,17 @@ export function SelectionScreen({
                   title="Create Printable Sheet"
                 >
                   <Printer className="w-5 h-5" />
+                </Button>
+              )}
+              {onOpenRadicalExplorer && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onOpenRadicalExplorer}
+                  className="bg-white/20 border-white/30 hover:bg-white/30 text-white"
+                  title="Radical Explorer"
+                >
+                  <Path className="w-5 h-5" />
                 </Button>
               )}
             </div>

@@ -8,11 +8,26 @@ import { Printer, Download, X } from '@phosphor-icons/react'
 import { LANGUAGES, getLanguageByCode, LanguageCategory } from '@/lib/languages'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
+import { TracingGlyph } from '@/components/TracingGlyph'
+import { QrCanvas } from '@/components/QrCanvas'
+import { encodeSheetMetadata } from '@/lib/qr'
 
 interface PrintableSheetProps {
   isOpen: boolean
   onClose: () => void
   selectedLanguage: string
+}
+
+function CornerFiducials() {
+  const corner = 'absolute w-5 h-5 border-gray-500'
+  return (
+    <div className="pointer-events-none absolute inset-2">
+      <div className={`${corner} top-0 left-0 border-l-2 border-t-2`} />
+      <div className={`${corner} top-0 right-0 border-r-2 border-t-2`} />
+      <div className={`${corner} bottom-0 left-0 border-l-2 border-b-2`} />
+      <div className={`${corner} bottom-0 right-0 border-r-2 border-b-2`} />
+    </div>
+  )
 }
 
 export function PrintableSheet({ isOpen, onClose, selectedLanguage }: PrintableSheetProps) {
@@ -248,7 +263,7 @@ export function PrintableSheet({ isOpen, onClose, selectedLanguage }: PrintableS
             <h3 className="text-lg font-semibold mb-3">Preview</h3>
             <div
               ref={printableRef}
-              className="bg-white p-6 border rounded-lg shadow-lg"
+              className="relative bg-white p-6 border rounded-lg shadow-lg"
               style={{ fontFamily: currentLanguage.fontFamily || 'sans-serif' }}
             >
               <div className="text-center mb-6">
@@ -274,14 +289,23 @@ export function PrintableSheet({ isOpen, onClose, selectedLanguage }: PrintableS
                       </div>
                     )}
                     <div className="flex-1 flex items-center justify-center">
-                      <span
-                        className="text-4xl"
-                        style={{
-                          fontFamily: currentLanguage.fontFamily,
-                        }}
-                      >
-                        {char}
-                      </span>
+                      {includeStrokeGuides && char.length === 1 ? (
+                        <TracingGlyph
+                          char={char}
+                          size={96}
+                          showDots={includeStrokeGuides}
+                          fallbackFont={currentLanguage.fontFamily}
+                        />
+                      ) : (
+                        <span
+                          className="text-4xl"
+                          style={{
+                            fontFamily: currentLanguage.fontFamily,
+                          }}
+                        >
+                          {char}
+                        </span>
+                      )}
                     </div>
                     {includeStrokeGuides && (
                       <div className="text-xs text-gray-400 text-center mt-2">
@@ -292,9 +316,23 @@ export function PrintableSheet({ isOpen, onClose, selectedLanguage }: PrintableS
                 ))}
               </div>
 
-              <div className="mt-6 pt-4 border-t border-gray-200 text-center text-xs text-gray-500">
-                Practice regularly to improve your handwriting! | www.weriteright.app
+              <div className="mt-6 pt-4 border-t border-gray-200 flex items-end justify-between">
+                <div className="text-xs text-gray-500">
+                  Practice regularly to improve your handwriting! | www.weriteright.app
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-right text-[10px] text-gray-500 leading-tight">
+                    <div>Sheet ID</div>
+                    <div className="font-mono">{selectedCharacters.length} chars</div>
+                  </div>
+                  <QrCanvas
+                    text={encodeSheetMetadata({ charList: selectedCharacters })}
+                    size={80}
+                  />
+                </div>
               </div>
+
+              <CornerFiducials />
             </div>
           </div>
         )}
