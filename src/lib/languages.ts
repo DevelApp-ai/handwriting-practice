@@ -487,3 +487,30 @@ export function getAllCharacters(languageCode: string): string[] {
   }
   return allChars
 }
+
+const RTL_PATTERN = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/
+const CJK_PATTERN = /[\u3400-\u9FFF\uF900-\uFAFF\u3040-\u309F\u30A0-\u30FF]/
+const DEVANAGARI_PATTERN = /[\u0900-\u097F]/
+
+export type ScriptFamilyForSlant = 'latin' | 'cjk' | 'devanagari' | 'arabic' | 'other'
+
+export function detectScriptFamily(char: string): ScriptFamilyForSlant {
+  if (DEVANAGARI_PATTERN.test(char)) return 'devanagari'
+  if (CJK_PATTERN.test(char)) return 'cjk'
+  if (RTL_PATTERN.test(char)) return 'arabic'
+  return 'latin'
+}
+
+export function getSlantReferenceRad(char: string): number {
+  const family = detectScriptFamily(char)
+  switch (family) {
+    case 'arabic':
+      return Math.PI / 2
+    case 'cjk':
+      return Math.PI / 2
+    case 'devanagari':
+      return Math.PI / 2
+    default:
+      return 0
+  }
+}
