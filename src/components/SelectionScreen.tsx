@@ -4,11 +4,12 @@ import { CharacterCard } from '@/components/CharacterCard'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Star, Trophy, Printer } from '@phosphor-icons/react'
+import { Star, Trophy, Printer, Clock } from '@phosphor-icons/react'
 import { Progress } from '@/lib/types'
 import { motion } from 'framer-motion'
 import { LanguageSelector } from '@/components/LanguageSelector'
 import { LANGUAGES, getLanguageByCode } from '@/lib/languages'
+import { getDueCharacters } from '@/lib/srs'
 
 interface SelectionScreenProps {
   onSelectCharacter: (character: string) => void
@@ -44,6 +45,8 @@ export function SelectionScreen({
   const getProgress = (char: string): Progress | undefined => {
     return progressData[char]
   }
+  const dueCharacters = getDueCharacters(progressData)
+  const dueCount = dueCharacters.length
 
   const renderCharacterGrid = (characters: string[], isSentence: boolean = false) => (
     <div className={isSentence ? "flex flex-col gap-4 p-4" : "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 p-4"}>
@@ -136,6 +139,16 @@ export function SelectionScreen({
             >
               🔥 {consecutiveDays} Day Streak
             </Badge>
+            {dueCount > 0 && (
+              <Badge
+                variant="secondary"
+                className="text-base px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30"
+                title={`${dueCount} characters due for review`}
+              >
+                <Clock weight="fill" className="w-5 h-5 mr-2 text-secondary" />
+                {dueCount} Due
+              </Badge>
+            )}
             {badges.length > 0 && (
               <Badge
                 variant="secondary"

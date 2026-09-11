@@ -7,6 +7,8 @@ import { AchievementModal } from '@/components/AchievementModal'
 import { LevelUpModal } from '@/components/LevelUpModal'
 import { UserProgress, AchievementId } from '@/lib/types'
 import { createDefaultProgress, updateProgressWithGamification, getLevelProgress, checkAchievements } from '@/lib/gamification'
+import { applyReviewToProgress, ReviewQuality } from '@/lib/srs'
+import { StrokeReport } from '@/lib/strokeEval'
 import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
 
@@ -38,7 +40,7 @@ function App() {
     setSelectedCharacter(null)
   }, [])
 
-  const handleComplete = useCallback((stars: number, characterId: string) => {
+  const handleComplete = useCallback((stars: number, characterId: string, report?: StrokeReport) => {
     if (!characterId) return
 
     const language = characterId.split('_')[0] || selectedLanguage || 'en'
@@ -50,7 +52,21 @@ function App() {
         current = createDefaultProgress()
       }
 
-      const updated = updateProgressWithGamification(current, characterId, stars, language, isWord, isSentence)
+      let updated = updateProgressWithGamification(current, characterId, stars, language, isWord, isSentence)
+      if (report && updated.progress[characterId]) {
+        const quality: ReviewQuality = {
+          overall: report.overall,
+          pauseCount: 0,
+          strokeOrderErrors: report.strokeOrder !== undefined ? Math.round((1 - report.strokeOrder) * 10) : 0,
+        }
+        updated = {
+          ...updated,
+          progress: {
+            ...updated.progress,
+            [characterId]: applyReviewToProgress(updated.progress[characterId], quality),
+          },
+        }
+      }
 
       // Check for new achievements
       const newAchievements = checkAchievements(current, characterId, stars, language, isWord, isSentence)
@@ -107,7 +123,7 @@ function App() {
         <PracticeScreen
           character={selectedCharacter}
           onBack={handleBack}
-          onComplete={(stars) => handleComplete(stars, selectedCharacter)}
+          onComplete={(stars, _char, report) => handleComplete(stars, selectedCharacter, report)}
         />
         <Toaster />
         <AchievementModal
