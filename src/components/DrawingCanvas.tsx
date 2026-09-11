@@ -6,11 +6,14 @@ import { getWritingDirection, isComplexScript, getSlantReferenceRad } from '@/li
 import { generateBasicStrokeOrder } from '@/lib/strokeOrder'
 import { renderGrid, selectGridKind, drawShirorekhaLine, drawSlantGuide, detectScriptFamily } from '@/lib/grid'
 import { evaluate, starsFromOverall, StrokeReport, StrokeFaultKind } from '@/lib/strokeEval'
+import { computeLandmarks } from '@/lib/scaffold'
+import { PracticeMode, DEFAULT_PRACTICE_MODE } from '@/lib/types'
 
 interface DrawingCanvasProps {
   character: string
   onComplete: (stars: number, report: StrokeReport) => void
   showGuide: boolean
+  practiceMode?: PracticeMode
 }
 
 export interface DrawingCanvasHandle {
@@ -35,7 +38,7 @@ function pressureWidth(pressure: number, enabled: boolean): number {
 }
 
 export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(
-  function DrawingCanvas({ character, onComplete, showGuide }, ref) {
+  function DrawingCanvas({ character, onComplete, showGuide, practiceMode = DEFAULT_PRACTICE_MODE }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const overlayRef = useRef<HTMLCanvasElement>(null)
   const heatmapRef = useRef<HTMLCanvasElement>(null)
@@ -296,13 +299,14 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
 
       drawGuideLines()
       drawCharacterGuide()
+      drawLandmarks()
       redrawStrokes()
     }
 
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
     return () => window.removeEventListener('resize', resizeCanvas)
-  }, [character, showGuide])
+  }, [character, showGuide, practiceMode])
 
   useEffect(() => {
     return () => {
@@ -310,10 +314,46 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     }
   }, [])
 
+  const showGhost =
+    showGuide && (practiceMode === 'observe' || practiceMode === 'trace')
+  const showLandmarks = showGuide && practiceMode === 'landmark'
+
+  const drawLandmarks = () => {
+    if (!showLandmarks || character.length !== 1) return
+    const overlay = overlayRef.current
+    if (!overlay) return
+    const ctx = overlay.getContext('2d')
+    if (!ctx) return
+    const landmarks = computeLandmarks(character)
+    const bounds = getEffectiveBounds(overlay.width, overlay.height)
+    const offsetX = 'offsetX' in bounds ? (bounds as any).offsetX : 0
+    const offsetY = 'offsetY' in bounds ? (bounds as any).offsetY : 0
+    let dotIndex = 0
+    for (const lm of landmarks) {
+      const x = offsetX + lm.x * bounds.width
+      const y = offsetY + lm.y * bounds.height
+      const radius = lm.kind === 'start' ? 14 : 9
+      ctx.beginPath()
+      ctx.arc(x, y, radius, 0, Math.PI * 2)
+      ctx.fillStyle = lm.kind === 'start' ? 'rgba(34, 197, 94, 0.85)' : 'rgba(234, 179, 8, 0.7)'
+      ctx.fill()
+      if (lm.kind === 'start') {
+        dotIndex++
+        ctx.fillStyle = 'white'
+        ctx.font = 'bold 12px Quicksand, sans-serif'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(String(dotIndex), x, y)
+      }
+    }
+  }
+
   useEffect(() => {
     drawGuideLines()
     drawCharacterGuide()
-  }, [showGuide])
+    drawLandmarks()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showGuide, showGhost, showLandmarks, practiceMode])
 
   useEffect(() => {
     redrawStrokes()
@@ -377,7 +417,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
   }
 
   const drawCharacterGuide = () => {
-    if (!showGuide) return
+    if (!showGhost) return
 
     const overlay = overlayRef.current
     if (!overlay) return

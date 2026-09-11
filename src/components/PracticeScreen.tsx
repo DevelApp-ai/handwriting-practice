@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { DrawingCanvas, DrawingCanvasHandle } from '@/components/DrawingCanvas'
+import { CursiveCanvas, CursiveCanvasHandle } from '@/components/CursiveCanvas'
+import { isCursiveWord } from '@/lib/cursive'
 import { Celebration } from '@/components/Celebration'
 import { LineGuideHelper } from '@/components/LineGuideHelper'
 import { StrokeOrderDemo } from '@/components/StrokeOrderDemo'
 import { ArrowLeft, Trash, Eye, EyeSlash, Info, Path } from '@phosphor-icons/react'
+import { PracticeMode } from '@/lib/types'
+import { StrokeReport } from '@/lib/strokeEval'
 import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import {
@@ -18,11 +22,12 @@ import {
 interface PracticeScreenProps {
   character: string
   onBack: () => void
-  onComplete: (stars: number, characterId: string) => void
+  onComplete: (stars: number, characterId: string, report?: StrokeReport) => void
 }
 
 export function PracticeScreen({ character, onBack, onComplete }: PracticeScreenProps) {
   const [showGuide, setShowGuide] = useState(true)
+  const [practiceMode, setPracticeMode] = useState<PracticeMode>('trace')
   const [showCelebration, setShowCelebration] = useState(false)
   const [earnedStars, setEarnedStars] = useState(0)
   const [key, setKey] = useState(0)
@@ -30,6 +35,9 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
   const [showStrokeOrder, setShowStrokeOrder] = useState(false)
   const [hasSeenHelper, setHasSeenHelper] = useKV<boolean>('has-seen-line-helper', false)
   const canvasHandleRef = useRef<DrawingCanvasHandle>(null)
+  const cursiveHandleRef = useRef<CursiveCanvasHandle>(null)
+  const lastReportRef = useRef<StrokeReport | undefined>(undefined)
+  const useCursive = isCursiveWord(character)
 
   useEffect(() => {
     if (!hasSeenHelper) {
@@ -42,19 +50,24 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
   }, [])
 
   const handleComplete = () => {
-    const result = canvasHandleRef.current?.evaluateAndRender()
+    const result = useCursive
+      ? cursiveHandleRef.current?.evaluateAndRender()
+      : canvasHandleRef.current?.evaluateAndRender()
     const stars = result?.stars ?? 1
     setEarnedStars(stars)
+    lastReportRef.current = result?.report
     setShowCelebration(true)
   }
 
   const handleCelebrationComplete = () => {
     setShowCelebration(false)
-    onComplete(earnedStars, character)
+    onComplete(earnedStars, character, lastReportRef.current)
+    lastReportRef.current = undefined
   }
 
   const handleClear = () => {
     canvasHandleRef.current?.clear()
+    cursiveHandleRef.current?.clear()
     setKey((prev) => prev + 1)
   }
 
@@ -100,7 +113,27 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
             <Info className="w-5 h-5" />
             <span className="hidden sm:inline">Lines</span>
           </Button>
-          
+
+          <div className="hidden md:flex items-center rounded-md border border-border overflow-hidden">
+            {(['observe', 'trace', 'landmark', 'blind'] as PracticeMode[]).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => {
+                  setPracticeMode(mode)
+                  setShowGuide(mode !== 'blind')
+                }}
+                className={`px-3 py-2 text-sm capitalize transition-colors ${
+                  practiceMode === mode
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-transparent hover:bg-accent'
+                }`}
+                title={`${mode} mode`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+
           <Button
             variant="outline"
             size="lg"
@@ -123,13 +156,24 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <DrawingCanvas
-          ref={canvasHandleRef}
-          key={key}
-          character={character}
-          onComplete={handleComplete}
-          showGuide={showGuide}
-        />
+        {useCursive ? (
+          <CursiveCanvas
+            ref={cursiveHandleRef}
+            key={key}
+            word={character}
+            onComplete={handleComplete}
+            showGuide={showGuide}
+          />
+        ) : (
+          <DrawingCanvas
+            ref={canvasHandleRef}
+            key={key}
+            character={character}
+            onComplete={handleComplete}
+            showGuide={showGuide}
+            practiceMode={practiceMode}
+          />
+        )}
       </div>
 
       <div className="flex items-center justify-center gap-4 p-4 md:p-6 border-t border-border bg-card shadow-sm">

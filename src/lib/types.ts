@@ -52,12 +52,20 @@ export const DEFAULT_PHASE1_SETTINGS: Phase1Settings = {
   gridKind: 'auto',
 }
 
+export type PracticeMode = 'observe' | 'trace' | 'landmark' | 'blind'
+
+export const DEFAULT_PRACTICE_MODE: PracticeMode = 'trace'
+
 export interface Progress {
   characterId: string
   stars: number
   completed: boolean
   attempts: number
   lastPracticed: number
+  nextReview?: number
+  easeFactor?: number
+  pausePenalty?: number
+  reviewCount?: number
 }
 
 export type AchievementId = 
