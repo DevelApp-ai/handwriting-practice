@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
-import { Point } from '@/lib/types'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { Point, TimedPoint, Phase1Settings, DEFAULT_PHASE1_SETTINGS } from '@/lib/types'
 import { useKV } from '@github/spark/hooks'
 import { triggerHapticFeedback, stopHapticFeedback } from '@/lib/haptics'
 import { getWritingDirection, isComplexScript } from '@/lib/languages'
 import { generateBasicStrokeOrder } from '@/lib/strokeOrder'
+import { renderGrid, selectGridKind, drawShirorekhaLine, drawSlantGuide, detectScriptFamily } from '@/lib/grid'
 
 interface DrawingCanvasProps {
   character: string
@@ -11,13 +12,29 @@ interface DrawingCanvasProps {
   showGuide: boolean
 }
 
+const BASE_STROKE_WIDTH = 4
+const MIN_PRESSURE_WIDTH = 2
+const MAX_PRESSURE_WIDTH = 10
+
+function pressureWidth(pressure: number, enabled: boolean): number {
+  if (!enabled || !pressure || pressure <= 0) return BASE_STROKE_WIDTH
+  const clamped = Math.max(0.05, Math.min(1, pressure))
+  return MIN_PRESSURE_WIDTH + (MAX_PRESSURE_WIDTH - MIN_PRESSURE_WIDTH) * clamped
+}
+
 export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const overlayRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
-  const [strokes, setStrokes] = useState<Point[][]>([])
-  const [currentStroke, setCurrentStroke] = useState<Point[]>([])
+  const [strokes, setStrokes] = useState<TimedPoint[][]>([])
+  const [currentStroke, setCurrentStroke] = useState<TimedPoint[]>([])
   const [userProgress] = useKV<any>('user-progress', { progress: {} })
+  const [phase1Settings] = useKV<Phase1Settings>('phase1-settings', DEFAULT_PHASE1_SETTINGS)
+
+  const settings: Phase1Settings = { ...DEFAULT_PHASE1_SETTINGS, ...phase1Settings }
+  const activePointerTypeRef = useRef<string>('')
+  const rafRef = useRef<number | null>(null)
+  const pendingRedrawRef = useRef(false)
 
   const LINE_HEIGHTS = {
     ascender: 0.25,
@@ -46,15 +63,34 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     }
   }
 
+  const getCanvasScale = () => {
+    switch (settings.canvasScale) {
+      case '2x': return 2
+      case '1.5x': return 1.5
+      default: return 1
+    }
+  }
+
+  const getEffectiveBounds = (canvasWidth: number, canvasHeight: number) => {
+    const scale = getCanvasScale()
+    if (scale === 1) return { width: canvasWidth, height: canvasHeight }
+    const width = canvasWidth / scale
+    const height = canvasHeight / scale
+    return { width, height, offsetX: (canvasWidth - width) / 2, offsetY: (canvasHeight - height) / 2 }
+  }
+
   const getCharacterBounds = (canvasWidth: number, canvasHeight: number) => {
     const isSentence = character.length > 15
     const isWord = character.length > 1 && character.length <= 15
+    const bounds = getEffectiveBounds(canvasWidth, canvasHeight)
+    const offsetX = 'offsetX' in bounds ? (bounds as any).offsetX : 0
+    const offsetY = 'offsetY' in bounds ? (bounds as any).offsetY : 0
     
-    let fontSize = canvasHeight * 0.4
+    let fontSize = bounds.height * 0.4
     if (isSentence) {
-      fontSize = canvasHeight * 0.12
+      fontSize = bounds.height * 0.12
     } else if (isWord) {
-      fontSize = canvasHeight * 0.25
+      fontSize = bounds.height * 0.25
     }
 
     const getFontFamily = () => {
@@ -82,8 +118,8 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     ctx.textAlign = 'center'
     ctx.textBaseline = 'alphabetic'
 
-    const centerX = canvasWidth / 2
-    const baselineY = canvasHeight * LINE_HEIGHTS.baseline
+    const centerX = offsetX + bounds.width / 2
+    const baselineY = offsetY + bounds.height * LINE_HEIGHTS.baseline
     const metrics = ctx.measureText(character)
 
     const actualHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
@@ -165,13 +201,19 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
   }, [character, showGuide])
 
   useEffect(() => {
+    return () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
+    }
+  }, [])
+
+  useEffect(() => {
     drawGuideLines()
     drawCharacterGuide()
   }, [showGuide])
 
   useEffect(() => {
     redrawStrokes()
-  }, [strokes])
+  }, [strokes, currentStroke])
 
   const drawGuideLines = () => {
     const overlay = overlayRef.current
@@ -182,31 +224,26 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
 
     ctx.clearRect(0, 0, overlay.width, overlay.height)
 
-    const height = overlay.height
-    const lines = [
-      { y: height * LINE_HEIGHTS.ascender, color: '#9ca3af', dash: [], width: 2, label: 'Ascender' },
-      { y: height * LINE_HEIGHTS.midline, color: '#6366f1', dash: [8, 4], width: 2, label: 'Midline' },
-      { y: height * LINE_HEIGHTS.baseline, color: '#000000', dash: [], width: 3, label: 'Baseline' },
-      { y: height * LINE_HEIGHTS.descender, color: '#9ca3af', dash: [], width: 2, label: 'Descender' },
-    ]
+    const bounds = getEffectiveBounds(overlay.width, overlay.height)
+    const gridKind = selectGridKind(character, settings.gridKind)
+    const family = detectScriptFamily(character)
+    const isSentence = character.length > 15
 
-    lines.forEach(({ y, color, dash, width, label }) => {
-      ctx.strokeStyle = color
-      ctx.lineWidth = width
-      ctx.setLineDash(dash)
-      ctx.beginPath()
-      ctx.moveTo(0, y)
-      ctx.lineTo(overlay.width, y)
-      ctx.stroke()
+    ctx.save()
+    if ('offsetX' in bounds) {
+      ctx.translate(bounds.offsetX as number, bounds.offsetY as number)
+    }
 
-      if (showGuide) {
-        ctx.setLineDash([])
-        ctx.font = '12px Quicksand, sans-serif'
-        ctx.fillStyle = color
-        ctx.textAlign = 'left'
-        ctx.fillText(label, 8, y - 6)
-      }
-    })
+    renderGrid(ctx, bounds.width, bounds.height, gridKind, { showLabels: showGuide })
+
+    if (family === 'devanagari' && gridKind === 'four-line' && !isSentence) {
+      drawShirorekhaLine(ctx, bounds.width, bounds.height, { showLabels: showGuide })
+    }
+    if (family === 'latin' && gridKind === 'four-line' && !isSentence && isComplexScript(character)) {
+      drawSlantGuide(ctx, bounds.width, bounds.height)
+    }
+
+    ctx.restore()
 
     ctx.setLineDash([])
 
@@ -276,8 +313,11 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     ctx.textAlign = 'center'
     ctx.textBaseline = 'alphabetic'
 
-    const centerX = overlay.width / 2
-    const baselineY = overlay.height * LINE_HEIGHTS.baseline
+    const bounds = getEffectiveBounds(overlay.width, overlay.height)
+    const offsetX = 'offsetX' in bounds ? (bounds as any).offsetX : 0
+    const offsetY = 'offsetY' in bounds ? (bounds as any).offsetY : 0
+    const centerX = offsetX + bounds.width / 2
+    const baselineY = offsetY + bounds.height * LINE_HEIGHTS.baseline
 
     if (isSentence) {
       const maxWidth = overlay.width * 0.9
@@ -313,7 +353,7 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
       ctx.fillText(character, centerX, baselineY)
       
       if (character.length === 1) {
-        drawStrokeDirectionArrows(ctx, character, overlay.width, overlay.height)
+        drawStrokeDirectionArrows(ctx, character, bounds.width, bounds.height)
       }
     }
 
@@ -443,18 +483,28 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
 
     if (currentStroke.length > 0) {
       drawStrokeWithColors(ctx, currentStroke, canvas.width, canvas.height)
+      const last = currentStroke[currentStroke.length - 1]
+      if (last) drawTiltIndicator(ctx, last)
     }
   }
 
+  const scheduleRedraw = useCallback(() => {
+    if (pendingRedrawRef.current) return
+    pendingRedrawRef.current = true
+    rafRef.current = requestAnimationFrame(() => {
+      pendingRedrawRef.current = false
+      redrawStrokes()
+    })
+  }, [strokes, currentStroke])
+
   const drawStrokeWithColors = (
     ctx: CanvasRenderingContext2D,
-    points: Point[],
+    points: TimedPoint[],
     canvasWidth: number,
     canvasHeight: number
   ) => {
     if (points.length < 2) return
 
-    ctx.lineWidth = 4
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
 
@@ -475,6 +525,7 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
       gradient.addColorStop(1, nextColor)
       
       ctx.strokeStyle = gradient
+      ctx.lineWidth = pressureWidth(currentPoint.pressure, settings.showPressureWidth)
       ctx.beginPath()
       ctx.moveTo(currentPoint.x, currentPoint.y)
       ctx.lineTo(nextPoint.x, nextPoint.y)
@@ -482,15 +533,68 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     }
   }
 
-  const getPoint = (e: React.PointerEvent<HTMLCanvasElement>): Point => {
+  const drawTiltIndicator = (
+    ctx: CanvasRenderingContext2D,
+    point: TimedPoint,
+  ) => {
+    if (!settings.showTilt || point.pointerType !== 'pen') return
+    if (point.tiltX === 0 && point.tiltY === 0) return
+    const tiltMag = Math.sqrt(point.tiltX * point.tiltX + point.tiltY * point.tiltY)
+    const angle = Math.atan2(point.tiltY, point.tiltX)
+    const len = Math.min(24, tiltMag * 0.4)
+    ctx.save()
+    ctx.strokeStyle = 'rgba(99, 102, 241, 0.55)'
+    ctx.fillStyle = 'rgba(99, 102, 241, 0.8)'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(point.x, point.y)
+    ctx.lineTo(point.x + Math.cos(angle) * len, point.y + Math.sin(angle) * len)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.arc(point.x, point.y, 3, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.restore()
+  }
+
+  const capturePoint = (e: React.PointerEvent<HTMLCanvasElement>): TimedPoint => {
     const canvas = canvasRef.current
-    if (!canvas) return { x: 0, y: 0 }
+    if (!canvas) return { x: 0, y: 0, t: 0, pressure: 0, tiltX: 0, tiltY: 0, twist: 0, pointerType: '' }
 
     const rect = canvas.getBoundingClientRect()
     return {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
+      t: e.timeStamp,
+      pressure: e.pressure ?? 0,
+      tiltX: e.tiltX ?? 0,
+      tiltY: e.tiltY ?? 0,
+      twist: e.twist ?? 0,
+      pointerType: (e.pointerType ?? '') as TimedPoint['pointerType'],
     }
+  }
+
+  const captureRawPoint = (
+    native: PointerEvent,
+    canvas: HTMLCanvasElement,
+  ): TimedPoint => {
+    const rect = canvas.getBoundingClientRect()
+    return {
+      x: native.clientX - rect.left,
+      y: native.clientY - rect.top,
+      t: native.timeStamp,
+      pressure: native.pressure ?? 0,
+      tiltX: native.tiltX ?? 0,
+      tiltY: native.tiltY ?? 0,
+      twist: native.twist ?? 0,
+      pointerType: (native.pointerType ?? '') as TimedPoint['pointerType'],
+    }
+  }
+
+  const isPalmRejected = (e: React.PointerEvent<HTMLCanvasElement>): boolean => {
+    if (!settings.palmRejection) return false
+    const active = activePointerTypeRef.current
+    if (active && e.pointerType !== active) return true
+    return false
   }
 
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -498,25 +602,40 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     const canvas = canvasRef.current
     if (!canvas) return
 
+    if (isPalmRejected(e)) return
+    activePointerTypeRef.current = e.pointerType ?? ''
+
     canvas.setPointerCapture(e.pointerId)
     setIsDrawing(true)
-    const point = getPoint(e)
+    const point = capturePoint(e)
     setCurrentStroke([point])
   }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return
     e.preventDefault()
-
-    const point = getPoint(e)
-    setCurrentStroke((prev) => [...prev, point])
+    if (isPalmRejected(e)) return
 
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
 
-    const distance = getDistanceFromCharacter(point, canvas.width, canvas.height)
+    const newPoints: TimedPoint[] = [capturePoint(e)]
+    const native = e.nativeEvent
+    if (native && typeof (native as PointerEvent).getCoalescedEvents === 'function') {
+      const coalesced = (native as PointerEvent).getCoalescedEvents()
+      if (coalesced && coalesced.length > 1) {
+        newPoints.length = 0
+        for (const ev of coalesced) newPoints.push(captureRawPoint(ev, canvas))
+      }
+    }
+
+    setCurrentStroke((prev) => {
+      const merged = newPoints.length > 1 ? [...prev, ...newPoints] : [...prev, newPoints[0]]
+      return merged
+    })
+
+    const lastPoint = newPoints[newPoints.length - 1]
+    const distance = getDistanceFromCharacter(lastPoint, canvas.width, canvas.height)
     const thresholds = getPrecisionThresholds()
 
     if (distance > 0) {
@@ -529,7 +648,7 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
       }
     }
 
-    redrawStrokes()
+    scheduleRedraw()
   }
 
   const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -544,6 +663,7 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     stopHapticFeedback()
 
     setIsDrawing(false)
+    activePointerTypeRef.current = ''
     if (currentStroke.length > 0) {
       setStrokes((prev) => [...prev, currentStroke])
       setCurrentStroke([])
