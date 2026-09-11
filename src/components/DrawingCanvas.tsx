@@ -1,15 +1,27 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react'
 import { Point, TimedPoint, Phase1Settings, DEFAULT_PHASE1_SETTINGS } from '@/lib/types'
 import { useKV } from '@github/spark/hooks'
 import { triggerHapticFeedback, stopHapticFeedback } from '@/lib/haptics'
-import { getWritingDirection, isComplexScript } from '@/lib/languages'
+import { getWritingDirection, isComplexScript, getSlantReferenceRad } from '@/lib/languages'
 import { generateBasicStrokeOrder } from '@/lib/strokeOrder'
 import { renderGrid, selectGridKind, drawShirorekhaLine, drawSlantGuide, detectScriptFamily } from '@/lib/grid'
+import { evaluate, starsFromOverall, StrokeReport, StrokeFaultKind } from '@/lib/strokeEval'
 
 interface DrawingCanvasProps {
   character: string
-  onComplete: (stars: number) => void
+  onComplete: (stars: number, report: StrokeReport) => void
   showGuide: boolean
+}
+
+export interface DrawingCanvasHandle {
+  clear: () => void
+  evaluateAndRender: () => { stars: number; report: StrokeReport }
+}
+
+const HEATMAP_COLORS: Record<StrokeFaultKind, string> = {
+  ok: 'rgba(34, 197, 94, 0.9)',
+  amber: 'rgba(234, 179, 8, 0.9)',
+  red: 'rgba(239, 68, 68, 0.9)',
 }
 
 const BASE_STROKE_WIDTH = 4
@@ -22,9 +34,12 @@ function pressureWidth(pressure: number, enabled: boolean): number {
   return MIN_PRESSURE_WIDTH + (MAX_PRESSURE_WIDTH - MIN_PRESSURE_WIDTH) * clamped
 }
 
-export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanvasProps) {
+export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(
+  function DrawingCanvas({ character, onComplete, showGuide }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const overlayRef = useRef<HTMLCanvasElement>(null)
+  const heatmapRef = useRef<HTMLCanvasElement>(null)
+  const strokesRef = useRef<TimedPoint[][]>([])
   const [isDrawing, setIsDrawing] = useState(false)
   const [strokes, setStrokes] = useState<TimedPoint[][]>([])
   const [currentStroke, setCurrentStroke] = useState<TimedPoint[]>([])
@@ -35,6 +50,69 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
   const activePointerTypeRef = useRef<string>('')
   const rafRef = useRef<number | null>(null)
   const pendingRedrawRef = useRef(false)
+
+  useEffect(() => {
+    strokesRef.current = strokes
+  }, [strokes])
+
+  const clearHeatmap = useCallback(() => {
+    const heatmap = heatmapRef.current
+    if (!heatmap) return
+    const ctx = heatmap.getContext('2d')
+    if (!ctx) return
+    ctx.clearRect(0, 0, heatmap.width, heatmap.height)
+  }, [])
+
+  const renderHeatmap = useCallback((report: StrokeReport) => {
+    const heatmap = heatmapRef.current
+    if (!heatmap) return
+    const ctx = heatmap.getContext('2d')
+    if (!ctx) return
+    ctx.clearRect(0, 0, heatmap.width, heatmap.height)
+
+    const allStrokes = strokesRef.current
+    const perStroke = report.perStroke
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+
+    for (let s = 0; s < allStrokes.length; s++) {
+      const stroke = allStrokes[s]
+      const fault = perStroke[s]
+      const color = fault ? HEATMAP_COLORS[fault.kind] : HEATMAP_COLORS.ok
+      if (stroke.length < 2) continue
+      ctx.strokeStyle = color
+      ctx.lineWidth = pressureWidth(
+        stroke[0].pressure ?? 0,
+        settings.showPressureWidth,
+      )
+      ctx.beginPath()
+      ctx.moveTo(stroke[0].x, stroke[0].y)
+      for (let i = 1; i < stroke.length; i++) {
+        ctx.lineTo(stroke[i].x, stroke[i].y)
+      }
+      ctx.stroke()
+    }
+  }, [settings.showPressureWidth])
+
+  useImperativeHandle(ref, () => ({
+    clear: () => {
+      setStrokes([])
+      setCurrentStroke([])
+      strokesRef.current = []
+      clearHeatmap()
+    },
+    evaluateAndRender: () => {
+      const canvas = canvasRef.current
+      const allStrokes = strokesRef.current
+      const report: StrokeReport = evaluate(allStrokes, character, {
+        slantReferenceRad: getSlantReferenceRad(character),
+        bounds: canvas ? getCharacterEvalBounds(canvas.width, canvas.height) : undefined,
+      })
+      renderHeatmap(report)
+      const stars = starsFromOverall(report.overall)
+      return { stars, report }
+    },
+  }), [character, renderHeatmap, clearHeatmap])
 
   const LINE_HEIGHTS = {
     ascender: 0.25,
@@ -125,14 +203,33 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     const actualHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
     const actualWidth = metrics.width
 
+    const bTop = baselineY - metrics.actualBoundingBoxAscent
+    const bBottom = baselineY + metrics.actualBoundingBoxDescent
+    const bLeft = centerX - actualWidth / 2
+    const bRight = centerX + actualWidth / 2
+
     return {
-      top: baselineY - metrics.actualBoundingBoxAscent,
-      bottom: baselineY + metrics.actualBoundingBoxDescent,
-      left: centerX - actualWidth / 2,
-      right: centerX + actualWidth / 2,
+      top: bTop,
+      bottom: bBottom,
+      left: bLeft,
+      right: bRight,
       centerX,
       baselineY,
+      evalBounds: {
+        left: bLeft,
+        top: bTop,
+        width: Math.max(1, bRight - bLeft),
+        height: Math.max(1, bBottom - bTop),
+      },
     }
+  }
+
+  const getCharacterEvalBounds = (
+    canvasWidth: number,
+    canvasHeight: number,
+  ): { left: number; top: number; width: number; height: number } | undefined => {
+    const b = getCharacterBounds(canvasWidth, canvasHeight)
+    return b ? (b as any).evalBounds : undefined
   }
 
   const getDistanceFromCharacter = (point: Point, canvasWidth: number, canvasHeight: number) => {
@@ -178,6 +275,7 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
   useEffect(() => {
     const canvas = canvasRef.current
     const overlay = overlayRef.current
+    const heatmap = heatmapRef.current
     if (!canvas || !overlay) return
 
     const resizeCanvas = () => {
@@ -189,6 +287,12 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
       canvas.height = size
       overlay.width = size
       overlay.height = size
+      if (heatmap) {
+        heatmap.width = size
+        heatmap.height = size
+        const hctx = heatmap.getContext('2d')
+        hctx?.clearRect(0, 0, size, size)
+      }
 
       drawGuideLines()
       drawCharacterGuide()
@@ -678,6 +782,10 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
           className="absolute inset-0 pointer-events-none"
         />
         <canvas
+          ref={heatmapRef}
+          className="absolute inset-0 pointer-events-none"
+        />
+        <canvas
           ref={canvasRef}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -689,3 +797,4 @@ export function DrawingCanvas({ character, onComplete, showGuide }: DrawingCanva
     </div>
   )
 }
+)

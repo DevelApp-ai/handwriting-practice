@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { DrawingCanvas } from '@/components/DrawingCanvas'
+import { DrawingCanvas, DrawingCanvasHandle } from '@/components/DrawingCanvas'
 import { Celebration } from '@/components/Celebration'
 import { LineGuideHelper } from '@/components/LineGuideHelper'
 import { StrokeOrderDemo } from '@/components/StrokeOrderDemo'
@@ -29,6 +29,7 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
   const [showLineHelper, setShowLineHelper] = useState(false)
   const [showStrokeOrder, setShowStrokeOrder] = useState(false)
   const [hasSeenHelper, setHasSeenHelper] = useKV<boolean>('has-seen-line-helper', false)
+  const canvasHandleRef = useRef<DrawingCanvasHandle>(null)
 
   useEffect(() => {
     if (!hasSeenHelper) {
@@ -41,7 +42,8 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
   }, [])
 
   const handleComplete = () => {
-    const stars = Math.floor(Math.random() * 2) + 2
+    const result = canvasHandleRef.current?.evaluateAndRender()
+    const stars = result?.stars ?? 1
     setEarnedStars(stars)
     setShowCelebration(true)
   }
@@ -52,6 +54,7 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
   }
 
   const handleClear = () => {
+    canvasHandleRef.current?.clear()
     setKey((prev) => prev + 1)
   }
 
@@ -121,6 +124,7 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
 
       <div className="flex-1 overflow-hidden">
         <DrawingCanvas
+          ref={canvasHandleRef}
           key={key}
           character={character}
           onComplete={handleComplete}
