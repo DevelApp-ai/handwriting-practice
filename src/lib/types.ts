@@ -17,6 +17,41 @@ export interface Point {
   y: number
 }
 
+export type PointerType = 'pen' | 'touch' | 'mouse' | ''
+
+export interface TimedPoint extends Point {
+  t: number
+  pressure: number
+  tiltX: number
+  tiltY: number
+  twist: number
+  pointerType: PointerType
+}
+
+export function isTimedPoint(p: Point | TimedPoint): p is TimedPoint {
+  return typeof (p as TimedPoint).t === 'number'
+}
+
+export type CanvasScale = '1x' | '1.5x' | '2x'
+
+export type GridKind = 'four-line' | 'tianzige' | 'mizige' | 'jiugongge'
+
+export interface Phase1Settings {
+  palmRejection: boolean
+  showTilt: boolean
+  showPressureWidth: boolean
+  canvasScale: CanvasScale
+  gridKind: GridKind | 'auto'
+}
+
+export const DEFAULT_PHASE1_SETTINGS: Phase1Settings = {
+  palmRejection: true,
+  showTilt: false,
+  showPressureWidth: true,
+  canvasScale: '1x',
+  gridKind: 'auto',
+}
+
 export interface Progress {
   characterId: string
   stars: number

@@ -128,20 +128,20 @@ export function SelectionScreen({
               variant="secondary"
               className="text-base px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30"
             >
-              \u{1F4C5} {totalXP} XP
+              📅 {totalXP} XP
             </Badge>
             <Badge
               variant="secondary"
               className="text-base px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30"
             >
-              \u{1F525} {consecutiveDays} Day Streak
+              🔥 {consecutiveDays} Day Streak
             </Badge>
             {badges.length > 0 && (
               <Badge
                 variant="secondary"
                 className="text-base px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30"
               >
-                \u2728 {badges.length} Badges
+                ✨ {badges.length} Badges
               </Badge>
             )}
           </motion.div>
