@@ -519,14 +519,14 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     }
 
     if (direction === 'rtl' && !isSentence) {
-      const arrowSize = 20
+      const arrowSize = 28
       const arrowY = overlay.height * 0.88
       const arrowStartX = overlay.width * 0.7
       const arrowEndX = overlay.width * 0.3
 
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)'
-      ctx.fillStyle = 'rgba(239, 68, 68, 0.6)'
-      ctx.lineWidth = 3
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.9)'
+      ctx.lineWidth = 4
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
 
@@ -542,19 +542,19 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       ctx.closePath()
       ctx.fill()
 
-      ctx.font = '14px Quicksand, sans-serif'
-      ctx.fillStyle = 'rgba(239, 68, 68, 0.8)'
+      ctx.font = 'bold 16px Quicksand, sans-serif'
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.95)'
       ctx.textAlign = 'center'
-      ctx.fillText('Write this way →', overlay.width / 2, arrowY - 15)
+      ctx.fillText('\u2190 Write this way', overlay.width / 2, arrowY - 18)
     } else if (direction === 'ltr' && !isSentence && isComplex) {
-      const arrowSize = 20
+      const arrowSize = 28
       const arrowY = overlay.height * 0.88
       const arrowStartX = overlay.width * 0.3
       const arrowEndX = overlay.width * 0.7
 
-      ctx.strokeStyle = 'rgba(34, 197, 94, 0.6)'
-      ctx.fillStyle = 'rgba(34, 197, 94, 0.6)'
-      ctx.lineWidth = 3
+      ctx.strokeStyle = 'rgba(34, 197, 94, 0.9)'
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.9)'
+      ctx.lineWidth = 4
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
 
@@ -570,10 +570,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       ctx.closePath()
       ctx.fill()
 
-      ctx.font = '14px Quicksand, sans-serif'
-      ctx.fillStyle = 'rgba(34, 197, 94, 0.8)'
+      ctx.font = 'bold 16px Quicksand, sans-serif'
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.95)'
       ctx.textAlign = 'center'
-      ctx.fillText('← Write this way', overlay.width / 2, arrowY - 15)
+      ctx.fillText('Write this way \u2192', overlay.width / 2, arrowY - 18)
     }
   }
 
@@ -589,8 +589,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     strokeData.strokes.forEach((stroke) => {
       if (stroke.points.length < 2) return
 
-      ctx.strokeStyle = 'rgba(34, 197, 94, 0.5)'
-      ctx.lineWidth = 2
+      ctx.strokeStyle = 'rgba(34, 197, 94, 0.85)'
+      ctx.lineWidth = 3
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
 
@@ -614,11 +614,11 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
 
         const angle = Math.atan2(dy, dx)
         
-        const arrowSize = 8
+        const arrowSize = 10
         const perpAngle1 = angle + Math.PI * 0.75
         const perpAngle2 = angle - Math.PI * 0.75
 
-        ctx.fillStyle = 'rgba(34, 197, 94, 0.7)'
+        ctx.fillStyle = 'rgba(34, 197, 94, 0.9)'
         ctx.beginPath()
         ctx.moveTo(midX, midY)
         ctx.lineTo(midX + Math.cos(perpAngle1) * arrowSize, midY + Math.sin(perpAngle1) * arrowSize)
