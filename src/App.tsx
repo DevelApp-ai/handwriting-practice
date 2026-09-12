@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/lib/useKV'
 import { SelectionScreen } from '@/components/SelectionScreen'
 import { RadicalExplorer } from '@/components/RadicalExplorer'
 import { PracticeScreen } from '@/components/PracticeScreen'

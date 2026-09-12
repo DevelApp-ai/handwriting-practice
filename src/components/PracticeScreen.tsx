@@ -10,7 +10,7 @@ import { ArrowLeft, Trash, Eye, EyeSlash, Info, Path } from '@phosphor-icons/rea
 import { PracticeMode } from '@/lib/types'
 import { StrokeReport } from '@/lib/strokeEval'
 import { motion } from 'framer-motion'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/lib/useKV'
 import {
   Dialog,
   DialogContent,
