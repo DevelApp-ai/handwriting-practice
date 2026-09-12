@@ -22,7 +22,7 @@ import {
   LEVEL_THRESHOLDS,
   XP_REWARDS,
 } from '../gamification'
-import { UserProgress, AchievementId, Progress } from '../types'
+import { UserProgress, AchievementId, Progress, DailyChallenge } from '../types'
 
 // Test fixtures
 const mockProgress: UserProgress = {
@@ -116,7 +116,7 @@ describe('Gamification Utilities', () => {
   describe('Achievement System', () => {
     it('should check for first character achievement', () => {
       const achievements = checkAchievements(
-        { ...mockProgress, progress: {}, charactersCompleted: 0 },
+        { ...mockProgress, progress: {}, charactersCompleted: 0, achievements: [] },
         'en_a',
         1,
         'en'
@@ -226,7 +226,17 @@ describe('Gamification Utilities', () => {
     })
 
     it('should update daily challenge progress', () => {
-      const challenge = generateDailyChallenge()
+      const challenge: DailyChallenge = {
+        id: 'daily_test',
+        type: 'character_marathon',
+        description: 'Complete 10 characters in one session',
+        target: 10,
+        progress: 0,
+        completed: false,
+        rewardXP: 50,
+        rewardStars: 1,
+        date: '2024-01-01',
+      }
       const updated = updateDailyChallenge(challenge, 5)
       expect(updated.progress).toBe(5)
       expect(updated.completed).toBe(false)
@@ -271,7 +281,9 @@ describe('Gamification Utilities', () => {
       const weekStart = getWeekStartDate()
       const challenges = generateWeeklyChallenges(weekStart)
       const updated = updateWeeklyChallenge(challenges, 'xp_collector', 100)
-      expect(updated[0].progress).toBe(100)
+      const xpCollector = updated.find((c) => c.type === 'xp_collector')
+      expect(xpCollector).toBeDefined()
+      expect(xpCollector!.progress).toBe(100)
     })
 
     it('should get or generate weekly challenges', () => {
@@ -321,14 +333,21 @@ describe('Gamification Utilities', () => {
     })
 
     it('should get achievement progress', () => {
+      const completedLetters: Record<string, Progress> = {}
+      for (let i = 0; i < 26; i++) {
+        const id = `en_${String.fromCharCode(97 + i)}`
+        completedLetters[id] = { characterId: id, stars: 3, completed: true, attempts: 1, lastPracticed: Date.now() }
+      }
       const progress: UserProgress = {
         ...mockProgress,
         totalStars: 50,
         charactersCompleted: 26,
+        progress: completedLetters,
+        achievements: ['alphabet_master'],
       }
       const result = getAchievementProgress('alphabet_master', progress)
       expect(result.target).toBe(26)
-      expect(result.current).toBe(50)
+      expect(result.current).toBe(26)
       expect(result.completed).toBe(true)
     })
 

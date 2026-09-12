@@ -13,6 +13,8 @@ import {
   DEFAULT_SETTINGS,
 } from './types'
 
+export { LEVEL_THRESHOLDS, XP_REWARDS }
+
 // ============================================================================
 // Initialization
 // ============================================================================
@@ -86,7 +88,9 @@ export function checkAchievements(
   isSentence: boolean = false
 ): AchievementId[] {
   const newAchievements: AchievementId[] = []
-  const completedCount = Object.values(progress.progress).filter((p) => p.completed).length
+  const existingCompleted = Object.values(progress.progress).filter((p) => p.completed).length
+  const currentAlreadyTracked = characterId in progress.progress && progress.progress[characterId].completed
+  const completedCount = existingCompleted + (currentAlreadyTracked ? 0 : 1)
 
   // Check character count achievements
   if (completedCount >= 1 && !progress.achievements.includes('first_character')) {
