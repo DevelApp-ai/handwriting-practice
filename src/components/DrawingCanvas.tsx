@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react'
 import { Point, TimedPoint, Phase1Settings, DEFAULT_PHASE1_SETTINGS } from '@/lib/types'
 import { PencilFrictionSynth, AudioContextLike, computeVelocity } from '@/lib/audio'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/lib/useKV'
 import { triggerHapticFeedback, stopHapticFeedback } from '@/lib/haptics'
 import { DEFAULT_SETTINGS } from '@/lib/types'
 import { getWritingDirection, isComplexScript, getSlantReferenceRad } from '@/lib/languages'
