@@ -4,8 +4,6 @@ import App from './App.tsx'
 import { ErrorFallback } from './ErrorFallback.tsx'
 import { startConsoleCapture } from './lib/errorReport'
 import "./main.css"
-import "./styles/theme.css"
-import "./index.css"
 
 startConsoleCapture()
 
