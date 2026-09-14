@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useKV } from '@/lib/useKV'
 import { SelectionScreen } from '@/components/SelectionScreen'
 import { RadicalExplorer } from '@/components/RadicalExplorer'
@@ -24,6 +24,7 @@ function App() {
   const [achievementToShow, setAchievementToShow] = useState<AchievementId | null>(null)
   const [showLevelUpModal, setShowLevelUpModal] = useState(false)
   const [newLevel, setNewLevel] = useState(1)
+  const prevLevelRef = useRef(userProgress?.level ?? 1)
 
   // Initialize progress with new fields if needed
   useEffect(() => {
@@ -111,12 +112,14 @@ function App() {
     setNewLevel(1)
   }, [])
 
-  // Show level up modal when level changes
+  // Show level up modal only when the level actually increases
   useEffect(() => {
-    if (userProgress && userProgress.level > 1) {
-      setNewLevel(userProgress.level)
+    const currentLevel = userProgress?.level ?? 1
+    if (currentLevel > prevLevelRef.current) {
+      setNewLevel(currentLevel)
       setShowLevelUpModal(true)
     }
+    prevLevelRef.current = currentLevel
   }, [userProgress?.level])
 
   if (showRadicalExplorer) {
