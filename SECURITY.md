@@ -1,31 +1,29 @@
-Thanks for helping make GitHub safe for everyone.
+# Security Policy
 
-# Security
+## Reporting a Vulnerability
 
-GitHub takes the security of our software products and services seriously, including all of the open source code repositories managed through our GitHub organizations, such as [GitHub](https://github.com/GitHub).
+If you believe you have found a security vulnerability in **handwriting-practice**, please report it responsibly.
 
-Even though [open source repositories are outside of the scope of our bug bounty program](https://bounty.github.com/index.html#scope) and therefore not eligible for bounty rewards, we will ensure that your finding gets passed along to the appropriate maintainers for remediation. 
+**Please do not report security vulnerabilities through public GitHub issues.**
 
-## Reporting Security Issues
+Instead, please email **security@develapp.ai** with:
 
-If you believe you have found a security vulnerability in any GitHub-owned repository, please report it to us through coordinated disclosure.
+- The type of issue (e.g., XSS, data exposure, etc.)
+- Steps to reproduce the issue
+- The affected file(s) or component(s)
+- Any proof-of-concept (if possible)
+- The impact of the issue
 
-**Please do not report security vulnerabilities through public GitHub issues, discussions, or pull requests.**
+We will acknowledge your report within 48 hours and aim to provide a fix or mitigation within 90 days, depending on severity.
 
-Instead, please send an email to opensource-security[@]github.com.
+## Scope
 
-Please include as much of the information listed below as you can to help us better understand and resolve the issue:
+This policy covers the `DevelApp-ai/handwriting-practice` repository and its live deployment at https://DevelApp-ai.github.io/handwriting-practice/.
 
-  * The type of issue (e.g., buffer overflow, SQL injection, or cross-site scripting)
-  * Full paths of source file(s) related to the manifestation of the issue
-  * The location of the affected source code (tag/branch/commit or direct URL)
-  * Any special configuration required to reproduce the issue
-  * Step-by-step instructions to reproduce the issue
-  * Proof-of-concept or exploit code (if possible)
-  * Impact of the issue, including how an attacker might exploit the issue
+## Data & Privacy
 
-This information will help us triage your report more quickly.
+handwriting-practice is a client-side-only application. No user data is transmitted to any server — all progress and settings are stored locally in the browser's `localStorage`. There is no backend, no accounts, and no analytics or telemetry.
 
-## Policy
+## Safe Harbor
 
-See [GitHub's Safe Harbor Policy](https://docs.github.com/en/site-policy/security-policies/github-bug-bounty-program-legal-safe-harbor#1-safe-harbor-terms)
+We support responsible disclosure and will not take legal action against security researchers who follow this policy in good faith.
