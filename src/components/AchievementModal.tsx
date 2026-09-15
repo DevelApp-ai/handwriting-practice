@@ -7,9 +7,10 @@ export interface AchievementModalProps {
   isOpen: boolean
   onClose: () => void
   achievementId: AchievementId | null
+  onViewAll?: () => void
 }
 
-export function AchievementModal({ isOpen, onClose, achievementId }: AchievementModalProps) {
+export function AchievementModal({ isOpen, onClose, achievementId, onViewAll }: AchievementModalProps) {
   const [isVisible, setIsVisible] = useState(isOpen)
 
   useEffect(() => {
@@ -65,6 +66,14 @@ export function AchievementModal({ isOpen, onClose, achievementId }: Achievement
         >
           Continue
         </button>
+        {onViewAll && (
+          <button
+            onClick={onViewAll}
+            className="mt-2 text-sm font-medium text-gray-500 underline-offset-4 transition-colors hover:text-gray-700 hover:underline dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            View All Achievements
+          </button>
+        )}
       </div>
     </Modal>
   )

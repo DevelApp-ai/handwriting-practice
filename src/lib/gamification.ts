@@ -12,6 +12,7 @@ import {
   WEEKLY_CHALLENGE_TYPES,
   DEFAULT_SETTINGS,
 } from './types'
+import { getLanguageByCode } from './languages'
 
 export { LEVEL_THRESHOLDS, XP_REWARDS }
 
@@ -303,14 +304,19 @@ export interface PracticeEvent {
   isSentence: boolean
   /** Star count the character had before this practice session */
   previousStars: number
+  /** XP earned by this practice event */
+  xpEarned: number
+  /** New stars earned by this practice event */
+  starsEarned: number
+  /** True when this practice completed every character of a category */
+  categoryCompleted?: boolean
+  /** True when every character of the practiced language is now completed */
+  languageMastered?: boolean
 }
 
 /**
  * Advance today's daily challenge based on a single practice event.
  * Challenges that are already completed (or from other days) are left untouched.
- *
- * Note: speed_round (needs session timing) and category_master (needs full
- * category completion) cannot be derived from a single practice event yet.
  */
 export function applyPracticeToDailyChallenges(
   challenges: DailyChallenge[],
@@ -340,6 +346,27 @@ export function applyPracticeToDailyChallenges(
         return event.isWord && firstCompletion ? updateDailyChallenge(challenge) : challenge
       case 'sentence_scribe':
         return event.isSentence && firstCompletion ? updateDailyChallenge(challenge) : challenge
+      case 'speed_round': {
+        if (!firstCompletion) return challenge
+        const timestamps = [...(challenge.completionTimestamps ?? []), Date.now()].sort((a, b) => a - b)
+        const windowMs = challenge.target * 60 * 1000
+        let best = 0
+        let start = 0
+        for (let end = 0; end < timestamps.length; end++) {
+          while (timestamps[end] - timestamps[start] >= windowMs) start++
+          best = Math.max(best, end - start + 1)
+        }
+        return {
+          ...challenge,
+          completionTimestamps: timestamps,
+          progress: best,
+          completed: best >= challenge.target,
+        }
+      }
+      case 'category_master':
+        return event.categoryCompleted
+          ? { ...challenge, progress: challenge.target, completed: true }
+          : challenge
       default:
         return challenge
     }
@@ -442,6 +469,82 @@ export function updateWeeklyChallenge(
   })
 }
 
+/**
+ * Advance this week's challenges based on a single practice event.
+ * Challenges that are already completed (or from other weeks) are left untouched.
+ */
+export function applyPracticeToWeeklyChallenges(
+  challenges: WeeklyChallenge[],
+  event: PracticeEvent
+): WeeklyChallenge[] {
+  const weekStart = getWeekStartDate()
+  const today = new Date().toISOString().split('T')[0]
+  const firstCompletion = event.stars > 0 && event.previousStars === 0
+
+  const advance = (challenge: WeeklyChallenge, progress: number): WeeklyChallenge => ({
+    ...challenge,
+    progress,
+    completed: progress >= challenge.target,
+  })
+
+  return challenges.map((challenge) => {
+    if (challenge.weekStart !== weekStart || challenge.completed) return challenge
+
+    switch (challenge.type) {
+      case 'weekly_streak': {
+        const daysPracticed = challenge.daysPracticed ?? []
+        if (daysPracticed.includes(today)) return challenge
+        const days = [...daysPracticed, today]
+        return { ...advance(challenge, days.length), daysPracticed: days }
+      }
+      case 'diversity_week': {
+        const languagesThisWeek = challenge.languagesThisWeek ?? []
+        if (languagesThisWeek.includes(event.language)) return challenge
+        const languages = [...languagesThisWeek, event.language]
+        return { ...advance(challenge, languages.length), languagesThisWeek: languages }
+      }
+      case 'xp_collector':
+        return advance(challenge, challenge.progress + event.xpEarned)
+      case 'star_collector':
+        return advance(challenge, challenge.progress + event.starsEarned)
+      case 'completionist':
+        return firstCompletion ? advance(challenge, challenge.progress + 1) : challenge
+      case 'language_master':
+        return event.languageMastered ? advance(challenge, challenge.target) : challenge
+      default:
+        return challenge
+    }
+  })
+}
+
+/**
+ * Grant the reward for a completed weekly challenge exactly once and mark it
+ * as claimed. Returns the input unchanged when the challenge is missing,
+ * not yet completed, or already claimed.
+ */
+export function claimWeeklyChallengeReward(progress: UserProgress, challengeId: string): UserProgress {
+  const challenge = progress.weeklyChallenges.find((c) => c.id === challengeId)
+  if (!challenge || !challenge.completed || challenge.claimed) {
+    return progress
+  }
+
+  const newTotalXP = progress.totalXP + challenge.rewardXP
+  const badges =
+    challenge.rewardBadge && !progress.badges.includes(challenge.rewardBadge)
+      ? [...progress.badges, challenge.rewardBadge]
+      : progress.badges
+
+  return {
+    ...progress,
+    totalXP: newTotalXP,
+    level: calculateLevel(newTotalXP),
+    badges,
+    weeklyChallenges: progress.weeklyChallenges.map((c) =>
+      c.id === challengeId ? { ...c, claimed: true } : c
+    ),
+  }
+}
+
 // ============================================================================
 // Progress Updates
 // ============================================================================
@@ -496,21 +599,46 @@ export function updateProgressWithGamification(
   // Update language practiced
   const languagesPracticed = [...new Set([...progress.languagesPracticed, language])]
 
+  // Check whether this practice completed a full category or mastered a
+  // language (used by the category_master daily challenge and the
+  // language_master weekly challenge)
+  const languageDefinition = getLanguageByCode(language)
+  let categoryCompleted = false
+  let languageMastered = false
+  if (languageDefinition) {
+    const category = languageDefinition.categories.find((c) => c.characters.includes(characterId))
+    if (category && category.characters.every((c) => updatedProgress[c]?.completed)) {
+      categoryCompleted = true
+      languageMastered = languageDefinition.categories.every((cat) =>
+        cat.characters.every((c) => updatedProgress[c]?.completed)
+      )
+    }
+  }
+
+  const practiceEvent: PracticeEvent = {
+    characterId,
+    stars,
+    language,
+    isWord,
+    isSentence,
+    previousStars,
+    xpEarned,
+    starsEarned,
+    categoryCompleted,
+    languageMastered,
+  }
+
   // Update daily challenges (make sure today's exists, then apply this practice)
   const dailyChallenges = applyPracticeToDailyChallenges(
     getDailyChallenges(progress),
-    {
-      characterId,
-      stars,
-      language,
-      isWord,
-      isSentence,
-      previousStars,
-    }
+    practiceEvent
   )
-  
-  // Update weekly challenges
-  const weeklyChallenges = getWeeklyChallenges(progress)
+
+  // Update weekly challenges (make sure this week's exist, then apply this practice)
+  const weeklyChallenges = applyPracticeToWeeklyChallenges(
+    getWeeklyChallenges(progress),
+    practiceEvent
+  )
 
   return {
     ...progress,

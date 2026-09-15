@@ -5,10 +5,12 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Star, Trophy, Printer, Clock, Path } from '@phosphor-icons/react'
-import { Progress, DailyChallenge } from '@/lib/types'
+import { Progress, DailyChallenge, WeeklyChallenge, BadgeId } from '@/lib/types'
 import { motion } from 'framer-motion'
 import { LanguageSelector } from '@/components/LanguageSelector'
 import { DailyChallengesList } from '@/components/DailyChallengeCard'
+import { WeeklyChallengesList } from '@/components/WeeklyChallengeCard'
+import { BadgeCollection } from '@/components/BadgeDisplay'
 import { LANGUAGES, getLanguageByCode } from '@/lib/languages'
 import { getDueCharacters } from '@/lib/srs'
 
@@ -19,10 +21,12 @@ interface SelectionScreenProps {
   totalXP?: number
   level?: number
   achievements?: string[]
-  badges?: string[]
+  badges?: BadgeId[]
   consecutiveDays?: number
   dailyChallenges?: DailyChallenge[]
   onClaimDailyChallenge?: (challenge: DailyChallenge) => void
+  weeklyChallenges?: WeeklyChallenge[]
+  onClaimWeeklyChallenge?: (challenge: WeeklyChallenge) => void
   selectedLanguage: string
   onLanguageChange: (languageCode: string) => void
   onPrintSheet?: () => void
@@ -41,6 +45,8 @@ export function SelectionScreen({
   consecutiveDays = 0,
   dailyChallenges = [],
   onClaimDailyChallenge,
+  weeklyChallenges = [],
+  onClaimWeeklyChallenge,
   selectedLanguage,
   onLanguageChange,
   onPrintSheet,
@@ -181,20 +187,25 @@ export function SelectionScreen({
               </Badge>
             )}
             {badges.length > 0 && (
-              <Badge
-                variant="secondary"
-                className="text-base px-4 py-2 bg-white/20 backdrop-blur-sm text-white border-white/30"
+              <div
+                className="flex items-center rounded-full border border-white/30 bg-white/20 px-4 py-2 backdrop-blur-sm"
+                title={`${badges.length} badges earned`}
               >
-                ✨ {badges.length} Badges
-              </Badge>
+                <BadgeCollection badgeIds={badges} maxVisible={5} />
+              </div>
             )}
           </motion.div>
         </div>
       </div>
 
-      {onClaimDailyChallenge && (
-        <div className="px-4 pt-4">
-          <DailyChallengesList challenges={dailyChallenges} onClaim={onClaimDailyChallenge} />
+      {(onClaimDailyChallenge || onClaimWeeklyChallenge) && (
+        <div className="space-y-4 px-4 pt-4">
+          {onClaimDailyChallenge && (
+            <DailyChallengesList challenges={dailyChallenges} onClaim={onClaimDailyChallenge} />
+          )}
+          {onClaimWeeklyChallenge && (
+            <WeeklyChallengesList challenges={weeklyChallenges} onClaim={onClaimWeeklyChallenge} />
+          )}
         </div>
       )}
 

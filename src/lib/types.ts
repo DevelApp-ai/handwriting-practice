@@ -99,6 +99,8 @@ export interface DailyChallenge {
   date: string
   /** Languages that have already been counted toward a language_explorer challenge */
   languagesToday?: string[]
+  /** Timestamps (ms) of today's first completions, used by speed_round */
+  completionTimestamps?: number[]
 }
 
 export interface WeeklyChallenge {
@@ -111,6 +113,12 @@ export interface WeeklyChallenge {
   rewardXP: number
   rewardBadge: BadgeId | null
   weekStart: string
+  /** True once the reward has been granted, so it can only be claimed once */
+  claimed?: boolean
+  /** Days (YYYY-MM-DD) that have already been counted toward a weekly_streak challenge */
+  daysPracticed?: string[]
+  /** Languages that have already been counted toward a diversity_week challenge */
+  languagesThisWeek?: string[]
 }
 
 export interface UserSettings {
