@@ -92,9 +92,13 @@ export interface DailyChallenge {
   target: number
   progress: number
   completed: boolean
+  /** True once the reward has been granted, so it can only be claimed once */
+  claimed?: boolean
   rewardXP: number
   rewardStars: number
   date: string
+  /** Languages that have already been counted toward a language_explorer challenge */
+  languagesToday?: string[]
 }
 
 export interface WeeklyChallenge {

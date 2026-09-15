@@ -7,8 +7,8 @@ import { PrintableSheet } from '@/components/PrintableSheet'
 import { AchievementsPage } from '@/pages/AchievementsPage'
 import { AchievementModal } from '@/components/AchievementModal'
 import { LevelUpModal } from '@/components/LevelUpModal'
-import { UserProgress, AchievementId } from '@/lib/types'
-import { createDefaultProgress, updateProgressWithGamification, getLevelProgress, checkAchievements } from '@/lib/gamification'
+import { UserProgress, AchievementId, DailyChallenge } from '@/lib/types'
+import { createDefaultProgress, updateProgressWithGamification, getLevelProgress, checkAchievements, ensureTodayChallenges, claimDailyChallengeReward } from '@/lib/gamification'
 import { applyReviewToProgress, ReviewQuality } from '@/lib/srs'
 import { StrokeReport } from '@/lib/strokeEval'
 import { Toaster } from '@/components/ui/sonner'
@@ -28,11 +28,16 @@ function App() {
   const [newLevel, setNewLevel] = useState(1)
   const prevLevelRef = useRef(userProgress?.level ?? 1)
 
-  // Initialize progress with new fields if needed
+  // Initialize progress with new fields if needed, and make sure today's
+  // daily challenge exists so it shows up on the selection screen
   useEffect(() => {
-    if (userProgress && !userProgress.totalXP) {
-      setUserProgress({ ...createDefaultProgress(), ...userProgress, totalXP: 0, level: 1 })
-    }
+    setUserProgress((current) => {
+      let base = current ?? createDefaultProgress()
+      if (!base.totalXP) {
+        base = { ...createDefaultProgress(), ...base, totalXP: 0, level: 1 }
+      }
+      return ensureTodayChallenges(base)
+    })
   }, [])
 
   const handleSelectCharacter = useCallback((character: string) => {
@@ -114,6 +119,14 @@ function App() {
     setNewLevel(1)
   }, [])
 
+  const handleClaimDailyChallenge = useCallback((challenge: DailyChallenge) => {
+    const current = userProgress?.dailyChallenges.find((c) => c.id === challenge.id) ?? challenge
+    if (!current.completed || current.claimed) return
+
+    setUserProgress((progress) => (progress ? claimDailyChallengeReward(progress, challenge.id) : progress))
+    toast.success(`Daily challenge complete! +${current.rewardXP} XP, +${current.rewardStars} star${current.rewardStars > 1 ? 's' : ''}!`)
+  }, [userProgress])
+
   // Show level up modal only when the level actually increases
   useEffect(() => {
     const currentLevel = userProgress?.level ?? 1
@@ -169,6 +182,8 @@ function App() {
         achievements={userProgress?.achievements || []}
         badges={userProgress?.badges || []}
         consecutiveDays={userProgress?.consecutiveDays || 0}
+        dailyChallenges={userProgress?.dailyChallenges || []}
+        onClaimDailyChallenge={handleClaimDailyChallenge}
         selectedLanguage={selectedLanguage || 'en'}
         onLanguageChange={setSelectedLanguage}
         onPrintSheet={() => setShowPrintableSheet(true)}
