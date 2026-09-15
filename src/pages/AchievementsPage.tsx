@@ -1,35 +1,34 @@
 import { useState } from 'react'
+import type { ReactElement } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Trophy, X, Flame, Calendar, Star } from '@phosphor-icons/react'
-import { AchievementId, ACHIEVEMENTS, BadgeId, BADGES } from '@/lib/types'
-import { getAchievementProgress, getBadgeColor } from '@/lib/gamification'
+import { AchievementId, ACHIEVEMENTS, UserProgress } from '@/lib/types'
+import { getAchievementProgress } from '@/lib/gamification'
+import { BadgeDisplay } from '@/components/BadgeDisplay'
 import { motion } from 'framer-motion'
 
 interface AchievementsPageProps {
   onBack: () => void
-  achievements: AchievementId[]
-  badges: BadgeId[]
-  totalXP: number
-  level: number
-  consecutiveDays: number
-  totalStars: number
-  charactersCompleted: number
+  userProgress: UserProgress
 }
 
 export function AchievementsPage({
   onBack,
-  achievements,
-  badges,
-  totalXP,
-  level,
-  consecutiveDays,
-  totalStars,
-  charactersCompleted,
+  userProgress,
 }: AchievementsPageProps) {
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'character' | 'language' | 'streak' | 'star' | 'special'>('all')
 
-  const categoryLabels: Record<string, { label: string; icon: JSX.Element; color: string }> = {
+  const {
+    achievements,
+    badges,
+    totalXP,
+    level,
+    consecutiveDays,
+    totalStars,
+  } = userProgress
+
+  const categoryLabels: Record<string, { label: string; icon: ReactElement; color: string }> = {
     all: { label: 'All', icon: <Trophy className="w-5 h-5" />, color: 'bg-purple-500' },
     character: { label: 'Character', icon: <Star className="w-5 h-5" />, color: 'bg-blue-500' },
     language: { label: 'Language', icon: <Flame className="w-5 h-5" />, color: 'bg-orange-500' },
@@ -130,46 +129,7 @@ export function AchievementsPage({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredAchievements.map(([id, achievement], index) => {
               const isCompleted = completedAchievements.has(id as AchievementId)
-              const progress = getAchievementProgress(id as AchievementId, {
-                totalStars,
-                charactersCompleted,
-                progress: {},
-                achievements,
-                badges,
-                totalXP,
-                level,
-                consecutiveDays,
-                longestStreak: 0,
-                lastPracticeDate: '',
-                languagesPracticed: [],
-                categoriesCompleted: {},
-                settings: {
-                  theme: 'light',
-                  background: 'solid',
-                  font: 'default',
-                  border: 'solid',
-                  difficulty: 'medium',
-                  characterSize: 'medium',
-                  guideLines: true,
-                  strokeOrder: true,
-                  soundEffects: true,
-                  animations: true,
-                  dailyGoal: 5,
-                  weeklyGoal: 30,
-                  notifications: {
-                    achievements: true,
-                    dailyChallenges: true,
-                    weeklyChallenges: true,
-                    streakReminders: true,
-                    levelUp: true,
-                  },
-                },
-                dailyChallenges: [],
-                weeklyChallenges: [],
-                unlockedThemes: [],
-                currentLearningPath: null,
-                learningPathProgress: {},
-              })
+              const progress = getAchievementProgress(id as AchievementId, userProgress)
 
               return (
                 <motion.div
@@ -204,20 +164,8 @@ export function AchievementsPage({
                     initial={{ scale: 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     whileHover={{ scale: 1.1 }}
-                    className="flex flex-col items-center"
                   >
-                    <div
-                      className="flex h-16 w-16 items-center justify-center rounded-full border-4 shadow-lg"
-                      style={{
-                        background: `linear-gradient(135deg, ${getBadgeColor(badgeId)} 0%, ${getBadgeColor(badgeId)}cc 100%)`,
-                        borderColor: getBadgeColor(badgeId),
-                      }}
-                    >
-                      <span className="text-2xl">{getBadgeIcon(badgeId)}</span>
-                    </div>
-                    <span className="mt-2 text-xs font-medium text-gray-600 dark:text-gray-300">
-                      {BADGES[badgeId]?.name || badgeId}
-                    </span>
+                    <BadgeDisplay badgeId={badgeId} size="lg" showName />
                   </motion.div>
                 ))}
               </div>
@@ -229,7 +177,7 @@ export function AchievementsPage({
   )
 }
 
-function SummaryCard({ icon, label, value, color }: { icon: JSX.Element; label: string; value: string | number; color: string }) {
+function SummaryCard({ icon, label, value, color }: { icon: ReactElement; label: string; value: string | number; color: string }) {
   return (
     <div className="rounded-xl bg-card p-4 shadow-sm border border-border">
       <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${color}`}>
@@ -303,21 +251,4 @@ function AchievementCard({
       )}
     </div>
   )
-}
-
-function getBadgeIcon(badgeId: BadgeId): string {
-  const icons: Record<BadgeId, string> = {
-    bronze: '\u{1F7E8}',
-    silver: '\u{1F7E6}',
-    gold: '\u{1F7E7}',
-    platinum: '\u2605',
-    diamond: '\u2666',
-    early_bird: '\u{1F425}',
-    night_owl: '\u{1F989}',
-    weekend_warrior: '\u{1F3C6}',
-    perfect_week: '\u2705',
-    speed_writer: '\u270F',
-    perfectionist: '\u{1F3F7}',
-  }
-  return icons[badgeId] || '\u2705'
 }
