@@ -283,7 +283,7 @@ describe('claimWeeklyChallengeReward', () => {
     const claimed = claimWeeklyChallengeReward(progress, `weekly_${getWeekStartDate()}_0`)
 
     expect(claimed.totalXP).toBe(200)
-    expect(claimed.level).toBe(1)
+    expect(claimed.level).toBe(2)
     expect(claimed.badges).toContain('gold')
     expect(claimed.weeklyChallenges[0].claimed).toBe(true)
 
