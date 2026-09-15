@@ -5,9 +5,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Star, Trophy, Printer, Clock, Path } from '@phosphor-icons/react'
-import { Progress } from '@/lib/types'
+import { Progress, DailyChallenge } from '@/lib/types'
 import { motion } from 'framer-motion'
 import { LanguageSelector } from '@/components/LanguageSelector'
+import { DailyChallengesList } from '@/components/DailyChallengeCard'
 import { LANGUAGES, getLanguageByCode } from '@/lib/languages'
 import { getDueCharacters } from '@/lib/srs'
 
@@ -20,6 +21,8 @@ interface SelectionScreenProps {
   achievements?: string[]
   badges?: string[]
   consecutiveDays?: number
+  dailyChallenges?: DailyChallenge[]
+  onClaimDailyChallenge?: (challenge: DailyChallenge) => void
   selectedLanguage: string
   onLanguageChange: (languageCode: string) => void
   onPrintSheet?: () => void
@@ -36,6 +39,8 @@ export function SelectionScreen({
   achievements = [],
   badges = [],
   consecutiveDays = 0,
+  dailyChallenges = [],
+  onClaimDailyChallenge,
   selectedLanguage,
   onLanguageChange,
   onPrintSheet,
@@ -186,6 +191,12 @@ export function SelectionScreen({
           </motion.div>
         </div>
       </div>
+
+      {onClaimDailyChallenge && (
+        <div className="px-4 pt-4">
+          <DailyChallengesList challenges={dailyChallenges} onClaim={onClaimDailyChallenge} />
+        </div>
+      )}
 
       <Tabs
         value={selectedTab}

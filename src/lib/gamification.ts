@@ -295,6 +295,100 @@ export function getDailyChallenges(progress: UserProgress): DailyChallenge[] {
   return [...progress.dailyChallenges.filter((c) => c.date !== today), newChallenge]
 }
 
+export interface PracticeEvent {
+  characterId: string
+  stars: number
+  language: string
+  isWord: boolean
+  isSentence: boolean
+  /** Star count the character had before this practice session */
+  previousStars: number
+}
+
+/**
+ * Advance today's daily challenge based on a single practice event.
+ * Challenges that are already completed (or from other days) are left untouched.
+ *
+ * Note: speed_round (needs session timing) and category_master (needs full
+ * category completion) cannot be derived from a single practice event yet.
+ */
+export function applyPracticeToDailyChallenges(
+  challenges: DailyChallenge[],
+  event: PracticeEvent
+): DailyChallenge[] {
+  const today = new Date().toISOString().split('T')[0]
+  const firstCompletion = event.stars > 0 && event.previousStars === 0
+  const firstThreeStars = event.stars >= 3 && event.previousStars < 3
+
+  return challenges.map((challenge) => {
+    if (challenge.date !== today || challenge.completed) return challenge
+
+    switch (challenge.type) {
+      case 'character_marathon':
+        return firstCompletion ? updateDailyChallenge(challenge) : challenge
+      case 'perfect_day':
+        return firstThreeStars ? updateDailyChallenge(challenge) : challenge
+      case 'language_explorer': {
+        const languagesToday = challenge.languagesToday ?? []
+        if (languagesToday.includes(event.language)) return challenge
+        return updateDailyChallenge({
+          ...challenge,
+          languagesToday: [...languagesToday, event.language],
+        })
+      }
+      case 'word_builder':
+        return event.isWord && firstCompletion ? updateDailyChallenge(challenge) : challenge
+      case 'sentence_scribe':
+        return event.isSentence && firstCompletion ? updateDailyChallenge(challenge) : challenge
+      default:
+        return challenge
+    }
+  })
+}
+
+/**
+ * Ensure today's daily challenge and this week's challenges exist without
+ * counting any progress. Returns the same object when nothing changed so
+ * callers can safely call it on every app start.
+ */
+export function ensureTodayChallenges(progress: UserProgress): UserProgress {
+  const dailyChallenges = getDailyChallenges(progress)
+  const weeklyChallenges = getWeeklyChallenges(progress)
+
+  if (
+    dailyChallenges === progress.dailyChallenges &&
+    weeklyChallenges === progress.weeklyChallenges
+  ) {
+    return progress
+  }
+
+  return { ...progress, dailyChallenges, weeklyChallenges }
+}
+
+/**
+ * Grant the reward for a completed daily challenge exactly once and mark it
+ * as claimed. Returns the input unchanged when the challenge is missing,
+ * not yet completed, or already claimed.
+ */
+export function claimDailyChallengeReward(progress: UserProgress, challengeId: string): UserProgress {
+  const challenge = progress.dailyChallenges.find((c) => c.id === challengeId)
+  if (!challenge || !challenge.completed || challenge.claimed) {
+    return progress
+  }
+
+  const newTotalXP = progress.totalXP + challenge.rewardXP
+
+  return {
+    ...progress,
+    totalXP: newTotalXP,
+    level: calculateLevel(newTotalXP),
+    totalStars: progress.totalStars + challenge.rewardStars,
+    dailyChallenges: progress.dailyChallenges.map((c) =>
+      c.id === challengeId ? { ...c, claimed: true } : c
+    ),
+  }
+}
+
 // ============================================================================
 // Weekly Challenges
 // ============================================================================
@@ -402,9 +496,18 @@ export function updateProgressWithGamification(
   // Update language practiced
   const languagesPracticed = [...new Set([...progress.languagesPracticed, language])]
 
-  // Update daily challenges
-  const today = new Date().toISOString().split('T')[0]
-  const dailyChallenges = getDailyChallenges(progress)
+  // Update daily challenges (make sure today's exists, then apply this practice)
+  const dailyChallenges = applyPracticeToDailyChallenges(
+    getDailyChallenges(progress),
+    {
+      characterId,
+      stars,
+      language,
+      isWord,
+      isSentence,
+      previousStars,
+    }
+  )
   
   // Update weekly challenges
   const weeklyChallenges = getWeeklyChallenges(progress)
