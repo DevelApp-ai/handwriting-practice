@@ -24,6 +24,7 @@ interface SelectionScreenProps {
   onLanguageChange: (languageCode: string) => void
   onPrintSheet?: () => void
   onOpenRadicalExplorer?: () => void
+  onOpenAchievements?: () => void
 }
 
 export function SelectionScreen({
@@ -39,6 +40,7 @@ export function SelectionScreen({
   onLanguageChange,
   onPrintSheet,
   onOpenRadicalExplorer,
+  onOpenAchievements,
 }: SelectionScreenProps) {
   const [selectedTab, setSelectedTab] = useState('0')
 
@@ -107,6 +109,17 @@ export function SelectionScreen({
                   title="Radical Explorer"
                 >
                   <Path className="w-5 h-5" />
+                </Button>
+              )}
+              {onOpenAchievements && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onOpenAchievements}
+                  className="bg-white/20 border-white/30 hover:bg-white/30 text-white"
+                  title="Achievements"
+                >
+                  <Trophy className="w-5 h-5" />
                 </Button>
               )}
             </div>

@@ -4,6 +4,7 @@ import { SelectionScreen } from '@/components/SelectionScreen'
 import { RadicalExplorer } from '@/components/RadicalExplorer'
 import { PracticeScreen } from '@/components/PracticeScreen'
 import { PrintableSheet } from '@/components/PrintableSheet'
+import { AchievementsPage } from '@/pages/AchievementsPage'
 import { AchievementModal } from '@/components/AchievementModal'
 import { LevelUpModal } from '@/components/LevelUpModal'
 import { UserProgress, AchievementId } from '@/lib/types'
@@ -20,6 +21,7 @@ function App() {
   const [isPracticing, setIsPracticing] = useState(false)
   const [showPrintableSheet, setShowPrintableSheet] = useState(false)
   const [showRadicalExplorer, setShowRadicalExplorer] = useState(false)
+  const [showAchievements, setShowAchievements] = useState(false)
   const [showAchievementModal, setShowAchievementModal] = useState(false)
   const [achievementToShow, setAchievementToShow] = useState<AchievementId | null>(null)
   const [showLevelUpModal, setShowLevelUpModal] = useState(false)
@@ -125,6 +127,14 @@ function App() {
   if (showRadicalExplorer) {
     return <RadicalExplorer onBack={() => setShowRadicalExplorer(false)} />
   }
+  if (showAchievements && userProgress) {
+    return (
+      <AchievementsPage
+        onBack={() => setShowAchievements(false)}
+        userProgress={userProgress}
+      />
+    )
+  }
   if (isPracticing && selectedCharacter) {
     return (
       <>
@@ -163,6 +173,7 @@ function App() {
         onLanguageChange={setSelectedLanguage}
         onPrintSheet={() => setShowPrintableSheet(true)}
         onOpenRadicalExplorer={() => setShowRadicalExplorer(true)}
+        onOpenAchievements={() => setShowAchievements(true)}
       />
       <PrintableSheet
         isOpen={showPrintableSheet}
