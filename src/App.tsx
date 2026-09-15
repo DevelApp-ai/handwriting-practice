@@ -7,8 +7,9 @@ import { PrintableSheet } from '@/components/PrintableSheet'
 import { AchievementsPage } from '@/pages/AchievementsPage'
 import { AchievementModal } from '@/components/AchievementModal'
 import { LevelUpModal } from '@/components/LevelUpModal'
-import { UserProgress, AchievementId, DailyChallenge } from '@/lib/types'
-import { createDefaultProgress, updateProgressWithGamification, getLevelProgress, checkAchievements, ensureTodayChallenges, claimDailyChallengeReward } from '@/lib/gamification'
+import { UserProgress, AchievementId, DailyChallenge, WeeklyChallenge } from '@/lib/types'
+import { createDefaultProgress, updateProgressWithGamification, getLevelProgress, checkAchievements, ensureTodayChallenges, claimDailyChallengeReward, claimWeeklyChallengeReward } from '@/lib/gamification'
+import { getLanguageByCode } from '@/lib/languages'
 import { applyReviewToProgress, ReviewQuality } from '@/lib/srs'
 import { StrokeReport } from '@/lib/strokeEval'
 import { Toaster } from '@/components/ui/sonner'
@@ -53,9 +54,14 @@ function App() {
   const handleComplete = useCallback((stars: number, characterId: string, report?: StrokeReport) => {
     if (!characterId) return
 
-    const language = characterId.split('_')[0] || selectedLanguage || 'en'
-    const isWord = characterId.startsWith('word_')
-    const isSentence = characterId.startsWith('sentence_')
+    // Character ids are the raw practice text ('A', 'cat', 'Hello world'), so
+    // only trust the id prefix when it really is a language code; otherwise
+    // fall back to the selected language. Words and sentences are detected
+    // from their shape so the matching challenges can advance.
+    const prefix = characterId.split('_')[0]
+    const language = getLanguageByCode(prefix) ? prefix : selectedLanguage || 'en'
+    const isSentence = characterId.startsWith('sentence_') || characterId.includes(' ')
+    const isWord = characterId.startsWith('word_') || (!isSentence && characterId.length > 1)
 
     setUserProgress((current) => {
       if (!current) {
@@ -127,6 +133,19 @@ function App() {
     toast.success(`Daily challenge complete! +${current.rewardXP} XP, +${current.rewardStars} star${current.rewardStars > 1 ? 's' : ''}!`)
   }, [userProgress])
 
+  const handleClaimWeeklyChallenge = useCallback((challenge: WeeklyChallenge) => {
+    const current = userProgress?.weeklyChallenges.find((c) => c.id === challenge.id) ?? challenge
+    if (!current.completed || current.claimed) return
+
+    setUserProgress((progress) => (progress ? claimWeeklyChallengeReward(progress, challenge.id) : progress))
+    toast.success(`Weekly challenge complete! +${current.rewardXP} XP${current.rewardBadge ? ' + badge' : ''}!`)
+  }, [userProgress])
+
+  const handleViewAllAchievements = useCallback(() => {
+    handleCloseAchievement()
+    setShowAchievements(true)
+  }, [handleCloseAchievement])
+
   // Show level up modal only when the level actually increases
   useEffect(() => {
     const currentLevel = userProgress?.level ?? 1
@@ -161,6 +180,7 @@ function App() {
           isOpen={showAchievementModal}
           onClose={handleCloseAchievement}
           achievementId={achievementToShow}
+          onViewAll={handleViewAllAchievements}
         />
         <LevelUpModal
           isOpen={showLevelUpModal}
@@ -184,6 +204,8 @@ function App() {
         consecutiveDays={userProgress?.consecutiveDays || 0}
         dailyChallenges={userProgress?.dailyChallenges || []}
         onClaimDailyChallenge={handleClaimDailyChallenge}
+        weeklyChallenges={userProgress?.weeklyChallenges || []}
+        onClaimWeeklyChallenge={handleClaimWeeklyChallenge}
         selectedLanguage={selectedLanguage || 'en'}
         onLanguageChange={setSelectedLanguage}
         onPrintSheet={() => setShowPrintableSheet(true)}
@@ -199,6 +221,7 @@ function App() {
         isOpen={showAchievementModal}
         onClose={handleCloseAchievement}
         achievementId={achievementToShow}
+        onViewAll={handleViewAllAchievements}
       />
       <LevelUpModal
         isOpen={showLevelUpModal}

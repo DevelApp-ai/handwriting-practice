@@ -1,8 +1,10 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   createDefaultProgress,
   applyPracticeToDailyChallenges,
+  applyPracticeToWeeklyChallenges,
   claimDailyChallengeReward,
+  claimWeeklyChallengeReward,
   ensureTodayChallenges,
   generateWeeklyChallenges,
   getWeekStartDate,
@@ -34,6 +36,21 @@ function makeProgress(
   return { ...createDefaultProgress(), dailyChallenges, weeklyChallenges }
 }
 
+function makeWeekly(overrides: Partial<WeeklyChallenge> = {}): WeeklyChallenge {
+  return {
+    id: `weekly_${getWeekStartDate()}_0`,
+    type: 'xp_collector',
+    description: 'Earn 500 XP this week',
+    target: 500,
+    progress: 0,
+    completed: false,
+    rewardXP: 200,
+    rewardBadge: 'bronze',
+    weekStart: getWeekStartDate(),
+    ...overrides,
+  }
+}
+
 const practice = (overrides: Partial<Parameters<typeof applyPracticeToDailyChallenges>[1]> = {}) => ({
   characterId: 'en_a',
   stars: 3,
@@ -41,6 +58,8 @@ const practice = (overrides: Partial<Parameters<typeof applyPracticeToDailyChall
   isWord: false,
   isSentence: false,
   previousStars: 0,
+  xpEarned: 5,
+  starsEarned: 3,
   ...overrides,
 })
 
@@ -102,6 +121,58 @@ describe('applyPracticeToDailyChallenges', () => {
     expect(updatedCompleted).toBe(completed)
     expect(updatedOld).toBe(old)
   })
+
+  it('completes speed_round when enough first completions happen within the time limit', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-09-15T10:00:00Z'))
+    try {
+      let challenge = makeChallenge({ type: 'speed_round', target: 3 })
+      for (const minute of ['10:00', '10:01', '10:02']) {
+        vi.setSystemTime(new Date(`2026-09-15T${minute}:00Z`))
+        ;[challenge] = applyPracticeToDailyChallenges([challenge], practice())
+      }
+      expect(challenge.progress).toBe(3)
+      expect(challenge.completed).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('keeps speed_round at the best window when completions are spread out', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-09-15T10:00:00Z'))
+    try {
+      let challenge = makeChallenge({ type: 'speed_round', target: 3 })
+      for (const minute of ['10:00', '10:03', '10:06']) {
+        vi.setSystemTime(new Date(`2026-09-15T${minute}:00Z`))
+        ;[challenge] = applyPracticeToDailyChallenges([challenge], practice())
+      }
+      expect(challenge.progress).toBe(1)
+      expect(challenge.completed).toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('ignores repeat completions for speed_round', () => {
+    const challenge = makeChallenge({ type: 'speed_round', target: 3 })
+    const [updated] = applyPracticeToDailyChallenges([challenge], practice({ previousStars: 3 }))
+    expect(updated).toBe(challenge)
+  })
+
+  it('completes category_master when the event finishes a category', () => {
+    const challenge = makeChallenge({ type: 'category_master', target: 1 })
+    const [updated] = applyPracticeToDailyChallenges([challenge], practice({ categoryCompleted: true }))
+    expect(updated.progress).toBe(1)
+    expect(updated.completed).toBe(true)
+  })
+
+  it('leaves category_master untouched while the category is unfinished', () => {
+    const challenge = makeChallenge({ type: 'category_master', target: 1 })
+    const [updated] = applyPracticeToDailyChallenges([challenge], practice())
+    expect(updated.progress).toBe(0)
+    expect(updated.completed).toBe(false)
+  })
 })
 
 describe('ensureTodayChallenges', () => {
@@ -142,6 +213,101 @@ describe('claimDailyChallengeReward', () => {
   })
 })
 
+describe('applyPracticeToWeeklyChallenges', () => {
+  it('adds XP and stars earned by the practice', () => {
+    const xp = makeWeekly({ type: 'xp_collector', target: 500 })
+    const stars = makeWeekly({ type: 'star_collector', target: 50, rewardBadge: null })
+    const [updatedXp] = applyPracticeToWeeklyChallenges([xp], practice({ xpEarned: 40 }))
+    const [updatedStars] = applyPracticeToWeeklyChallenges([stars], practice({ starsEarned: 2 }))
+    expect(updatedXp.progress).toBe(40)
+    expect(updatedStars.progress).toBe(2)
+  })
+
+  it('counts first completions for completionist', () => {
+    const challenge = makeWeekly({ type: 'completionist', target: 30, rewardBadge: null })
+    const [first] = applyPracticeToWeeklyChallenges([challenge], practice())
+    const [repeat] = applyPracticeToWeeklyChallenges([first], practice({ previousStars: 3 }))
+    expect(first.progress).toBe(1)
+    expect(repeat.progress).toBe(1)
+  })
+
+  it('counts unique languages for diversity_week', () => {
+    const challenge = makeWeekly({ type: 'diversity_week', target: 5, rewardBadge: 'silver' })
+    const [first] = applyPracticeToWeeklyChallenges([challenge], practice({ language: 'en' }))
+    const [sameAgain] = applyPracticeToWeeklyChallenges([first], practice({ language: 'en' }))
+    const [second] = applyPracticeToWeeklyChallenges([sameAgain], practice({ language: 'da' }))
+    expect(first.progress).toBe(1)
+    expect(sameAgain.progress).toBe(1)
+    expect(second.progress).toBe(2)
+    expect(second.languagesThisWeek).toEqual(['en', 'da'])
+  })
+
+  it('counts distinct practice days for weekly_streak', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-09-14T10:00:00Z'))
+    try {
+      const challenge = makeWeekly({ type: 'weekly_streak', target: 7, rewardBadge: null })
+      const [day1] = applyPracticeToWeeklyChallenges([challenge], practice())
+      const [sameDay] = applyPracticeToWeeklyChallenges([day1], practice())
+      vi.setSystemTime(new Date('2026-09-15T10:00:00Z'))
+      const [day2] = applyPracticeToWeeklyChallenges([sameDay], practice())
+      expect(day1.progress).toBe(1)
+      expect(sameDay.progress).toBe(1)
+      expect(day2.progress).toBe(2)
+      expect(day2.daysPracticed).toEqual(['2026-09-14', '2026-09-15'])
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('completes language_master when the language is mastered', () => {
+    const challenge = makeWeekly({ type: 'language_master', target: 1, rewardBadge: 'gold' })
+    const [updated] = applyPracticeToWeeklyChallenges([challenge], practice({ languageMastered: true }))
+    expect(updated.progress).toBe(1)
+    expect(updated.completed).toBe(true)
+  })
+
+  it('leaves completed and outdated challenges untouched', () => {
+    const completed = makeWeekly({ type: 'xp_collector', progress: 500, completed: true })
+    const old = makeWeekly({ type: 'xp_collector', weekStart: '2024-01-01', id: 'weekly_2024-01-01_0' })
+    const [updatedCompleted] = applyPracticeToWeeklyChallenges([completed], practice({ xpEarned: 40 }))
+    const [updatedOld] = applyPracticeToWeeklyChallenges([old], practice({ xpEarned: 40 }))
+    expect(updatedCompleted).toBe(completed)
+    expect(updatedOld).toBe(old)
+  })
+})
+
+describe('claimWeeklyChallengeReward', () => {
+  it('grants XP and the reward badge exactly once', () => {
+    const progress = makeProgress([], [makeWeekly({ progress: 500, completed: true, rewardBadge: 'gold' })])
+    const claimed = claimWeeklyChallengeReward(progress, `weekly_${getWeekStartDate()}_0`)
+
+    expect(claimed.totalXP).toBe(200)
+    expect(claimed.level).toBe(2)
+    expect(claimed.badges).toContain('gold')
+    expect(claimed.weeklyChallenges[0].claimed).toBe(true)
+
+    const claimedAgain = claimWeeklyChallengeReward(claimed, `weekly_${getWeekStartDate()}_0`)
+    expect(claimedAgain).toBe(claimed)
+    expect(claimedAgain.totalXP).toBe(200)
+  })
+
+  it('does not duplicate an already owned badge', () => {
+    const progress = {
+      ...makeProgress([], [makeWeekly({ progress: 500, completed: true, rewardBadge: 'gold' })]),
+      badges: ['gold' as const],
+    }
+    const claimed = claimWeeklyChallengeReward(progress, `weekly_${getWeekStartDate()}_0`)
+    expect(claimed.badges.filter((b) => b === 'gold')).toHaveLength(1)
+  })
+
+  it('is a no-op for incomplete or unknown challenges', () => {
+    const progress = makeProgress([], [makeWeekly()])
+    expect(claimWeeklyChallengeReward(progress, `weekly_${getWeekStartDate()}_0`)).toBe(progress)
+    expect(claimWeeklyChallengeReward(progress, 'weekly_unknown')).toBe(progress)
+  })
+})
+
 describe('updateProgressWithGamification daily challenge integration', () => {
   it('advances an existing character_marathon challenge from practice', () => {
     const progress = makeProgress([makeChallenge({ type: 'character_marathon' })])
@@ -163,6 +329,31 @@ describe('updateProgressWithGamification daily challenge integration', () => {
     const updated = updateProgressWithGamification({ ...progress, progress: { en_a: { characterId: 'en_a', stars: 3, completed: true, attempts: 1, lastPracticed: Date.now() } } }, 'en_a', 2, 'en')
 
     const todayChallenge = updated.dailyChallenges.find((c) => c.date === today())
+    expect(todayChallenge!.progress).toBe(1)
+  })
+})
+
+describe('updateProgressWithGamification weekly challenge integration', () => {
+  it('advances weekly challenges from practice', () => {
+    const progress = makeProgress([], generateWeeklyChallenges(getWeekStartDate()))
+    const updated = updateProgressWithGamification(progress, 'en_a', 3, 'en')
+
+    expect(updated.weeklyChallenges.find((c) => c.type === 'completionist')!.progress).toBe(1)
+    expect(updated.weeklyChallenges.find((c) => c.type === 'xp_collector')!.progress).toBe(5)
+    expect(updated.weeklyChallenges.find((c) => c.type === 'star_collector')!.progress).toBe(3)
+    expect(updated.weeklyChallenges.find((c) => c.type === 'weekly_streak')!.progress).toBe(1)
+    expect(updated.weeklyChallenges.find((c) => c.type === 'diversity_week')!.progress).toBe(1)
+  })
+
+  it('completes a category_master challenge when a full category is finished', () => {
+    const progress = makeProgress([makeChallenge({ type: 'category_master', target: 1 })])
+    let updated = progress
+    for (const char of '0123456789'.split('')) {
+      updated = updateProgressWithGamification(updated, char, 3, 'en')
+    }
+
+    const todayChallenge = updated.dailyChallenges.find((c) => c.date === today())
+    expect(todayChallenge!.completed).toBe(true)
     expect(todayChallenge!.progress).toBe(1)
   })
 })
