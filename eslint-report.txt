@@ -1,16 +1,32 @@
-npm warn exec The following package was not found and will be installed: eslint@10.10.0
 
-Oops! Something went wrong! :(
+/home/runner/work/handwriting-practice/handwriting-practice/src/components/CursiveCanvas.tsx
+   43:8  warning  React Hook useEffect has a missing dependency: 'resizeCanvas'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+   95:8  warning  React Hook useEffect has a missing dependency: 'resizeCanvas'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+  187:8  warning  React Hook useEffect has a missing dependency: 'redrawStrokes'. Either include it or remove the dependency array        react-hooks/exhaustive-deps
+  301:7  warning  React Hook useImperativeHandle has an unnecessary dependency: 'word'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
 
-ESLint: 10.10.0
+/home/runner/work/handwriting-practice/handwriting-practice/src/components/DrawingCanvas.tsx
+  136:7  warning  React Hook useImperativeHandle has a missing dependency: 'getCharacterEvalBounds'. Either include it or remove the dependency array                                              react-hooks/exhaustive-deps
+  326:6  warning  React Hook useEffect has missing dependencies: 'drawCharacterGuide', 'drawGuideLines', 'drawLandmarks', and 'redrawStrokes'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  378:6  warning  React Hook useEffect has a missing dependency: 'redrawStrokes'. Either include it or remove the dependency array                                                                 react-hooks/exhaustive-deps
+  659:6  warning  React Hook useCallback has a missing dependency: 'redrawStrokes'. Either include it or remove the dependency array                                                               react-hooks/exhaustive-deps
 
-Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@eslint/js' imported from /home/runner/work/handwriting-practice/handwriting-practice/eslint.config.js
-    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:314:9)
-    at packageResolve (node:internal/modules/esm/resolve:768:81)
-    at moduleResolve (node:internal/modules/esm/resolve:855:18)
-    at defaultResolve (node:internal/modules/esm/resolve:985:11)
-    at #cachedDefaultResolve (node:internal/modules/esm/loader:747:20)
-    at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)
-    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)
-    at ModuleJob._link (node:internal/modules/esm/module_job:182:49)
-exit: 2
+/home/runner/work/handwriting-practice/handwriting-practice/src/components/PracticeScreen.tsx
+  50:6  warning  React Hook useEffect has missing dependencies: 'hasSeenHelper' and 'setHasSeenHelper'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/runner/work/handwriting-practice/handwriting-practice/src/components/StrokeOrderDemo.tsx
+  228:6  warning  React Hook useEffect has a missing dependency: 'drawStrokeOrder'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  263:6  warning  React Hook useEffect has a missing dependency: 'animate'. Either include it or remove the dependency array          react-hooks/exhaustive-deps
+
+/home/runner/work/handwriting-practice/handwriting-practice/src/components/ui/badge.tsx
+  46:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/runner/work/handwriting-practice/handwriting-practice/src/components/ui/button.tsx
+  59:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/runner/work/handwriting-practice/handwriting-practice/src/components/ui/toggle.tsx
+  45:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+✖ 14 problems (0 errors, 14 warnings)
+
+exit: 0
