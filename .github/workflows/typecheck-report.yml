@@ -1,0 +1,51 @@
+name: Typecheck report
+
+on:
+  push:
+    branches:
+      - vibe/ts-strict-68
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: typecheck-report
+  cancel-in-progress: true
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    if: github.head_ref == '' || github.head_ref == 'vibe/ts-strict-68'
+    steps:
+      - name: Checkout branch head
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Collect reports
+        run: |
+          set +e
+          npx tsc -b > tsc-report.txt 2>&1
+          echo "exit: $?" >> tsc-report.txt
+          npx eslint . > eslint-report.txt 2>&1
+          echo "exit: $?" >> eslint-report.txt
+          exit 0
+
+      - name: Commit reports
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tsc-report.txt eslint-report.txt
+          git diff --cached --quiet || (git commit -m "chore: update typecheck/lint reports [skip ci]" && git push)

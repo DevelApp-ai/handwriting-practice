@@ -3,7 +3,7 @@ import { Point, TimedPoint, Phase1Settings, DEFAULT_PHASE1_SETTINGS } from '@/li
 import { PencilFrictionSynth, AudioContextLike, computeVelocity } from '@/lib/audio'
 import { useKV } from '@/lib/useKV'
 import { triggerHapticFeedback, stopHapticFeedback } from '@/lib/haptics'
-import { DEFAULT_SETTINGS } from '@/lib/types'
+import { DEFAULT_SETTINGS, UserSettings } from '@/lib/types'
 import { getWritingDirection, isComplexScript, getSlantReferenceRad } from '@/lib/languages'
 import { generateBasicStrokeOrder } from '@/lib/strokeOrder'
 import { renderGrid, selectGridKind, drawShirorekhaLine, drawSlantGuide, detectScriptFamily } from '@/lib/grid'
@@ -48,8 +48,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
   const [isDrawing, setIsDrawing] = useState(false)
   const [strokes, setStrokes] = useState<TimedPoint[][]>([])
   const [currentStroke, setCurrentStroke] = useState<TimedPoint[]>([])
-  const [userProgress] = useKV<any>('user-progress', { progress: {} })
-  const [userSettings] = useKV<any>('user-settings', DEFAULT_SETTINGS)
+  const [userProgress] = useKV<{ progress?: Record<string, { attempts: number }> }>('user-progress', { progress: {} })
+  const [userSettings] = useKV<UserSettings>('user-settings', DEFAULT_SETTINGS)
   const [phase1Settings] = useKV<Phase1Settings>('phase1-settings', DEFAULT_PHASE1_SETTINGS)
 
   const settings: Phase1Settings = { ...DEFAULT_PHASE1_SETTINGS, ...phase1Settings }
@@ -63,8 +63,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
   const ensureSynth = useCallback((): PencilFrictionSynth | null => {
     if (!soundEnabled) return null
     if (synthRef.current) return synthRef.current
-    const Ctor = (typeof window !== 'undefined' && (window as any).AudioContext)
-      || (typeof window !== 'undefined' && (window as any).webkitAudioContext)
+    const Ctor = typeof window !== 'undefined'
+      ? window.AudioContext
+        || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      : undefined
     if (!Ctor) return null
     synthRef.current = new PencilFrictionSynth(new Ctor() as AudioContextLike)
     return synthRef.current
@@ -168,7 +170,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     }
   }
 
-  const getEffectiveBounds = (canvasWidth: number, canvasHeight: number) => {
+  const getEffectiveBounds = (canvasWidth: number, canvasHeight: number): { width: number; height: number; offsetX?: number; offsetY?: number } => {
     const scale = getCanvasScale()
     if (scale === 1) return { width: canvasWidth, height: canvasHeight }
     const width = canvasWidth / scale
@@ -180,8 +182,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     const isSentence = character.length > 15
     const isWord = character.length > 1 && character.length <= 15
     const bounds = getEffectiveBounds(canvasWidth, canvasHeight)
-    const offsetX = 'offsetX' in bounds ? (bounds as any).offsetX : 0
-    const offsetY = 'offsetY' in bounds ? (bounds as any).offsetY : 0
+    const offsetX = bounds.offsetX ?? 0
+    const offsetY = bounds.offsetY ?? 0
     
     let fontSize = bounds.height * 0.4
     if (isSentence) {
@@ -248,7 +250,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     canvasHeight: number,
   ): { left: number; top: number; width: number; height: number } | undefined => {
     const b = getCharacterBounds(canvasWidth, canvasHeight)
-    return b ? (b as any).evalBounds : undefined
+    return b ? (b as { evalBounds?: { left: number; top: number; width: number; height: number } }).evalBounds : undefined
   }
 
   const getDistanceFromCharacter = (point: Point, canvasWidth: number, canvasHeight: number) => {
@@ -343,8 +345,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     if (!ctx) return
     const landmarks = computeLandmarks(character)
     const bounds = getEffectiveBounds(overlay.width, overlay.height)
-    const offsetX = 'offsetX' in bounds ? (bounds as any).offsetX : 0
-    const offsetY = 'offsetY' in bounds ? (bounds as any).offsetY : 0
+    const offsetX = bounds.offsetX ?? 0
+    const offsetY = bounds.offsetY ?? 0
     let dotIndex = 0
     for (const lm of landmarks) {
       const x = offsetX + lm.x * bounds.width
@@ -475,8 +477,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     ctx.textBaseline = 'alphabetic'
 
     const bounds = getEffectiveBounds(overlay.width, overlay.height)
-    const offsetX = 'offsetX' in bounds ? (bounds as any).offsetX : 0
-    const offsetY = 'offsetY' in bounds ? (bounds as any).offsetY : 0
+    const offsetX = bounds.offsetX ?? 0
+    const offsetY = bounds.offsetY ?? 0
     const centerX = offsetX + bounds.width / 2
     const baselineY = offsetY + bounds.height * LINE_HEIGHTS.baseline
 
