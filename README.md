@@ -39,7 +39,7 @@ npm test         # run the test suite
 The app builds as a static site and is deployed to GitHub Pages from the `main`
 branch via the included workflow.
 
-See [PRD.md](./PRD.md) for the full product specification.
+See [PRD.md](docs/PRD.md) for the full product specification.
 
 ## License
 
