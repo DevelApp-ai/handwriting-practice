@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AchievementId, ACHIEVEMENTS, BADGES } from '@/lib/types'
+import { AchievementId, ACHIEVEMENTS, BadgeId } from '@/lib/types'
 import { getBadgeForAchievement, getBadgeColor } from '@/lib/gamification'
 import { Modal } from '@/components/ui/modal'
 

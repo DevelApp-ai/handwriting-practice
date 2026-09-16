@@ -3,9 +3,8 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Printer, Download, X } from '@phosphor-icons/react'
-import { LANGUAGES, getLanguageByCode, LanguageCategory } from '@/lib/languages'
+import { LANGUAGES, getLanguageByCode } from '@/lib/languages'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 import { TracingGlyph } from '@/components/TracingGlyph'
@@ -134,10 +133,6 @@ export function PrintableSheet({ isOpen, onClose, selectedLanguage }: PrintableS
     window.print()
   }
 
-  const getCategoryById = (id: string): LanguageCategory | undefined => {
-    return currentLanguage.categories.find(c => c.id === id)
-  }
-
   const cols = getGridColumns()
 
   return (
@@ -239,7 +234,7 @@ export function PrintableSheet({ isOpen, onClose, selectedLanguage }: PrintableS
                   <Checkbox
                     id="stroke-guides"
                     checked={includeStrokeGuides}
-                    onCheckedChange={setIncludeStrokeGuides}
+                    onCheckedChange={(checked) => setIncludeStrokeGuides(checked === true)}
                   />
                   <Label htmlFor="stroke-guides">Include stroke order guides</Label>
                 </div>
@@ -248,7 +243,7 @@ export function PrintableSheet({ isOpen, onClose, selectedLanguage }: PrintableS
                   <Checkbox
                     id="character-name"
                     checked={includeCharacterName}
-                    onCheckedChange={setIncludeCharacterName}
+                    onCheckedChange={(checked) => setIncludeCharacterName(checked === true)}
                   />
                   <Label htmlFor="character-name">Include character/word name</Label>
                 </div>

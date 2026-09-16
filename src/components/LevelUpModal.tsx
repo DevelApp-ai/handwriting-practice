@@ -16,23 +16,22 @@ export function LevelUpModal({ isOpen, onClose, newLevel }: LevelUpModalProps) {
     return () => clearTimeout(timer)
   }, [isOpen, onClose])
 
-  if (!isOpen || newLevel < 2) return null
-
-  const previousLevel = newLevel - 1
-  const previousThreshold = LEVEL_THRESHOLDS[previousLevel - 1] || 0
-  const newThreshold = LEVEL_THRESHOLDS[newLevel - 1] || 0
-
   // Generate confetti effect
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen || newLevel < 2) return
     const colors = ['#FFD700', '#C0C0C0', '#CD7F32', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4']
-    
     for (let i = 0; i < 100; i++) {
       setTimeout(() => {
         createConfetti(colors[Math.floor(Math.random() * colors.length)])
       }, i * 30)
     }
-  }, [isOpen])
+  }, [isOpen, newLevel])
+
+  if (!isOpen || newLevel < 2) return null
+
+  const previousLevel = newLevel - 1
+  const previousThreshold = LEVEL_THRESHOLDS[previousLevel - 1] || 0
+  const newThreshold = LEVEL_THRESHOLDS[newLevel - 1] || 0
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">

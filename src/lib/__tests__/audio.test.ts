@@ -18,7 +18,6 @@ function makeMockNode(over: Partial<AudioNodeLike> = {}): AudioNodeLike {
 }
 
 function makeMockContext(): AudioContextLike {
-  let t = 0
   return {
     sampleRate: 44100,
     currentTime: 0,
@@ -89,7 +88,6 @@ describe('PencilFrictionSynth', () => {
     const ctx = makeMockContext()
     const synth = new PencilFrictionSynth(ctx)
     synth.start()
-    const gainBefore = synth.getGainValue()
     synth.start()
     expect(synth.isRunning()).toBe(true)
     synth.stop()

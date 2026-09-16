@@ -84,9 +84,9 @@ export function checkAchievements(
   progress: UserProgress,
   characterId: string,
   stars: number,
-  language: string,
-  isWord: boolean = false,
-  isSentence: boolean = false
+  _language: string,
+  _isWord: boolean = false,
+  _isSentence: boolean = false
 ): AchievementId[] {
   const newAchievements: AchievementId[] = []
   const existingCompleted = Object.values(progress.progress).filter((p) => p.completed).length

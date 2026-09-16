@@ -60,7 +60,7 @@ export function scheduleReview(
 
   let delta = 0.1 - (5 - qGrade) * (0.08 + (5 - qGrade) * 0.02)
   if (qGrade < 3) delta = -0.2
-  let easeFactor = clampEase(prevEase + delta)
+  const easeFactor = clampEase(prevEase + delta)
 
   const pauseCount = Math.max(0, quality.pauseCount)
   const pausePenalty = Math.min(0.5, pauseCount * 0.04)

@@ -1,14 +1,4 @@
 
-/home/runner/work/handwriting-practice/handwriting-practice/src/App.tsx
-   11:65  error    'getLevelProgress' is defined but never used. Allowed unused vars must match /^_/u                                    @typescript-eslint/no-unused-vars
-   42:6   warning  React Hook useEffect has a missing dependency: 'setUserProgress'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
-  116:6   warning  React Hook useCallback has a missing dependency: 'setUserProgress'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-  134:6   warning  React Hook useCallback has a missing dependency: 'setUserProgress'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-  142:6   warning  React Hook useCallback has a missing dependency: 'setUserProgress'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/components/AchievementModal.tsx
-  2:39  error  'BADGES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-
 /home/runner/work/handwriting-practice/handwriting-practice/src/components/CursiveCanvas.tsx
    43:8  warning  React Hook useEffect has a missing dependency: 'resizeCanvas'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
    95:8  warning  React Hook useEffect has a missing dependency: 'resizeCanvas'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
@@ -16,30 +6,13 @@
   301:7  warning  React Hook useImperativeHandle has an unnecessary dependency: 'word'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
 
 /home/runner/work/handwriting-practice/handwriting-practice/src/components/DrawingCanvas.tsx
-   43:39  error    'onComplete' is defined but never used. Allowed unused args must match /^_/u                                                                                                     @typescript-eslint/no-unused-vars
-  136:7   warning  React Hook useImperativeHandle has a missing dependency: 'getCharacterEvalBounds'. Either include it or remove the dependency array                                              react-hooks/exhaustive-deps
-  224:11  error    'actualHeight' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                          @typescript-eslint/no-unused-vars
-  327:6   warning  React Hook useEffect has missing dependencies: 'drawCharacterGuide', 'drawGuideLines', 'drawLandmarks', and 'redrawStrokes'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
-  379:6   warning  React Hook useEffect has a missing dependency: 'redrawStrokes'. Either include it or remove the dependency array                                                                 react-hooks/exhaustive-deps
-  421:11  error    'thresholds' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                            @typescript-eslint/no-unused-vars
-  661:6   warning  React Hook useCallback has a missing dependency: 'redrawStrokes'. Either include it or remove the dependency array                                                               react-hooks/exhaustive-deps
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/components/LevelUpModal.tsx
-  26:3  error  React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  136:7  warning  React Hook useImperativeHandle has a missing dependency: 'getCharacterEvalBounds'. Either include it or remove the dependency array                                              react-hooks/exhaustive-deps
+  326:6  warning  React Hook useEffect has missing dependencies: 'drawCharacterGuide', 'drawGuideLines', 'drawLandmarks', and 'redrawStrokes'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  378:6  warning  React Hook useEffect has a missing dependency: 'redrawStrokes'. Either include it or remove the dependency array                                                                 react-hooks/exhaustive-deps
+  659:6  warning  React Hook useCallback has a missing dependency: 'redrawStrokes'. Either include it or remove the dependency array                                                               react-hooks/exhaustive-deps
 
 /home/runner/work/handwriting-practice/handwriting-practice/src/components/PracticeScreen.tsx
   50:6  warning  React Hook useEffect has missing dependencies: 'hasSeenHelper' and 'setHasSeenHelper'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/components/PrintableSheet.tsx
-    6:10  error  'Select' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
-    6:18  error  'SelectContent' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
-    6:33  error  'SelectItem' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
-    6:45  error  'SelectTrigger' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
-    6:60  error  'SelectValue' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
-  137:9   error  'getCategoryById' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/components/SelectionScreen.tsx
-  43:3  error  'achievements' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
 
 /home/runner/work/handwriting-practice/handwriting-practice/src/components/StrokeOrderDemo.tsx
   228:6  warning  React Hook useEffect has a missing dependency: 'drawStrokeOrder'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
@@ -54,52 +27,6 @@
 /home/runner/work/handwriting-practice/handwriting-practice/src/components/ui/toggle.tsx
   45:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
 
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/__tests__/audio.test.ts
-  21:7   error  't' is never reassigned. Use 'const' instead                                           prefer-const
-  21:7   error  't' is assigned a value but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
-  92:11  error  'gainBefore' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+✖ 14 problems (0 errors, 14 warnings)
 
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/__tests__/gamification.test.ts
-   1:32  error  'beforeEach' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
-  22:3   error  'LEVEL_THRESHOLDS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-  25:24  error  'AchievementId' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/__tests__/progress.test.ts
-  193:13  error  'today' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/__tests__/radicals.test.ts
-  4:3  error  'DECOMPOSITIONS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/__tests__/srs.test.ts
-  13:3  error  'ReviewQuality' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/__tests__/strokeEval.test.ts
-  133:11  error  'good' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/gamification.ts
-  88:3  error  'isWord' is assigned a value but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
-  89:3  error  'isSentence' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/grid.ts
-  8:7  error  'DEFAULT_COLOR' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/languages.ts
-  475:119  error  Unexpected combined character in character class  no-misleading-character-class
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/qr.ts
-  241:16  error  'c' is never reassigned. Use 'const' instead                         prefer-const
-  258:7   error  'c' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/srs.ts
-  63:7  error  'easeFactor' is never reassigned. Use 'const' instead  prefer-const
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/lib/useKV.ts
-  83:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
-
-/home/runner/work/handwriting-practice/handwriting-practice/src/pages/AchievementsPage.tsx
-  195:3  error  'id' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
-
-✖ 50 problems (31 errors, 19 warnings)
-  3 errors and 1 warning potentially fixable with the `--fix` option.
-
-exit: 1
+exit: 0

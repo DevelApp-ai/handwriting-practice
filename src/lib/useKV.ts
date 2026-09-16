@@ -80,7 +80,6 @@ export function useKV<T = string>(
   const deleteValue = useCallback(() => {
     removeStored(key)
     setValue(undefined)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])
 
   return useMemo(() => [value, userSetValue, deleteValue] as const, [value, userSetValue, deleteValue])
