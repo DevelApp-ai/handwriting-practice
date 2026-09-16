@@ -5,8 +5,6 @@ export interface GridRenderOptions {
   color?: string
 }
 
-const DEFAULT_COLOR = '#9ca3af'
-
 function resetStroke(ctx: CanvasRenderingContext2D) {
   ctx.setLineDash([])
   ctx.lineCap = 'butt'

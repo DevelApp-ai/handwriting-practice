@@ -472,7 +472,7 @@ export function getWritingDirection(char: string): 'ltr' | 'rtl' {
 }
 
 export function isComplexScript(char: string): boolean {
-  const complexScriptPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\u3040-\u309F\u30A0-\u30FF\u0900-\u097F]/
+  const complexScriptPattern = /[\u0900-\u097F\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\u3040-\u309F\u30A0-\u30FF]/
   return complexScriptPattern.test(char)
 }
 

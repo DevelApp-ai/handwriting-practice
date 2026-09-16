@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import {
   createDefaultProgress,
   calculateLevel,
@@ -19,10 +19,9 @@ import {
   getLevelProgress,
   getAchievementProgress,
   getStatistics,
-  LEVEL_THRESHOLDS,
   XP_REWARDS,
 } from '../gamification'
-import { UserProgress, AchievementId, Progress, DailyChallenge } from '../types'
+import { UserProgress, Progress, DailyChallenge } from '../types'
 
 // Test fixtures
 const mockProgress: UserProgress = {

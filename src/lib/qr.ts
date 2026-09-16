@@ -238,7 +238,7 @@ function placeData(m: boolean[][], reserved: boolean[][], data: number[], size: 
     if (col === 6) col--
     for (let i = 0; i < size; i++) {
       const r = upward ? size - 1 - i : i
-      for (let c of [col, col - 1]) {
+      for (const c of [col, col - 1]) {
         if (!reserved[r][c]) {
           const byteIdx = Math.floor(bitIdx / 8)
           const bitInByte = 7 - (bitIdx % 8)
@@ -255,8 +255,8 @@ function placeData(m: boolean[][], reserved: boolean[][], data: number[], size: 
 
 const MASK_FNS: ((r: number, c: number) => boolean)[] = [
   (r, c) => (r + c) % 2 === 0,
-  (r, c) => r % 2 === 0,
-  (r, c) => c % 3 === 0,
+  (r, _c) => r % 2 === 0,
+  (_r, c) => c % 3 === 0,
   (r, c) => (r + c) % 3 === 0,
   (r, c) => (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0,
   (r, c) => ((r * c) % 2 + (r * c) % 3) === 0,

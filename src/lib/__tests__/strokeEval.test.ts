@@ -130,9 +130,6 @@ describe('evaluate', () => {
   it('scores a template-shaped candidate higher than a random scribble', () => {
     const tpl = buildTemplatePaths('A')
     expect(tpl.length).toBeGreaterThan(0)
-    const good: TimedPoint[][] = tpl.map((stroke) =>
-      stroke.map((p) => mkStroke([[p.x * 200, p.y * 200]]).pop()!).flat(),
-    )
     const goodCandidate = tpl.map((stroke) =>
       stroke.map((p) => ({ x: p.x * 200, y: p.y * 200, t: 0, pressure: 0, tiltX: 0, tiltY: 0, twist: 0, pointerType: 'pen' as const })),
     )

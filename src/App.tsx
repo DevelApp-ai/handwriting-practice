@@ -8,7 +8,7 @@ import { AchievementsPage } from '@/pages/AchievementsPage'
 import { AchievementModal } from '@/components/AchievementModal'
 import { LevelUpModal } from '@/components/LevelUpModal'
 import { UserProgress, AchievementId, DailyChallenge, WeeklyChallenge } from '@/lib/types'
-import { createDefaultProgress, updateProgressWithGamification, getLevelProgress, checkAchievements, ensureTodayChallenges, claimDailyChallengeReward, claimWeeklyChallengeReward } from '@/lib/gamification'
+import { createDefaultProgress, updateProgressWithGamification, checkAchievements, ensureTodayChallenges, claimDailyChallengeReward, claimWeeklyChallengeReward } from '@/lib/gamification'
 import { getLanguageByCode } from '@/lib/languages'
 import { applyReviewToProgress, ReviewQuality } from '@/lib/srs'
 import { StrokeReport } from '@/lib/strokeEval'
@@ -39,7 +39,7 @@ function App() {
       }
       return ensureTodayChallenges(base)
     })
-  }, [])
+  }, [setUserProgress])
 
   const handleSelectCharacter = useCallback((character: string) => {
     setSelectedCharacter(character)
@@ -113,7 +113,7 @@ function App() {
 
     setIsPracticing(false)
     setSelectedCharacter(null)
-  }, [selectedLanguage])
+  }, [selectedLanguage, setUserProgress])
 
   const handleCloseAchievement = useCallback(() => {
     setShowAchievementModal(false)
@@ -129,17 +129,17 @@ function App() {
     const current = userProgress?.dailyChallenges.find((c) => c.id === challenge.id) ?? challenge
     if (!current.completed || current.claimed) return
 
-    setUserProgress((progress) => (progress ? claimDailyChallengeReward(progress, challenge.id) : progress))
+    setUserProgress((progress) => claimDailyChallengeReward(progress ?? createDefaultProgress(), challenge.id))
     toast.success(`Daily challenge complete! +${current.rewardXP} XP, +${current.rewardStars} star${current.rewardStars > 1 ? 's' : ''}!`)
-  }, [userProgress])
+  }, [userProgress, setUserProgress])
 
   const handleClaimWeeklyChallenge = useCallback((challenge: WeeklyChallenge) => {
     const current = userProgress?.weeklyChallenges.find((c) => c.id === challenge.id) ?? challenge
     if (!current.completed || current.claimed) return
 
-    setUserProgress((progress) => (progress ? claimWeeklyChallengeReward(progress, challenge.id) : progress))
+    setUserProgress((progress) => claimWeeklyChallengeReward(progress ?? createDefaultProgress(), challenge.id))
     toast.success(`Weekly challenge complete! +${current.rewardXP} XP${current.rewardBadge ? ' + badge' : ''}!`)
-  }, [userProgress])
+  }, [userProgress, setUserProgress])
 
   const handleViewAllAchievements = useCallback(() => {
     handleCloseAchievement()
