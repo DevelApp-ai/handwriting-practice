@@ -1,0 +1,133 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.0 [39m[90m/home/runner/work/handwriting-practice/handwriting-practice[39m
+
+ [32m✓[39m src/lib/__tests__/dailyChallenges.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/languages.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/gamification.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [31m❯[39m src/lib/__tests__/strokeEval.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m src/lib/__tests__/progress.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/srs.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [31m❯[39m src/lib/__tests__/strokeOrder.test.ts [2m([22m[2m0 test[22m[2m)[22m
+[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mrecords console.error calls while capturing
+[22m[39ma problem { code: [33m1[39m }
+
+[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mrecords console.warn calls while capturing
+[22m[39mcareful
+
+[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mdoes not capture before startConsoleCapture is called
+[22m[39mignored
+
+[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mstops capturing after stopConsoleCapture
+[22m[39mcaptured
+not captured
+
+[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mlimits the buffer to the most recent entries
+[22m[39mentry 0
+entry 1
+entry 2
+entry 3
+entry 4
+entry 5
+entry 6
+entry 7
+entry 8
+entry 9
+entry 10
+entry 11
+entry 12
+entry 13
+entry 14
+entry 15
+entry 16
+entry 17
+entry 18
+entry 19
+entry 20
+entry 21
+entry 22
+entry 23
+entry 24
+entry 25
+entry 26
+entry 27
+entry 28
+entry 29
+entry 30
+entry 31
+entry 32
+entry 33
+entry 34
+entry 35
+entry 36
+entry 37
+entry 38
+entry 39
+entry 40
+entry 41
+entry 42
+entry 43
+entry 44
+entry 45
+entry 46
+entry 47
+entry 48
+entry 49
+entry 50
+entry 51
+entry 52
+entry 53
+entry 54
+entry 55
+entry 56
+entry 57
+entry 58
+entry 59
+
+ [32m✓[39m src/lib/__tests__/errorReport.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/grid.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/audio.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [31m❯[39m src/lib/__tests__/cursive.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m src/components/__tests__/WeeklyChallengeCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 312[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/radicals.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/components/__tests__/DailyChallengeCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 301[2mms[22m[39m
+ [31m❯[39m src/lib/__tests__/scaffold.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m src/lib/__tests__/qr.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m src/components/__tests__/CharacterCard.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 256[2mms[22m[39m
+ [32m✓[39m src/pages/__tests__/AchievementsPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 412[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/__tests__/cursive.test.ts[2m [ src/lib/__tests__/cursive.test.ts ][22m
+[41m[1m FAIL [22m[49m src/lib/__tests__/scaffold.test.ts[2m [ src/lib/__tests__/scaffold.test.ts ][22m
+[41m[1m FAIL [22m[49m src/lib/__tests__/strokeEval.test.ts[2m [ src/lib/__tests__/strokeEval.test.ts ][22m
+[41m[1m FAIL [22m[49m src/lib/__tests__/strokeOrder.test.ts[2m [ src/lib/__tests__/strokeOrder.test.ts ][22m
+[31m[1mError[22m:   x Unexpected token `]`. Expected identifier, string literal, numeric literal or [ for the computed key
+     ,-[/home/runner/work/handwriting-practice/handwriting-practice/src/lib/strokeOrder.ts:343:1]
+ 340 |       [{x: 0.5, y: 0.25}, {x: 0.3, y: 0.3}, {x: 0.2, y: 0.4}, {x: 0.2, y: 0.6}, {x: 0.3, y: 0.7}, {x: 0.5, y: 0.75}, {x: 0.7, y: 0.7}, {x: 0.8, y: 0.6}, {x: 0.8, y: 0.4}, {x: 0.7, y: 0.3}, {x: 0.5, y: 0.25}],
+ 341 |       [{x: 0.45, y: 0.45}, {x: 0.55, y: 0.45}]
+ 342 |     ],
+ 343 |     ],
+     :     ^
+ 344 |     '\u00df': [
+ 345 |       [{x: 0.25, y: 0.8}, {x: 0.25, y: 0.2}],
+ 346 |       [{x: 0.25, y: 0.2}, {x: 0.6, y: 0.2}, {x: 0.7, y: 0.35}, {x: 0.7, y: 0.65}, {x: 0.6, y: 0.8}, {x: 0.25, y: 0.8}]
+     `----
+
+
+Caused by:
+    Syntax Error[39m
+  Plugin: [35mvite:react-swc[39m
+  File: [36m/home/runner/work/handwriting-practice/handwriting-practice/src/lib/strokeOrder.ts[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m14 passed[39m[22m[90m (18)[39m
+[2m      Tests [22m [1m[32m199 passed[39m[22m[90m (199)[39m
+[2m   Start at [22m 01:08:25
+[2m   Duration [22m 10.96s[2m (environment 66%, import 15%, setup 11%, tests 6%, transform 2%, worker 1%)[22m
+
+[2mEnvironment [22m [33mjsdom was created 18 times[39m[2m · 17.87s total, 66% of tracked time[22m
+[2m            [22m [2mcreate it once per worker with [22m[33mpool: 'vmThreads'[39m[2m (keeps per-file isolation) or [22m[33misolate: false[39m[2m (shares it across files)[22m
+[2m            [22m [2mlearn more: https://vitest.dev/guide/improving-performance#test-environments[22m
+
+exit: 1
