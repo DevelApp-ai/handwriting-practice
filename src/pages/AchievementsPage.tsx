@@ -192,7 +192,6 @@ function SummaryCard({ icon, label, value, color }: { icon: ReactElement; label:
 }
 
 function AchievementCard({
-  id,
   name,
   description,
   isCompleted,

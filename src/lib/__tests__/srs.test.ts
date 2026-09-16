@@ -10,7 +10,6 @@ import {
   MIN_EASE_FACTOR,
   MIN_INTERVAL_MS,
   msToHours,
-  ReviewQuality,
   SrsRecord,
 } from '@/lib/srs'
 import { Progress } from '@/lib/types'

@@ -1,18 +1,36 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { UserProgress, Progress } from '../types'
+import { UserProgress, Progress, DEFAULT_SETTINGS } from '../types'
+
+function makeProgress(overrides: Partial<UserProgress> = {}): UserProgress {
+  return {
+    totalStars: 0,
+    charactersCompleted: 0,
+    progress: {},
+    achievements: [],
+    badges: [],
+    rewards: [],
+    totalXP: 0,
+    level: 1,
+    consecutiveDays: 0,
+    longestStreak: 0,
+    lastPracticeDate: '',
+    languagesPracticed: [],
+    categoriesCompleted: {},
+    settings: DEFAULT_SETTINGS,
+    dailyChallenges: [],
+    weeklyChallenges: [],
+    unlockedThemes: [],
+    currentLearningPath: null,
+    learningPathProgress: {},
+    ...overrides,
+  }
+}
 
 describe('User Progress', () => {
   let initialProgress: UserProgress
 
   beforeEach(() => {
-    initialProgress = {
-      totalStars: 0,
-      charactersCompleted: 0,
-      progress: {},
-      achievements: [],
-      consecutiveDays: 0,
-      lastPracticeDate: '',
-    }
+    initialProgress = makeProgress()
   })
 
   describe('Initial State', () => {
@@ -81,17 +99,14 @@ describe('User Progress', () => {
     })
 
     it('should calculate total stars correctly', () => {
-      const progress: UserProgress = {
+      const progress = makeProgress({
         totalStars: 5,
         charactersCompleted: 2,
         progress: {
           'A': { characterId: 'A', stars: 3, completed: true, attempts: 1, lastPracticed: Date.now() },
           'B': { characterId: 'B', stars: 2, completed: true, attempts: 1, lastPracticed: Date.now() },
         },
-        achievements: [],
-        consecutiveDays: 0,
-        lastPracticeDate: '',
-      }
+      })
 
       const total = Object.values(progress.progress).reduce(
         (sum, p) => sum + p.stars,
@@ -101,7 +116,7 @@ describe('User Progress', () => {
     })
 
     it('should calculate completed count correctly', () => {
-      const progress: UserProgress = {
+      const progress = makeProgress({
         totalStars: 5,
         charactersCompleted: 2,
         progress: {
@@ -109,10 +124,7 @@ describe('User Progress', () => {
           'B': { characterId: 'B', stars: 2, completed: true, attempts: 1, lastPracticed: Date.now() },
           'C': { characterId: 'C', stars: 0, completed: false, attempts: 1, lastPracticed: Date.now() },
         },
-        achievements: [],
-        consecutiveDays: 0,
-        lastPracticeDate: '',
-      }
+      })
 
       const completedCount = Object.values(progress.progress).filter(
         p => p.completed
@@ -190,17 +202,14 @@ describe('User Progress', () => {
 
   describe('Consecutive Days Tracking', () => {
     it('should track consecutive days', () => {
-      const today = new Date().toISOString().split('T')[0]
       const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
 
-      const progress: UserProgress = {
+      const progress = makeProgress({
         totalStars: 10,
         charactersCompleted: 5,
-        progress: {},
-        achievements: [],
         consecutiveDays: 1,
         lastPracticeDate: yesterday,
-      }
+      })
 
       expect(progress.consecutiveDays).toBe(1)
       expect(progress.lastPracticeDate).toBe(yesterday)
@@ -209,14 +218,12 @@ describe('User Progress', () => {
     it('should update last practice date', () => {
       const today = new Date().toISOString().split('T')[0]
 
-      const progress: UserProgress = {
+      const progress = makeProgress({
         totalStars: 10,
         charactersCompleted: 5,
-        progress: {},
-        achievements: [],
         consecutiveDays: 1,
         lastPracticeDate: today,
-      }
+      })
 
       expect(progress.lastPracticeDate).toBe(today)
     })
@@ -224,28 +231,24 @@ describe('User Progress', () => {
 
   describe('Achievements', () => {
     it('should have achievements array', () => {
-      const progress: UserProgress = {
+      const progress = makeProgress({
         totalStars: 10,
         charactersCompleted: 5,
-        progress: {},
-        achievements: ['first_star', 'five_stars'],
+        achievements: ['first_star', 'ten_stars'],
         consecutiveDays: 1,
-        lastPracticeDate: '',
-      }
+      })
 
       expect(progress.achievements).toContain('first_star')
-      expect(progress.achievements).toContain('five_stars')
+      expect(progress.achievements).toContain('ten_stars')
     })
 
     it('should add achievements', () => {
-      const progress: UserProgress = {
+      const progress = makeProgress({
         totalStars: 10,
         charactersCompleted: 5,
-        progress: {},
         achievements: ['first_star'],
         consecutiveDays: 1,
-        lastPracticeDate: '',
-      }
+      })
 
       const newAchievements = [...progress.achievements, 'ten_stars']
       expect(newAchievements).toContain('ten_stars')

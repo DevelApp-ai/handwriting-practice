@@ -40,7 +40,7 @@ function pressureWidth(pressure: number, enabled: boolean): number {
 }
 
 export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(
-  function DrawingCanvas({ character, onComplete, showGuide, practiceMode = DEFAULT_PRACTICE_MODE }, ref) {
+  function DrawingCanvas({ character, showGuide, practiceMode = DEFAULT_PRACTICE_MODE }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const overlayRef = useRef<HTMLCanvasElement>(null)
   const heatmapRef = useRef<HTMLCanvasElement>(null)
@@ -68,7 +68,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
         || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
       : undefined
     if (!Ctor) return null
-    synthRef.current = new PencilFrictionSynth(new Ctor() as AudioContextLike)
+    synthRef.current = new PencilFrictionSynth(new Ctor() as unknown as AudioContextLike)
     return synthRef.current
   }, [soundEnabled])
 
@@ -221,7 +221,6 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     const baselineY = offsetY + bounds.height * LINE_HEIGHTS.baseline
     const metrics = ctx.measureText(character)
 
-    const actualHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
     const actualWidth = metrics.width
 
     const bTop = baselineY - metrics.actualBoundingBoxAscent
@@ -418,7 +417,6 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       ctx.fillText(`Level ${level} - Higher precision required!`, overlay.width - 8, 20)
     }
 
-    const thresholds = getPrecisionThresholds()
     ctx.font = '11px Quicksand, sans-serif'
     ctx.textAlign = 'left'
     

@@ -243,9 +243,9 @@ export const DAILY_CHALLENGE_TYPES = [
 // Weekly challenge definitions
 export const WEEKLY_CHALLENGE_TYPES = [
   { type: 'weekly_streak' as const, description: 'Practice every day this week', target: 7, rewardXP: 200, rewardBadge: null },
-  { type: 'language_master' as const, description: 'Master all characters in one language', target: 1, rewardXP: 200, rewardBadge: 'gold' },
-  { type: 'diversity_week' as const, description: 'Practice characters from {target} different languages', target: 5, rewardXP: 200, rewardBadge: 'silver' },
-  { type: 'xp_collector' as const, description: 'Earn {target} XP this week', target: 500, rewardXP: 200, rewardBadge: 'bronze' },
+  { type: 'language_master' as const, description: 'Master all characters in one language', target: 1, rewardXP: 200, rewardBadge: 'gold' as const },
+  { type: 'diversity_week' as const, description: 'Practice characters from {target} different languages', target: 5, rewardXP: 200, rewardBadge: 'silver' as const },
+  { type: 'xp_collector' as const, description: 'Earn {target} XP this week', target: 500, rewardXP: 200, rewardBadge: 'bronze' as const },
   { type: 'star_collector' as const, description: 'Earn {target} stars this week', target: 50, rewardXP: 200, rewardBadge: null },
   { type: 'completionist' as const, description: 'Complete {target} characters this week', target: 30, rewardXP: 200, rewardBadge: null },
 ]

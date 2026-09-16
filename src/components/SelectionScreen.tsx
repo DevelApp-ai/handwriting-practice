@@ -40,7 +40,6 @@ export function SelectionScreen({
   totalStars,
   totalXP = 0,
   level = 1,
-  achievements = [],
   badges = [],
   consecutiveDays = 0,
   dailyChallenges = [],
