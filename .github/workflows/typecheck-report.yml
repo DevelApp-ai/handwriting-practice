@@ -3,7 +3,7 @@ name: Typecheck report
 on:
   push:
     branches:
-      - vibe/ts-strict-68
+      - vibe/fix-remaining-lint-68
   pull_request:
     branches:
       - main
@@ -18,7 +18,7 @@ concurrency:
 jobs:
   report:
     runs-on: ubuntu-latest
-    if: github.head_ref == '' || github.head_ref == 'vibe/ts-strict-68'
+    if: github.head_ref == '' || github.head_ref == 'vibe/fix-remaining-lint-68'
     steps:
       - name: Checkout branch head
         uses: actions/checkout@v5
@@ -41,11 +41,14 @@ jobs:
           echo "exit: $?" >> tsc-report.txt
           npx eslint . > eslint-report.txt 2>&1
           echo "exit: $?" >> eslint-report.txt
+          npx vitest run > test-report.txt 2>&1
+          echo "exit: $?" >> test-report.txt
+          { echo '--- failures ---'; grep -n -B 2 -A 12 -E "(FAIL|× )" test-report.txt | head -300; echo '--- summary ---'; tail -40 test-report.txt; } > test-summary.txt
           exit 0
 
       - name: Commit reports
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tsc-report.txt eslint-report.txt
+          git add tsc-report.txt eslint-report.txt test-report.txt test-summary.txt
           git diff --cached --quiet || (git commit -m "chore: update typecheck/lint reports [skip ci]" && git push)
