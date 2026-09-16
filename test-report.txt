@@ -1,107 +1,30 @@
+npm warn exec The following package was not found and will be installed: vitest@5.0.1
+vitest.config.ts (1:388) [33m[UNRESOLVED_IMPORT] [0mCould not resolve 'vitest/config' in vitest.config.ts
+ - Module not found, treating it as an external dependency in vitest.config.ts at 388..403
 
-[1m[30m[46m RUN [49m[39m[22m [36mv5.0.0 [39m[90m/home/runner/work/handwriting-practice/handwriting-practice[39m
+vitest.config.ts (3:18) [33m[UNRESOLVED_IMPORT] [0mCould not resolve '@vitejs/plugin-react-swc' in vitest.config.ts
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m vitest.config.ts:3:19 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m3 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m'@vitejs/plugin-react-swc'
+ [38;5;240m  │[0m                   ─────────────┬────────────  
+ [38;5;240m  │[0m                                ╰────────────── Module not found, treating it as an external dependency
+[38;5;246m───╯[0m
 
- [32m✓[39m src/lib/__tests__/dailyChallenges.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 22[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/gamification.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 23[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/languages.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 31[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/progress.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 13[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/srs.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 22[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/strokeEval.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 52[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/strokeOrder.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 48[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/grid.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 11[2mms[22m[39m
-[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mrecords console.error calls while capturing
-[22m[39ma problem { code: [33m1[39m }
+[31mfailed to load config from /home/runner/work/handwriting-practice/handwriting-practice/vitest.config.ts[39m
 
-[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mrecords console.warn calls while capturing
-[22m[39mcareful
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Startup Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯⎯[39m
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vitest' imported from /home/runner/work/handwriting-practice/handwriting-practice/vitest.config.ts.timestamp-1789602174029-3e821ffe87326.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:314:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:855:18)
+    at defaultResolve (node:internal/modules/esm/resolve:985:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:747:20)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)
+    at ModuleJob._link (node:internal/modules/esm/module_job:182:49) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
 
-[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mdoes not capture before startConsoleCapture is called
-[22m[39mignored
 
-[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mstops capturing after stopConsoleCapture
-[22m[39mcaptured
-not captured
 
-[90mstderr[2m | src/lib/__tests__/errorReport.test.ts[2m > [22m[2merrorReport[2m > [22m[2mconsole capture[2m > [22m[2mlimits the buffer to the most recent entries
-[22m[39mentry 0
-entry 1
-entry 2
-entry 3
-entry 4
-entry 5
-entry 6
-entry 7
-entry 8
-entry 9
-entry 10
-entry 11
-entry 12
-entry 13
-entry 14
-entry 15
-entry 16
-entry 17
-entry 18
-entry 19
-entry 20
-entry 21
-entry 22
-entry 23
-entry 24
-entry 25
-entry 26
-entry 27
-entry 28
-entry 29
-entry 30
-entry 31
-entry 32
-entry 33
-entry 34
-entry 35
-entry 36
-entry 37
-entry 38
-entry 39
-entry 40
-entry 41
-entry 42
-entry 43
-entry 44
-entry 45
-entry 46
-entry 47
-entry 48
-entry 49
-entry 50
-entry 51
-entry 52
-entry 53
-entry 54
-entry 55
-entry 56
-entry 57
-entry 58
-entry 59
-
- [32m✓[39m src/lib/__tests__/errorReport.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 23[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/audio.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 32[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/cursive.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 38[2mms[22m[39m
- [32m✓[39m src/components/__tests__/WeeklyChallengeCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 294[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/radicals.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 16[2mms[22m[39m
- [32m✓[39m src/components/__tests__/DailyChallengeCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 295[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/scaffold.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/qr.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 24[2mms[22m[39m
- [32m✓[39m src/components/__tests__/CharacterCard.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 224[2mms[22m[39m
- [32m✓[39m src/pages/__tests__/AchievementsPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 387[2mms[22m[39m
-
-[2m Test Files [22m [1m[32m18 passed[39m[22m[90m (18)[39m
-[2m      Tests [22m [1m[32m259 passed[39m[22m[90m (259)[39m
-[2m   Start at [22m 01:10:40
-[2m   Duration [22m 11.20s[2m (environment 66%, import 15%, setup 10%, tests 6%, transform 3%, worker 1%)[22m
-
-[2mEnvironment [22m [33mjsdom was created 18 times[39m[2m · 18.42s total, 66% of tracked time[22m
-[2m            [22m [2mcreate it once per worker with [22m[33mpool: 'vmThreads'[39m[2m (keeps per-file isolation) or [22m[33misolate: false[39m[2m (shares it across files)[22m
-[2m            [22m [2mlearn more: https://vitest.dev/guide/improving-performance#test-environments[22m
-
-exit: 0
+exit: 1
