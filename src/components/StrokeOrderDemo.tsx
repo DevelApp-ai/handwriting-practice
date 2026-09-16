@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Play, Pause, ArrowCounterClockwise } from '@phosphor-icons/react'
-import { generateBasicStrokeOrder } from '@/lib/strokeOrder'
+import { generateBasicStrokeOrder, Stroke } from '@/lib/strokeOrder'
 
 interface StrokeOrderDemoProps {
   character: string
@@ -18,14 +18,14 @@ export function StrokeOrderDemo({ character, width = 300, height = 300 }: Stroke
 
   const strokeData = character.length === 1 ? generateBasicStrokeOrder(character) : { character, strokes: [] }
 
-  const drawCompleteStroke = (ctx: CanvasRenderingContext2D, stroke: any, index: number) => {
+  const drawCompleteStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke, index: number) => {
     ctx.strokeStyle = 'rgba(99, 102, 241, 0.8)'
     ctx.lineWidth = 6
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
 
     ctx.beginPath()
-    stroke.points.forEach((point: any, i: number) => {
+    stroke.points.forEach((point, i) => {
       const x = point.x * width
       const y = point.y * height
       if (i === 0) {
@@ -53,7 +53,7 @@ export function StrokeOrderDemo({ character, width = 300, height = 300 }: Stroke
     }
   }
 
-  const drawPartialStroke = (ctx: CanvasRenderingContext2D, stroke: any, index: number, progress: number) => {
+  const drawPartialStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke, index: number, progress: number) => {
     if (stroke.points.length === 0) return
 
     const totalProgress = progress * stroke.points.length
@@ -107,7 +107,7 @@ export function StrokeOrderDemo({ character, width = 300, height = 300 }: Stroke
     ctx.fillText((index + 1).toString(), firstPoint.x * width, firstPoint.y * height)
   }
 
-  const drawStrokeArrows = (ctx: CanvasRenderingContext2D, stroke: any, progress = 1) => {
+  const drawStrokeArrows = (ctx: CanvasRenderingContext2D, stroke: Stroke, progress = 1) => {
     if (stroke.points.length < 2) return
 
     for (let i = 0; i < stroke.points.length - 1; i++) {
@@ -147,14 +147,14 @@ export function StrokeOrderDemo({ character, width = 300, height = 300 }: Stroke
     }
   }
 
-  const drawStrokePreview = (ctx: CanvasRenderingContext2D, stroke: any, index: number) => {
+  const drawStrokePreview = (ctx: CanvasRenderingContext2D, stroke: Stroke, index: number) => {
     ctx.strokeStyle = 'rgba(150, 150, 150, 0.2)'
     ctx.lineWidth = 4
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
 
     ctx.beginPath()
-    stroke.points.forEach((point: any, i: number) => {
+    stroke.points.forEach((point, i) => {
       const x = point.x * width
       const y = point.y * height
       if (i === 0) {

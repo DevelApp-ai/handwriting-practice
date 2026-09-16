@@ -13,11 +13,13 @@ interface AchievementsPageProps {
   userProgress: UserProgress
 }
 
+type CategoryTab = 'all' | 'character' | 'language' | 'streak' | 'star' | 'special'
+
 export function AchievementsPage({
   onBack,
   userProgress,
 }: AchievementsPageProps) {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'character' | 'language' | 'streak' | 'star' | 'special'>('all')
+  const [selectedCategory, setSelectedCategory] = useState<CategoryTab>('all')
 
   const {
     achievements,
@@ -28,7 +30,7 @@ export function AchievementsPage({
     totalStars,
   } = userProgress
 
-  const categoryLabels: Record<string, { label: string; icon: ReactElement; color: string }> = {
+  const categoryLabels: Record<CategoryTab, { label: string; icon: ReactElement; color: string }> = {
     all: { label: 'All', icon: <Trophy className="w-5 h-5" />, color: 'bg-purple-500' },
     character: { label: 'Character', icon: <Star className="w-5 h-5" />, color: 'bg-blue-500' },
     language: { label: 'Language', icon: <Flame className="w-5 h-5" />, color: 'bg-orange-500' },
@@ -116,7 +118,7 @@ export function AchievementsPage({
                 key={key}
                 variant={selectedCategory === key ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setSelectedCategory(key as any)}
+                onClick={() => setSelectedCategory(key as CategoryTab)}
                 className={`gap-2 ${selectedCategory === key ? color : 'border-gray-300'}`}
               >
                 {icon}

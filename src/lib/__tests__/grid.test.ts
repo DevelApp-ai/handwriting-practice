@@ -20,14 +20,10 @@ interface MockStroke {
 
 function createMockCtx() {
   const strokes: MockStroke[] = []
-  const ctx: any = {
+  const ctx = {
     strokes,
-    setLineDash(d: number[]) {
-      this._dash = d
-    },
-    beginPath() {
-      this._inPath = true
-    },
+    setLineDash(_d: number[]) {},
+    beginPath() {},
     moveTo(x: number, y: number) {
       strokes.push({ kind: 'moveTo', args: [x, y] })
     },
@@ -59,7 +55,7 @@ describe('grid renderers', () => {
   it('four-line grid draws 4 horizontal strokes plus labels', () => {
     const ctx = createMockCtx()
     drawFourLineGrid(ctx as unknown as CanvasRenderingContext2D, 400, 400, { showLabels: true })
-    const strokes = (ctx as any).strokes as MockStroke[]
+    const strokes = ctx.strokes
     const strokeCalls = strokes.filter((s) => s.kind === 'stroke').length
     expect(strokeCalls).toBe(4)
     const labels = strokes.filter((s) => s.kind === 'fillText').map((s) => s.args[0])
@@ -72,14 +68,14 @@ describe('grid renderers', () => {
   it('four-line grid omits labels when showLabels is false', () => {
     const ctx = createMockCtx()
     drawFourLineGrid(ctx as unknown as CanvasRenderingContext2D, 400, 400, { showLabels: false })
-    const labels = ((ctx as any).strokes as MockStroke[]).filter((s) => s.kind === 'fillText')
+    const labels = (ctx.strokes).filter((s) => s.kind === 'fillText')
     expect(labels.length).toBe(0)
   })
 
   it('tianzige grid draws an outer square plus cross and diagonals', () => {
     const ctx = createMockCtx()
     drawTianzigeGrid(ctx as unknown as CanvasRenderingContext2D, 300, 300)
-    const strokes = (ctx as any).strokes as MockStroke[]
+    const strokes = ctx.strokes
     const rects = strokes.filter((s) => s.kind === 'strokeRect').length
     expect(rects).toBe(1)
     const lineTos = strokes.filter((s) => s.kind === 'lineTo')
@@ -89,7 +85,7 @@ describe('grid renderers', () => {
   it('mizige grid draws outer square, diagonals, and an arc (8-segment star)', () => {
     const ctx = createMockCtx()
     drawMizigeGrid(ctx as unknown as CanvasRenderingContext2D, 300, 300)
-    const strokes = (ctx as any).strokes as MockStroke[]
+    const strokes = ctx.strokes
     expect(strokes.some((s) => s.kind === 'strokeRect')).toBe(true)
     expect(strokes.some((s) => s.kind === 'arc')).toBe(true)
   })
@@ -97,8 +93,8 @@ describe('grid renderers', () => {
   it('jiugongge grid draws 4 interior division lines (2 vertical + 2 horizontal => 3x3 squares)', () => {
     const ctx = createMockCtx()
     drawJiugonggeGrid(ctx as unknown as CanvasRenderingContext2D, 300, 300)
-    const lineTos = ((ctx as any).strokes as MockStroke[]).filter((s) => s.kind === 'lineTo')
-    const moveTos = ((ctx as any).strokes as MockStroke[]).filter((s) => s.kind === 'moveTo')
+    const lineTos = (ctx.strokes).filter((s) => s.kind === 'lineTo')
+    const moveTos = (ctx.strokes).filter((s) => s.kind === 'moveTo')
     expect(lineTos.length).toBe(4)
     expect(moveTos.length).toBe(4)
   })
@@ -106,14 +102,14 @@ describe('grid renderers', () => {
   it('slant guide draws many parallel diagonal lines', () => {
     const ctx = createMockCtx()
     drawSlantGuide(ctx as unknown as CanvasRenderingContext2D, 400, 400, { spacing: 40 })
-    const lineTos = ((ctx as any).strokes as MockStroke[]).filter((s) => s.kind === 'lineTo')
+    const lineTos = (ctx.strokes).filter((s) => s.kind === 'lineTo')
     expect(lineTos.length).toBeGreaterThan(10)
   })
 
   it('shirorekha draws a single horizontal line with label', () => {
     const ctx = createMockCtx()
     drawShirorekhaLine(ctx as unknown as CanvasRenderingContext2D, 400, 400, { showLabels: true })
-    const strokes = (ctx as any).strokes as MockStroke[]
+    const strokes = ctx.strokes
     expect(strokes.filter((s) => s.kind === 'stroke').length).toBe(1)
     expect(strokes.some((s) => s.kind === 'fillText' && s.args[0] === 'Shirorekha')).toBe(true)
   })
@@ -123,12 +119,12 @@ describe('renderGrid dispatch', () => {
   it('renders four-line via renderGrid', () => {
     const ctx = createMockCtx()
     renderGrid(ctx as unknown as CanvasRenderingContext2D, 400, 400, 'four-line', { showLabels: false })
-    expect(((ctx as any).strokes as MockStroke[]).filter((s) => s.kind === 'stroke').length).toBe(4)
+    expect((ctx.strokes).filter((s) => s.kind === 'stroke').length).toBe(4)
   })
   it('renders tianzige via renderGrid', () => {
     const ctx = createMockCtx()
     renderGrid(ctx as unknown as CanvasRenderingContext2D, 300, 300, 'tianzige')
-    expect(((ctx as any).strokes as MockStroke[]).some((s) => s.kind === 'strokeRect')).toBe(true)
+    expect((ctx.strokes).some((s) => s.kind === 'strokeRect')).toBe(true)
   })
 })
 
