@@ -1,7 +1,7 @@
 
-added 392 packages, and audited 393 packages in 12s
+added 394 packages, and audited 395 packages in 13s
 
-69 packages are looking for funding
+70 packages are looking for funding
   run `npm fund` for details
 
 1 moderate severity vulnerability
@@ -202,7 +202,7 @@ handwriting-practice@0.0.0 /home/runner/work/handwriting-practice/handwriting-pr
 │ └── react@19.3.0 deduped
 ├─┬ lucide-react@0.484.0
 │ └── react@19.3.0 deduped
-├─┬ react-dom@19.2.8
+├─┬ react-dom@19.3.0
 │ └── react@19.3.0 deduped
 ├─┬ react-error-boundary@6.1.5
 │ └── react@19.3.0 deduped
