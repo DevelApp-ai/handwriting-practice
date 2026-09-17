@@ -19,23 +19,23 @@ entry 57
 entry 58
 entry 59
 
- [32m✓[39m src/lib/__tests__/errorReport.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 23[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/audio.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 32[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/cursive.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 38[2mms[22m[39m
- [32m✓[39m src/components/__tests__/WeeklyChallengeCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 294[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/radicals.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 16[2mms[22m[39m
- [32m✓[39m src/components/__tests__/DailyChallengeCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 295[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/scaffold.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m src/lib/__tests__/qr.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 24[2mms[22m[39m
- [32m✓[39m src/components/__tests__/CharacterCard.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 224[2mms[22m[39m
- [32m✓[39m src/pages/__tests__/AchievementsPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 387[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/errorReport.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/audio.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/cursive.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/components/__tests__/WeeklyChallengeCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 285[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/radicals.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/scaffold.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/__tests__/DailyChallengeCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 290[2mms[22m[39m
+ [32m✓[39m src/lib/__tests__/qr.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/components/__tests__/CharacterCard.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 229[2mms[22m[39m
+ [32m✓[39m src/pages/__tests__/AchievementsPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 450[2mms[22m[39m
 
 [2m Test Files [22m [1m[32m18 passed[39m[22m[90m (18)[39m
 [2m      Tests [22m [1m[32m259 passed[39m[22m[90m (259)[39m
-[2m   Start at [22m 01:10:40
-[2m   Duration [22m 11.20s[2m (environment 66%, import 15%, setup 10%, tests 6%, transform 3%, worker 1%)[22m
+[2m   Start at [22m 23:45:53
+[2m   Duration [22m 11.38s[2m (environment 65%, import 16%, setup 10%, tests 6%, transform 3%, worker 1%)[22m
 
-[2mEnvironment [22m [33mjsdom was created 18 times[39m[2m · 18.42s total, 66% of tracked time[22m
+[2mEnvironment [22m [33mjsdom was created 18 times[39m[2m · 18.40s total, 65% of tracked time[22m
 [2m            [22m [2mcreate it once per worker with [22m[33mpool: 'vmThreads'[39m[2m (keeps per-file isolation) or [22m[33misolate: false[39m[2m (shares it across files)[22m
 [2m            [22m [2mlearn more: https://vitest.dev/guide/improving-performance#test-environments[22m
 
