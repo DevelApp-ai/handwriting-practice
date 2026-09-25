@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -41,13 +41,4 @@ jobs:
           NODE_ENV: production
 
       - name: Test
-        run: |
-          set +e
-          npm test > test-out.txt 2>&1
-          code=$?
-          if [ $code -ne 0 ]; then
-            MSG=$(grep -a -A 40 -m 1 -E "Failed Tests|Failed Suites|Unhandled|Test process crashed|Vitest caught" test-out.txt | head -c 3200 | sed -z 's/\n/%0A/g' || true)
-            if [ -z "$MSG" ]; then MSG=$(tail -c 3200 test-out.txt | sed -z 's/\n/%0A/g'); fi
-            echo "::error::${MSG:0:4000}"
-          fi
-          exit $code
+        run: npm test

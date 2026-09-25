@@ -27,3 +27,18 @@ if (typeof window !== 'undefined' && typeof Element !== 'undefined') {
     Element.prototype.releasePointerCapture = () => {}
   }
 }
+
+// jsdom does not implement window.matchMedia, which libraries such as sonner
+// rely on when mounting their UI.
+if (typeof window !== 'undefined' && typeof window.matchMedia !== 'function') {
+  window.matchMedia = ((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  })) as unknown as typeof window.matchMedia
+}
