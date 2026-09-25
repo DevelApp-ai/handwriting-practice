@@ -33,7 +33,16 @@ jobs:
         run: npm ci
 
       - name: Lint
-        run: npm run lint
+        run: |
+          set +e
+          npm run lint > lint.log 2>&1
+          code=$?
+          if [ "$code" -ne 0 ]; then
+            tail -n 25 lint.log | while IFS= read -r line; do
+              echo "::error::${line:0:250}"
+            done
+            exit "$code"
+          fi
 
       - name: Build
         run: npm run build
