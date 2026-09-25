@@ -42,8 +42,7 @@ function pressureWidth(pressure: number, enabled: boolean): number {
 export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(
   function DrawingCanvas({ character, showGuide, practiceMode = DEFAULT_PRACTICE_MODE }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const overlayRef = useRef
-<HTMLCanvasElement>(null)
+  const overlayRef = useRef<HTMLCanvasElement>(null)
   const heatmapRef = useRef<HTMLCanvasElement>(null)
   const strokesRef = useRef<TimedPoint[][]>([])
   const [isDrawing, setIsDrawing] = useState(false)
@@ -88,8 +87,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
   const renderHeatmap = useCallback((report: StrokeReport) => {
     const heatmap = heatmapRef.current
     if (!heatmap) return
-    const ctx = heatmap.getCont
-ext('2d')
+    const ctx = heatmap.getContext('2d')
     if (!ctx) return
     ctx.clearRect(0, 0, heatmap.width, heatmap.height)
 
@@ -151,8 +149,7 @@ ext('2d')
   const getCharacterLevel = () => {
     const progress = userProgress?.progress?.[character]
     if (!progress) return 1
-    return Math.min(Math.floor(progr
-ess.attempts / 3) + 1, 5)
+    return Math.min(Math.floor(progress.attempts / 3) + 1, 5)
   }
 
   const getPrecisionThresholds = () => {
@@ -211,8 +208,7 @@ ess.attempts / 3) + 1, 5)
       } else if (devanagariChars.test(character)) {
         return "'Noto Sans Devanagari', sans-serif"
       }
-      
-return "'Quicksand', sans-serif"
+      return "'Quicksand', sans-serif"
     }
 
     const tempCanvas = document.createElement('canvas')
@@ -278,8 +274,7 @@ return "'Quicksand', sans-serif"
       const horizontalDist = left - point.x
       minDistance = Math.max(minDistance, horizontalDist * 0.5)
     } else if (point.x > right) {
-    
-  const horizontalDist = point.x - right
+      const horizontalDist = point.x - right
       minDistance = Math.max(minDistance, horizontalDist * 0.5)
     }
 
@@ -346,8 +341,7 @@ return "'Quicksand', sans-serif"
   }, [])
 
   const showGhost =
- 
-   showGuide && (practiceMode === 'observe' || practiceMode === 'trace')
+    showGuide && (practiceMode === 'observe' || practiceMode === 'trace')
   const showLandmarks = showGuide && practiceMode === 'landmark'
 
   const drawLandmarks = () => {
@@ -404,8 +398,7 @@ return "'Quicksand', sans-serif"
     ctx.clearRect(0, 0, overlay.width, overlay.height)
 
     const bounds = getEffectiveBounds(overlay.width, overlay.height)
-    const gridKind = select
-GridKind(character, settings.gridKind)
+    const gridKind = selectGridKind(character, settings.gridKind)
     const family = detectScriptFamily(character)
     const isSentence = character.length > 15
 
@@ -467,8 +460,7 @@ GridKind(character, settings.gridKind)
     
     let fontSize = overlay.height * 0.4
     if (isSentence) {
-      fontSize 
-= overlay.height * 0.12
+      fontSize = overlay.height * 0.12
     } else if (isWord) {
       fontSize = overlay.height * 0.25
     }
@@ -530,8 +522,7 @@ GridKind(character, settings.gridKind)
       })
     } else {
       ctx.direction = direction
-      ctx.fillText(character, centerX, baselineY
-)
+      ctx.fillText(character, centerX, baselineY)
       
       if (character.length === 1) {
         drawStrokeDirectionArrows(ctx, character, bounds.width, bounds.height)
@@ -593,8 +584,7 @@ GridKind(character, settings.gridKind)
       ctx.font = 'bold 16px Quicksand, sans-serif'
       ctx.fillStyle = 'rgba(34, 197, 94, 0.95)'
       ctx.textAlign = 'center'
-      ctx.fillText(
-'Write this way \u2192', overlay.width / 2, arrowY - 18)
+      ctx.fillText('Write this way \u2192', overlay.width / 2, arrowY - 18)
     }
   }
 
@@ -664,8 +654,7 @@ GridKind(character, settings.gridKind)
     })
 
     if (currentStroke.length > 0) {
-      drawStrokeWithCo
-lors(ctx, currentStroke, canvas.width, canvas.height)
+      drawStrokeWithColors(ctx, currentStroke, canvas.width, canvas.height)
       const last = currentStroke[currentStroke.length - 1]
       if (last) drawTiltIndicator(ctx, last)
     }
@@ -727,8 +716,7 @@ lors(ctx, currentStroke, canvas.width, canvas.height)
     const len = Math.min(24, tiltMag * 0.4)
     ctx.save()
     ctx.strokeStyle = 'rgba(99, 102, 241, 0.55)'
-    ctx.fillStyle = 'rgba(99, 10
-2, 241, 0.8)'
+    ctx.fillStyle = 'rgba(99, 102, 241, 0.8)'
     ctx.lineWidth = 2
     ctx.beginPath()
     ctx.moveTo(point.x, point.y)
@@ -793,8 +781,7 @@ lors(ctx, currentStroke, canvas.width, canvas.height)
     setIsDrawing(true)
     const point = capturePoint(e)
     lastPointRef.current = point
-    setCurren
-tStroke([point])
+    setCurrentStroke([point])
     const synth = ensureSynth()
     if (synth) synth.start()
   }
@@ -860,8 +847,7 @@ tStroke([point])
 
     setIsDrawing(false)
     activePointerTypeRef.current = ''
-    if (currentStroke.leng
-th > 0) {
+    if (currentStroke.length > 0) {
       setStrokes((prev) => [...prev, currentStroke])
       setCurrentStroke([])
     }
