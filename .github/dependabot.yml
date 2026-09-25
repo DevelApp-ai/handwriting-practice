@@ -4,6 +4,15 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    # The ESLint toolchain must upgrade together: @eslint/js@10 requires
+    # eslint@^10 as a peer, so bumping them in separate PRs fails npm ci.
+    groups:
+      eslint:
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "eslint-*"
 
   - package-ecosystem: "devcontainers"
     directory: "/"
