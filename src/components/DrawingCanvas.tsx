@@ -133,6 +133,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       const stars = starsFromOverall(report.overall)
       return { stars, report }
     },
+    // getCharacterEvalBounds is a pure function of the character and settings
+    // declared below; the handle is intentionally rebuilt only when the
+    // character changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [character, renderHeatmap, clearHeatmap])
 
   const LINE_HEIGHTS = {
@@ -323,6 +327,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
     return () => window.removeEventListener('resize', resizeCanvas)
+    // The draw helpers are re-created on every render but are pure functions
+    // of the deps below; binding the resize listener only when the
+    // character/mode changes is intentional.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [character, showGuide, practiceMode])
 
   useEffect(() => {
@@ -375,6 +383,9 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
 
   useEffect(() => {
     redrawStrokes()
+    // redrawStrokes is re-created on every render but only reads the state
+    // listed below; adding it would re-run this effect on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [strokes, currentStroke])
 
   const drawGuideLines = () => {
@@ -656,7 +667,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       pendingRedrawRef.current = false
       redrawStrokes()
     })
-  }, [strokes, currentStroke])
+  }, [strokes, currentStroke, redrawStrokes])
 
   const drawStrokeWithColors = (
     ctx: CanvasRenderingContext2D,

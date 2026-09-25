@@ -225,6 +225,9 @@ export function StrokeOrderDemo({ character, width = 300, height = 300 }: Stroke
 
   useEffect(() => {
     drawStrokeOrder()
+    // The draw helpers are pure functions of the state listed below; adding
+    // them to the deps would only make this effect re-run on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [character, currentStroke, strokeProgress, width, height])
 
   const animate = () => {
@@ -260,6 +263,9 @@ export function StrokeOrderDemo({ character, width = 300, height = 300 }: Stroke
         cancelAnimationFrame(animationRef.current)
       }
     }
+    // animate() intentionally reads the latest stroke data through its closure;
+    // restarting the effect on stroke changes is what drives the animation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying, currentStroke])
 
   const handlePlayPause = () => {

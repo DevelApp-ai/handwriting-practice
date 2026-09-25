@@ -47,7 +47,7 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
       }, 1000)
       return () => clearTimeout(timer)
     }
-  }, [])
+  }, [hasSeenHelper, setHasSeenHelper])
 
   const handleComplete = () => {
     const result = useCursive

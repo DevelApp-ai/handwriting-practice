@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react'
+import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react'
 import { TimedPoint } from '@/lib/types'
 import { layoutCursiveWord, CursiveLayout, ligatureScore, candidatePathsForGlyph } from '@/lib/cursive'
 import { evaluate, starsFromOverall, StrokeReport } from '@/lib/strokeEval'
@@ -40,6 +40,11 @@ export const CursiveCanvas = forwardRef<CursiveCanvasHandle, CursiveCanvasProps>
       setCurrentStroke([])
       strokesRef.current = []
       resizeCanvas()
+      drawGhost()
+      // resizeCanvas is a stable useCallback; drawGhost is omitted because
+      // re-running this effect when the guide toggles would clear the
+      // in-progress drawing. The showGuide effect below redraws the ghost.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [word])
 
     const worldToCanvas = (
@@ -74,7 +79,7 @@ export const CursiveCanvas = forwardRef<CursiveCanvasHandle, CursiveCanvasProps>
       return { x: (cx - offsetX) / scale, y: (cy - offsetY) / scale }
     }
 
-    const resizeCanvas = () => {
+    const resizeCanvas = useCallback(() => {
       const canvas = canvasRef.current
       const overlay = overlayRef.current
       const parent = canvas?.parentElement
@@ -85,16 +90,9 @@ export const CursiveCanvas = forwardRef<CursiveCanvasHandle, CursiveCanvasProps>
       canvas.height = h
       overlay.width = w
       overlay.height = h
-      drawGhost()
-    }
-
-    useEffect(() => {
-      resizeCanvas()
-      window.addEventListener('resize', resizeCanvas)
-      return () => window.removeEventListener('resize', resizeCanvas)
     }, [])
 
-    const drawGhost = () => {
+    const drawGhost = useCallback(() => {
       const overlay = overlayRef.current
       if (!overlay) return
       const ctx = overlay.getContext('2d')
@@ -135,7 +133,17 @@ export const CursiveCanvas = forwardRef<CursiveCanvasHandle, CursiveCanvasProps>
       }
 
       drawSlantGuide(ctx, overlay.width, overlay.height)
-    }
+    }, [showGuide])
+
+    useEffect(() => {
+      const handleResize = () => {
+        resizeCanvas()
+        drawGhost()
+      }
+      handleResize()
+      window.addEventListener('resize', handleResize)
+      return () => window.removeEventListener('resize', handleResize)
+    }, [resizeCanvas, drawGhost])
 
     const drawSlantGuide = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
       const slantRad = (SLANT_DEG * Math.PI) / 180
@@ -157,10 +165,9 @@ export const CursiveCanvas = forwardRef<CursiveCanvasHandle, CursiveCanvasProps>
 
     useEffect(() => {
       drawGhost()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [showGuide, word])
+    }, [drawGhost])
 
-    const redrawStrokes = () => {
+    const redrawStrokes = useCallback(() => {
       const canvas = canvasRef.current
       if (!canvas) return
       const ctx = canvas.getContext('2d')
@@ -180,11 +187,11 @@ export const CursiveCanvas = forwardRef<CursiveCanvasHandle, CursiveCanvasProps>
         })
         ctx.stroke()
       }
-    }
+    }, [strokes, currentStroke])
 
     useEffect(() => {
       redrawStrokes()
-    }, [strokes, currentStroke])
+    }, [redrawStrokes])
 
     const capturePoint = (e: React.PointerEvent<HTMLCanvasElement>): TimedPoint => {
       const canvas = canvasRef.current
@@ -298,7 +305,7 @@ export const CursiveCanvas = forwardRef<CursiveCanvasHandle, CursiveCanvasProps>
           return { stars: starsFromOverall(adjusted), report }
         },
       }),
-      [word],
+      [],
     )
 
     return (
