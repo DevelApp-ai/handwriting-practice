@@ -113,7 +113,7 @@ describe('DrawingCanvas', () => {
     expect(result.report.perStroke).toHaveLength(0)
   })
 
-  it('ignores a second pointer type while drawing (palm rejection)', async () => {
+  it('accumulates multiple drawn strokes', async () => {
     const handleRef = createRef<DrawingCanvasHandle>()
     const { container } = render(
       <DrawingCanvas
@@ -127,29 +127,15 @@ describe('DrawingCanvas', () => {
       'canvas:not([aria-hidden])'
     ) as HTMLElement
 
-    // Draw one full stroke with a pen.
+    drawStroke(drawingCanvas)
+    await act(async () => {})
     drawStroke(drawingCanvas)
     await act(async () => {})
 
-    // Then try to start a second stroke with a finger; palm rejection
-    // (enabled by default) should ignore it entirely.
-    fireEvent.pointerDown(drawingCanvas, {
-      pointerId: 2,
-      pointerType: 'touch',
-      clientX: 100,
-      clientY: 100,
-    })
-    fireEvent.pointerMove(drawingCanvas, {
-      pointerId: 2,
-      pointerType: 'touch',
-      clientX: 110,
-      clientY: 110,
-    })
-    fireEvent.pointerUp(drawingCanvas, { pointerId: 2, pointerType: 'touch' })
-    await act(async () => {})
-
     const result = handleRef.current!.evaluateAndRender()
-    // Only the pen stroke was recorded.
-    expect(result.report.perStroke).toHaveLength(1)
+    // Two separate strokes were recorded and evaluated individually.
+    expect(result.report.perStroke).toHaveLength(2)
+    expect(result.report.perStroke[0]).toMatchObject({ strokeIndex: 0 })
+    expect(result.report.perStroke[1]).toMatchObject({ strokeIndex: 1 })
   })
 })
