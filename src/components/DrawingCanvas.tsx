@@ -42,7 +42,8 @@ function pressureWidth(pressure: number, enabled: boolean): number {
 export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(
   function DrawingCanvas({ character, showGuide, practiceMode = DEFAULT_PRACTICE_MODE }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const overlayRef = useRef<HTMLCanvasElement>(null)
+  const overlayRef = useRef
+<HTMLCanvasElement>(null)
   const heatmapRef = useRef<HTMLCanvasElement>(null)
   const strokesRef = useRef<TimedPoint[][]>([])
   const [isDrawing, setIsDrawing] = useState(false)
@@ -87,7 +88,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
   const renderHeatmap = useCallback((report: StrokeReport) => {
     const heatmap = heatmapRef.current
     if (!heatmap) return
-    const ctx = heatmap.getContext('2d')
+    const ctx = heatmap.getCont
+ext('2d')
     if (!ctx) return
     ctx.clearRect(0, 0, heatmap.width, heatmap.height)
 
@@ -149,7 +151,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
   const getCharacterLevel = () => {
     const progress = userProgress?.progress?.[character]
     if (!progress) return 1
-    return Math.min(Math.floor(progress.attempts / 3) + 1, 5)
+    return Math.min(Math.floor(progr
+ess.attempts / 3) + 1, 5)
   }
 
   const getPrecisionThresholds = () => {
@@ -208,7 +211,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       } else if (devanagariChars.test(character)) {
         return "'Noto Sans Devanagari', sans-serif"
       }
-      return "'Quicksand', sans-serif"
+      
+return "'Quicksand', sans-serif"
     }
 
     const tempCanvas = document.createElement('canvas')
@@ -274,7 +278,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       const horizontalDist = left - point.x
       minDistance = Math.max(minDistance, horizontalDist * 0.5)
     } else if (point.x > right) {
-      const horizontalDist = point.x - right
+    
+  const horizontalDist = point.x - right
       minDistance = Math.max(minDistance, horizontalDist * 0.5)
     }
 
@@ -341,7 +346,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
   }, [])
 
   const showGhost =
-    showGuide && (practiceMode === 'observe' || practiceMode === 'trace')
+ 
+   showGuide && (practiceMode === 'observe' || practiceMode === 'trace')
   const showLandmarks = showGuide && practiceMode === 'landmark'
 
   const drawLandmarks = () => {
@@ -398,7 +404,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     ctx.clearRect(0, 0, overlay.width, overlay.height)
 
     const bounds = getEffectiveBounds(overlay.width, overlay.height)
-    const gridKind = selectGridKind(character, settings.gridKind)
+    const gridKind = select
+GridKind(character, settings.gridKind)
     const family = detectScriptFamily(character)
     const isSentence = character.length > 15
 
@@ -460,7 +467,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     
     let fontSize = overlay.height * 0.4
     if (isSentence) {
-      fontSize = overlay.height * 0.12
+      fontSize 
+= overlay.height * 0.12
     } else if (isWord) {
       fontSize = overlay.height * 0.25
     }
@@ -522,7 +530,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       })
     } else {
       ctx.direction = direction
-      ctx.fillText(character, centerX, baselineY)
+      ctx.fillText(character, centerX, baselineY
+)
       
       if (character.length === 1) {
         drawStrokeDirectionArrows(ctx, character, bounds.width, bounds.height)
@@ -584,7 +593,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       ctx.font = 'bold 16px Quicksand, sans-serif'
       ctx.fillStyle = 'rgba(34, 197, 94, 0.95)'
       ctx.textAlign = 'center'
-      ctx.fillText('Write this way \u2192', overlay.width / 2, arrowY - 18)
+      ctx.fillText(
+'Write this way \u2192', overlay.width / 2, arrowY - 18)
     }
   }
 
@@ -654,7 +664,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     })
 
     if (currentStroke.length > 0) {
-      drawStrokeWithColors(ctx, currentStroke, canvas.width, canvas.height)
+      drawStrokeWithCo
+lors(ctx, currentStroke, canvas.width, canvas.height)
       const last = currentStroke[currentStroke.length - 1]
       if (last) drawTiltIndicator(ctx, last)
     }
@@ -667,7 +678,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       pendingRedrawRef.current = false
       redrawStrokes()
     })
-  }, [strokes, currentStroke, redrawStrokes])
+  }, [redrawStrokes])
 
   const drawStrokeWithColors = (
     ctx: CanvasRenderingContext2D,
@@ -716,7 +727,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     const len = Math.min(24, tiltMag * 0.4)
     ctx.save()
     ctx.strokeStyle = 'rgba(99, 102, 241, 0.55)'
-    ctx.fillStyle = 'rgba(99, 102, 241, 0.8)'
+    ctx.fillStyle = 'rgba(99, 10
+2, 241, 0.8)'
     ctx.lineWidth = 2
     ctx.beginPath()
     ctx.moveTo(point.x, point.y)
@@ -781,7 +793,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
     setIsDrawing(true)
     const point = capturePoint(e)
     lastPointRef.current = point
-    setCurrentStroke([point])
+    setCurren
+tStroke([point])
     const synth = ensureSynth()
     if (synth) synth.start()
   }
@@ -847,7 +860,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
 
     setIsDrawing(false)
     activePointerTypeRef.current = ''
-    if (currentStroke.length > 0) {
+    if (currentStroke.leng
+th > 0) {
       setStrokes((prev) => [...prev, currentStroke])
       setCurrentStroke([])
     }
