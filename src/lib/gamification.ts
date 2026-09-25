@@ -678,7 +678,7 @@ export function getAchievementProgress(achievementId: AchievementId, progress: U
   if (!achievement) return { current: 0, target: 1, completed: false }
 
   const target = achievement.threshold || 1
-  let current = 0
+  let current: number
 
   switch (achievementId) {
     case 'first_character':
