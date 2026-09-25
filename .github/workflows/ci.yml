@@ -52,3 +52,4 @@ jobs:
           git commit -m "chore: record test report (temp) [skip ci]" || true
           git push origin HEAD:${{ github.head_ref }} || echo "push failed"
           exit $code
+
