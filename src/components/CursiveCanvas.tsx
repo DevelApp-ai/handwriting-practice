@@ -303,8 +303,12 @@ export const CursiveCanvas = forwardRef<CursiveCanvasHandle, CursiveCanvasProps>
 
     return (
       <div className="relative w-full h-full flex items-center justify-center p-4">
-        <div className="relative w-full h-full min-h-[200px]">
-          <canvas ref={overlayRef} className="absolute inset-0 pointer-events-none" />
+        <div
+          className="relative w-full h-full min-h-[200px]"
+          role="region"
+          aria-label={`Cursive writing practice area for "${word}"`}
+        >
+          <canvas ref={overlayRef} className="absolute inset-0 pointer-events-none" aria-hidden="true" />
           <canvas
             ref={canvasRef}
             onPointerDown={handlePointerDown}
@@ -312,7 +316,16 @@ export const CursiveCanvas = forwardRef<CursiveCanvasHandle, CursiveCanvasProps>
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
             className="absolute inset-0 touch-none cursor-crosshair"
+            role="img"
+            aria-label={`Drawing canvas for practicing the cursive word "${word}"`}
+            aria-describedby="cursive-canvas-instructions"
           />
+          <span id="cursive-canvas-instructions" className="sr-only">
+            Connect the letters in one flowing motion with a mouse, pen, or
+            finger. If you cannot or prefer not to draw, open the Strokes dialog
+            to watch a demonstration without drawing, then press the Done button
+            to evaluate your writing.
+          </span>
         </div>
       </div>
     )
