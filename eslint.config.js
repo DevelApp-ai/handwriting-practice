@@ -18,7 +18,13 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
+      // Do not spread reactHooks.configs.recommended.rules: in
+      // eslint-plugin-react-hooks v6/v7 it also enables the React
+      // Compiler-powered rules (purity, refs, immutability,
+      // set-state-in-effect, ...) as errors. Keep the classic v5
+      // recommended set until those are deliberately adopted.
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },

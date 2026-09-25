@@ -667,7 +667,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
       pendingRedrawRef.current = false
       redrawStrokes()
     })
-  }, [strokes, currentStroke, redrawStrokes])
+  }, [redrawStrokes])
 
   const drawStrokeWithColors = (
     ctx: CanvasRenderingContext2D,
