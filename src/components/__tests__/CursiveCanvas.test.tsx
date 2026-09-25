@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { render, fireEvent, act, screen } from '@testing-library/react'
 import { createRef } from 'react'
 import {
