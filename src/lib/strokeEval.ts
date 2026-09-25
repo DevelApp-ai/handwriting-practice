@@ -294,11 +294,12 @@ export function evaluate(
     const dirDot = candDir.dx * tplDir.dx + candDir.dy * tplDir.dy
     const directionScore = clamp01((dirDot + 1) / 2)
 
-    let kind: StrokeFaultKind = 'ok'
-    if (trajScore < 0.4) kind = 'red'
-    else if (directionScore < 0.3) kind = 'red'
-    else if (trajScore < 0.7 || directionScore < 0.6) kind = 'amber'
-    else kind = 'ok'
+    const kind: StrokeFaultKind =
+      trajScore < 0.4 || directionScore < 0.3
+        ? 'red'
+        : trajScore < 0.7 || directionScore < 0.6
+          ? 'amber'
+          : 'ok'
 
     if (bestTpl === i && kind !== 'red') orderCorrect++
     if (bestTpl >= 0) usedTpl.add(bestTpl)
