@@ -73,12 +73,18 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
 
   return (
     <div className="h-screen flex flex-col bg-background">
+      <p className="sr-only" aria-live="polite">
+        Practicing "{character}". Draw on the canvas, or open the Strokes dialog
+        to watch the stroke order without drawing. Press the Done button when
+        finished.
+      </p>
       <div className="flex items-center justify-between p-4 md:p-6 border-b border-border bg-card shadow-sm">
         <Button
           variant="ghost"
           size="lg"
           onClick={onBack}
           className="gap-2"
+          aria-label="Back to character selection"
         >
           <ArrowLeft className="w-5 h-5" />
           <span className="hidden sm:inline">Back</span>
@@ -99,6 +105,7 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
             size="lg"
             onClick={() => setShowStrokeOrder(true)}
             className="gap-2"
+            aria-label={`Watch stroke order demo for "${character}" (no drawing required)`}
           >
             <Path className="w-5 h-5" />
             <span className="hidden sm:inline">Strokes</span>
@@ -109,12 +116,17 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
             size="lg"
             onClick={() => setShowLineHelper(true)}
             className="gap-2"
+            aria-label="Line guide help"
           >
             <Info className="w-5 h-5" />
             <span className="hidden sm:inline">Lines</span>
           </Button>
 
-          <div className="hidden md:flex items-center rounded-md border border-border overflow-hidden">
+          <div
+            className="hidden md:flex items-center rounded-md border border-border overflow-hidden"
+            role="group"
+            aria-label="Practice mode"
+          >
             {(['observe', 'trace', 'landmark', 'blind'] as PracticeMode[]).map((mode) => (
               <button
                 key={mode}
@@ -128,6 +140,8 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
                     : 'bg-transparent hover:bg-accent'
                 }`}
                 title={`${mode} mode`}
+                aria-label={`${mode} mode`}
+                aria-pressed={practiceMode === mode}
               >
                 {mode}
               </button>
@@ -139,6 +153,7 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
             size="lg"
             onClick={() => setShowGuide(!showGuide)}
             className="gap-2"
+            aria-label={showGuide ? 'Hide guide' : 'Show guide'}
           >
             {showGuide ? (
               <>
@@ -212,7 +227,9 @@ export function PracticeScreen({ character, onBack, onComplete }: PracticeScreen
           <DialogHeader>
             <DialogTitle>Stroke Order for "{character}"</DialogTitle>
             <DialogDescription>
-              Watch how to write this character stroke by stroke. Green dots show where to start each stroke.
+              Watch how to write this character stroke by stroke. Green dots show
+              where to start each stroke. This demo is a watch-only alternative
+              that does not require any drawing.
             </DialogDescription>
           </DialogHeader>
           <StrokeOrderDemo character={character} width={280} height={280} />

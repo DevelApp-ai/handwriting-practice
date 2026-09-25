@@ -844,14 +844,20 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
 
   return (
     <div className="relative w-full h-full flex items-center justify-center p-4">
-      <div className="relative w-full max-w-2xl aspect-square">
+      <div
+        className="relative w-full max-w-2xl aspect-square"
+        role="region"
+        aria-label={`Writing practice area for "${character}"`}
+      >
         <canvas
           ref={overlayRef}
           className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
         />
         <canvas
           ref={heatmapRef}
           className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
         />
         <canvas
           ref={canvasRef}
@@ -860,7 +866,17 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
           className="absolute inset-0 touch-none cursor-crosshair"
+          role="img"
+          aria-label={`Drawing canvas for practicing "${character}"`}
+          aria-describedby="drawing-canvas-instructions"
         />
+        <span id="drawing-canvas-instructions" className="sr-only">
+          Draw the character with a mouse, pen, or finger. Strokes are colored by
+          accuracy: blue means on target, red means too far off. If you cannot or
+          prefer not to draw, open the Strokes dialog to watch the stroke order
+          demo without drawing, then press the Done button to evaluate your
+          writing.
+        </span>
       </div>
     </div>
   )
