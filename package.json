@@ -29,7 +29,7 @@
         "@tailwindcss/vite": "^4.3.3",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
-        "framer-motion": "^13.2.0",
+        "framer-motion": "^14.9.0",
         "html2canvas": "^1.4.1",
         "jspdf": "^4.2.1",
         "lucide-react": "^1.48.0",
